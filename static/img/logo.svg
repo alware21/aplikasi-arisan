@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <!-- Pure Solid 24K Royal Gold Gradients (Tanpa Glow Putih Menyilaukan) -->
+    <linearGradient id="goldRibbonMain" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#B45309" />
+      <stop offset="25%" stop-color="#D97706" />
+      <stop offset="55%" stop-color="#F59E0B" />
+      <stop offset="80%" stop-color="#FBBF24" />
+      <stop offset="100%" stop-color="#FDE68A" />
+    </linearGradient>
+
+    <linearGradient id="goldRibbonFold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE68A" />
+      <stop offset="30%" stop-color="#FBBF24" />
+      <stop offset="65%" stop-color="#D97706" />
+      <stop offset="100%" stop-color="#92400E" />
+    </linearGradient>
+
+    <!-- Lucky Solid Golden Lot Sphere Gradient -->
+    <radialGradient id="lotSphereGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#FEF3C7" />
+      <stop offset="35%" stop-color="#FDE047" />
+      <stop offset="70%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#B45309" />
+    </radialGradient>
+
+    <!-- Soft Warm Golden Aura Shadow -->
+    <filter id="goldAura" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="2.5" stdDeviation="4" flood-color="#D97706" flood-opacity="0.32" />
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#92400E" flood-opacity="0.20" />
+    </filter>
+
+    <!-- Gentle Inner Fold Shadow for 3D Ribbon Depth -->
+    <filter id="foldShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="1.5" dy="1.5" stdDeviation="2" flood-color="#78350F" flood-opacity="0.28" />
+    </filter>
+
+    <!-- Golden Sheen Spine Highlight (Emas Lembut Senada, Bukan Putih) -->
+    <linearGradient id="goldSheenGleam" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FBBF24" stop-opacity="0" />
+      <stop offset="50%" stop-color="#FEF08A" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#FBBF24" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <!-- Dynamic Ascending Group (Menyerong Miring -30 Derajat) -->
+  <g transform="rotate(-30 100 100)" filter="url(#goldAura)">
+    
+    <!-- Base Continuous Infinity Ribbon -->
+    <path d="M 100,100 C 126,138 168,136 178,100 C 188,64 148,64 100,100 C 52,136 12,136 22,100 C 32,64 74,62 100,100 Z" 
+          fill="none" 
+          stroke="url(#goldRibbonMain)" 
+          stroke-width="24" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" />
+
+    <!-- 3D Overlapping Fold Ribbon (Front Layer Crossing with Depth) -->
+    <path d="M 78,76 C 90,90 100,100 110,112 C 124,128 152,132 168,114 C 180,100 178,78 162,68 C 146,58 126,70 110,88" 
+          fill="none" 
+          stroke="url(#goldRibbonFold)" 
+          stroke-width="24" 
+          stroke-linecap="round" 
+          filter="url(#foldShadow)" />
+
+    <!-- Subtle Golden Sheen on Left Wing -->
+    <path d="M 28,94 C 36,70 70,70 94,94" 
+          fill="none" 
+          stroke="url(#goldSheenGleam)" 
+          stroke-width="3" 
+          stroke-linecap="round" />
+
+    <!-- Subtle Golden Sheen on Right Wing -->
+    <path d="M 106,106 C 122,126 156,126 172,104" 
+          fill="none" 
+          stroke="url(#goldSheenGleam)" 
+          stroke-width="3" 
+          stroke-linecap="round" />
+
+    <!-- The Lucky Golden Lot Sphere at the Ascending Crest -->
+    <circle cx="158" cy="68" r="14" fill="url(#lotSphereGrad)" />
+    <!-- Soft Golden Reflection on Sphere -->
+    <circle cx="153" cy="63" r="3.5" fill="#FEF08A" opacity="0.8" />
+  </g>
+</svg>

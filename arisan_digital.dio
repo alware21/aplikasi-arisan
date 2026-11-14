@@ -1,0 +1,150 @@
+<mxfile host="app.diagrams.net" modified="2026-09-18T04:25:33+02:00" agent="Antigravity" version="21.0.0" type="device">
+  <diagram name="ERD Arisan Digital Offline" id="erd-arisan-offline">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="#f8fafc" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Header Title -->
+        <mxCell id="title" value="Entity Relationship Diagram (ERD): Arisan Digital (Mode Offline)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=22;fontStyle=1;fontColor=#0f172a;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="80" y="35" width="700" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Skema Database Sederhana: Fokus Pencatatan Anggota, Kelompok, dan Pengocokan Undian Digital" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontColor=#64748b;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="80" y="70" width="700" height="25" as="geometry" />
+        </mxCell>
+
+        <!-- Legend Box -->
+        <mxCell id="legend_box" value="" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#cbd5e1;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="690" y="35" width="300" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_text" value="&lt;font color=&quot;#dc2626&quot;&gt;&lt;b&gt;[PK]&lt;/b&gt;&lt;/font&gt; Primary Key &amp;nbsp;|&amp;nbsp; &lt;font color=&quot;#2563eb&quot;&gt;&lt;b&gt;[FK]&lt;/b&gt;&lt;/font&gt; Foreign Key&lt;br&gt;&lt;b&gt;1 : N&lt;/b&gt; One-to-Many Relationship" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#334155;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="690" y="35" width="300" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- TABLE: anggota (Master Anggota) -->
+        <mxCell id="tbl_anggota" value="" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;rounded=1;arcSize=6;fillColor=#1E40AF;strokeColor=#1E40AF;fontColor=#ffffff;fontSize=14;strokeWidth=2;shadow=1;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="80" y="140" width="370" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_anggota_header" value="&lt;b&gt;anggota (Master Anggota)&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; font-weight: normal; opacity: 0.9;&quot;&gt;Daftar Orang / Buku Tamu Warga&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;fontColor=#ffffff;fontFamily=Helvetica;" vertex="1" parent="tbl_anggota">
+          <mxGeometry width="370" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_anggota_f_0" value="&lt;font color=&quot;#dc2626&quot;&gt;&lt;b&gt;[PK]&lt;/b&gt;&lt;/font&gt; &lt;b&gt;id_anggota&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: INT AUTO_INCREMENT&lt;/font&gt;" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_anggota">
+          <mxGeometry y="40" width="370" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_anggota_f_1" value="&lt;b&gt;nama&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: VARCHAR(100) NOT NULL&lt;/font&gt;" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_anggota">
+          <mxGeometry y="68" width="370" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_anggota_f_2" value="&lt;b&gt;no_telepon&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: VARCHAR(20) NULL&lt;/font&gt;" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_anggota">
+          <mxGeometry y="96" width="370" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_anggota_f_3" value="&lt;b&gt;alamat&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: TEXT NULL&lt;/font&gt;" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_anggota">
+          <mxGeometry y="124" width="370" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_anggota_f_4" value="&lt;b&gt;created_at&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: TIMESTAMP&lt;/font&gt;" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_anggota">
+          <mxGeometry y="152" width="370" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- TABLE: kelompok_arisan -->
+        <mxCell id="tbl_kelompok" value="" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;rounded=1;arcSize=6;fillColor=#0F766E;strokeColor=#0F766E;fontColor=#ffffff;fontSize=14;strokeWidth=2;shadow=1;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="600" y="140" width="390" height="236" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_kelompok_header" value="&lt;b&gt;kelompok_arisan&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; font-weight: normal; opacity: 0.9;&quot;&gt;Grup / Kelompok Arisan&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;fontColor=#ffffff;fontFamily=Helvetica;" vertex="1" parent="tbl_kelompok">
+          <mxGeometry width="390" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_kelompok_f_0" value="&lt;font color=&quot;#dc2626&quot;&gt;&lt;b&gt;[PK]&lt;/b&gt;&lt;/font&gt; &lt;b&gt;id_arisan&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: INT AUTO_INCREMENT&lt;/font&gt;" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_kelompok">
+          <mxGeometry y="40" width="390" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_kelompok_f_1" value="&lt;b&gt;nama_kelompok&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: VARCHAR(100) NOT NULL&lt;/font&gt;" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_kelompok">
+          <mxGeometry y="68" width="390" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_kelompok_f_2" value="&lt;b&gt;nominal_iuran&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: DECIMAL(12,2) NOT NULL&lt;/font&gt;" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_kelompok">
+          <mxGeometry y="96" width="390" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_kelompok_f_3" value="&lt;b&gt;periode_kocok&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: ENUM(&#039;mingguan&#039;,&#039;bulanan&#039;)&lt;/font&gt;" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_kelompok">
+          <mxGeometry y="124" width="390" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_kelompok_f_4" value="&lt;b&gt;tanggal_mulai&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: DATE NOT NULL&lt;/font&gt;" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_kelompok">
+          <mxGeometry y="152" width="390" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_kelompok_f_5" value="&lt;b&gt;status_arisan&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: ENUM(&#039;aktif&#039;,&#039;selesai&#039;)&lt;/font&gt;" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_kelompok">
+          <mxGeometry y="180" width="390" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_kelompok_f_6" value="&lt;b&gt;created_at&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: TIMESTAMP&lt;/font&gt;" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_kelompok">
+          <mxGeometry y="208" width="390" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- TABLE: peserta_arisan -->
+        <mxCell id="tbl_peserta" value="" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;rounded=1;arcSize=6;fillColor=#0369A1;strokeColor=#0369A1;fontColor=#ffffff;fontSize=14;strokeWidth=2;shadow=1;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="80" y="450" width="370" height="208" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_peserta_header" value="&lt;b&gt;peserta_arisan&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; font-weight: normal; opacity: 0.9;&quot;&gt;Daftar Anggota di Kelompok Arisan&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;fontColor=#ffffff;fontFamily=Helvetica;" vertex="1" parent="tbl_peserta">
+          <mxGeometry width="370" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_peserta_f_0" value="&lt;font color=&quot;#dc2626&quot;&gt;&lt;b&gt;[PK]&lt;/b&gt;&lt;/font&gt; &lt;b&gt;id_peserta&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: INT AUTO_INCREMENT&lt;/font&gt;" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_peserta">
+          <mxGeometry y="40" width="370" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_peserta_f_1" value="&lt;font color=&quot;#2563eb&quot;&gt;&lt;b&gt;[FK]&lt;/b&gt;&lt;/font&gt; &lt;b&gt;id_arisan&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: INT [FK -&gt; kelompok_arisan]&lt;/font&gt;" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_peserta">
+          <mxGeometry y="68" width="370" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_peserta_f_2" value="&lt;font color=&quot;#2563eb&quot;&gt;&lt;b&gt;[FK]&lt;/b&gt;&lt;/font&gt; &lt;b&gt;id_anggota&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: INT [FK -&gt; anggota]&lt;/font&gt;" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_peserta">
+          <mxGeometry y="96" width="370" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_peserta_f_3" value="&lt;b&gt;nomor_undian&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: INT NOT NULL&lt;/font&gt;" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_peserta">
+          <mxGeometry y="124" width="370" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_peserta_f_4" value="&lt;b&gt;status_menang&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: BOOLEAN DEFAULT FALSE&lt;/font&gt;" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_peserta">
+          <mxGeometry y="152" width="370" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_peserta_f_5" value="&lt;b&gt;created_at&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: TIMESTAMP&lt;/font&gt;" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_peserta">
+          <mxGeometry y="180" width="370" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- TABLE: riwayat_kocokan -->
+        <mxCell id="tbl_riwayat" value="" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;rounded=1;arcSize=6;fillColor=#C2410C;strokeColor=#C2410C;fontColor=#ffffff;fontSize=14;strokeWidth=2;shadow=1;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="600" y="450" width="390" height="264" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_riwayat_header" value="&lt;b&gt;riwayat_kocokan&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; font-weight: normal; opacity: 0.9;&quot;&gt;Catatan Hasil Kocokan Tiap Putaran&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;fontColor=#ffffff;fontFamily=Helvetica;" vertex="1" parent="tbl_riwayat">
+          <mxGeometry width="390" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_riwayat_f_0" value="&lt;font color=&quot;#dc2626&quot;&gt;&lt;b&gt;[PK]&lt;/b&gt;&lt;/font&gt; &lt;b&gt;id_kocokan&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: INT AUTO_INCREMENT&lt;/font&gt;" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_riwayat">
+          <mxGeometry y="40" width="390" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_riwayat_f_1" value="&lt;font color=&quot;#2563eb&quot;&gt;&lt;b&gt;[FK]&lt;/b&gt;&lt;/font&gt; &lt;b&gt;id_arisan&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: INT [FK -&gt; kelompok_arisan]&lt;/font&gt;" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_riwayat">
+          <mxGeometry y="68" width="390" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_riwayat_f_2" value="&lt;font color=&quot;#2563eb&quot;&gt;&lt;b&gt;[FK]&lt;/b&gt;&lt;/font&gt; &lt;b&gt;id_peserta_menang&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: INT [FK -&gt; peserta_arisan]&lt;/font&gt;" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_riwayat">
+          <mxGeometry y="96" width="390" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_riwayat_f_3" value="&lt;b&gt;periode_ke&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: INT NOT NULL&lt;/font&gt;" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_riwayat">
+          <mxGeometry y="124" width="390" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_riwayat_f_4" value="&lt;b&gt;tanggal_kocok&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: DATE NOT NULL&lt;/font&gt;" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_riwayat">
+          <mxGeometry y="152" width="390" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_riwayat_f_5" value="&lt;b&gt;total_diterima&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: DECIMAL(12,2) NOT NULL&lt;/font&gt;" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_riwayat">
+          <mxGeometry y="180" width="390" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_riwayat_f_6" value="&lt;b&gt;catatan&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: VARCHAR(255) NULL&lt;/font&gt;" style="text;strokeColor=none;fillColor=#ffffff;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_riwayat">
+          <mxGeometry y="208" width="390" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tbl_riwayat_f_7" value="&lt;b&gt;created_at&lt;/b&gt; &lt;font color=&quot;#64748b&quot;&gt;: TIMESTAMP&lt;/font&gt;" style="text;strokeColor=none;fillColor=#f8fafc;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=10;fontSize=11;fontColor=#1e293b;fontFamily=Consolas, monospace;whiteSpace=wrap;html=1;" vertex="1" parent="tbl_riwayat">
+          <mxGeometry y="236" width="390" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- RELATIONS (EDGES) -->
+        <mxCell id="rel_anggota_peserta" value="1 : N (Terdaftar Peserta)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.3;exitY=1;entryX=0.3;entryY=0;strokeColor=#1e40af;strokeWidth=2;endArrow=ERmany;startArrow=ERmandOne;endFill=0;startFill=0;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="tbl_anggota" target="tbl_peserta">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_kelompok_peserta" value="1 : N (Anggota Grup)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.15;exitY=1;entryX=1;entryY=0.25;strokeColor=#0f766e;strokeWidth=2;endArrow=ERmany;startArrow=ERmandOne;endFill=0;startFill=0;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="tbl_kelompok" target="tbl_peserta">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_kelompok_riwayat" value="1 : N (Putaran Kocok)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;entryX=0.75;entryY=0;strokeColor=#0f766e;strokeWidth=2;endArrow=ERmany;startArrow=ERmandOne;endFill=0;startFill=0;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="tbl_kelompok" target="tbl_riwayat">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_peserta_riwayat" value="1 : N (Pemenang Undian)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.6;entryX=0;entryY=0.6;strokeColor=#0369a1;strokeWidth=2;endArrow=ERmany;startArrow=ERmandOne;endFill=0;startFill=0;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="tbl_peserta" target="tbl_riwayat">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

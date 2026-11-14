@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kelompok &amp; Peserta - Arisan Digital by Alware Platform{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-extrabold text-stone-900">Kelompok Arisan &amp; Alokasi Peserta</h2>
+      <p class="text-xs text-stone-500">Kelola grup arisan warga dan daftarkan anggota ke nomor undian lot</p>
+    </div>
+
+    <button onclick="openModalTambahKelompok()" 
+            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 text-white font-bold text-xs hover:brightness-105 shadow-md flex items-center gap-2 self-start sm:self-auto">
+      <i data-lucide="plus-circle" class="w-4 h-4"></i>
+      <span>Buat Kelompok Baru</span>
+    </button>
+  </div>
+
+
+  <!-- Groups Cards & Details -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    {% for k in kelompok_all %}
+      <div class="glass-folder-card bg-white border border-amber-200/80 rounded-3xl p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="badge-gold text-xs">{{ k.get_periode_kocok_display }}</span>
+            <span class="text-xs font-bold {% if k.status_arisan == 'aktif' %}text-emerald-700{% else %}text-stone-400{% endif %}">
+              ● Status: {{ k.status_arisan|capfirst }}
+            </span>
+          </div>
+
+          <h3 class="text-xl font-extrabold text-stone-900">{{ k.nama_kelompok }}</h3>
+          <p class="text-xs text-stone-500 mt-1">Iuran per orang: <strong class="text-amber-800">Rp {{ k.nominal_iuran|floatformat:0 }}</strong></p>
+
+          <div class="my-5 p-4 rounded-2xl bg-amber-50/50 border border-amber-100 space-y-2 text-xs">
+            <div class="flex justify-between">
+              <span class="text-stone-500">Total Peserta:</span>
+              <span class="font-bold text-stone-900">{{ k.total_peserta }} Warga</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-stone-500">Total Pot Hadiah:</span>
+              <span class="font-bold text-amber-900">Rp {{ k.total_pot_hadiah|floatformat:0 }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-stone-500">Belum Menang:</span>
+              <span class="font-bold text-amber-700">{{ k.sisa_kandidat_count }} Orang</span>
+            </div>
+          </div>
+
+          <!-- Participant Roster -->
+          <div class="space-y-1.5 mb-6">
+            <p class="text-xs font-bold text-stone-700 mb-2">Daftar Nomor Lot Peserta:</p>
+            {% for p in k.peserta.all %}
+              <div class="flex items-center justify-between text-xs py-1.5 px-3 rounded-lg bg-stone-50 border border-stone-100">
+                <span class="font-bold text-amber-900">Lot #{{ p.nomor_undian|stringformat:"02d" }} - {{ p.anggota.nama }}</span>
+                {% if p.status_menang %}
+                  <span class="badge-success-glass text-[10px]">Menang</span>
+                {% else %}
+                  <span class="text-[10px] text-stone-400 font-semibold">Mengantre</span>
+                {% endif %}
+              </div>
+            {% empty %}
+              <p class="text-xs text-stone-400 italic">Belum ada peserta di kelompok ini.</p>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-stone-100 flex gap-2">
+          <button onclick="openModalTambahPeserta('{{ k.id }}', '{{ k.nama_kelompok|escapejs }}')" 
+                  class="w-full py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+            <span>Daftarkan Warga</span>
+          </button>
+          <a href="{% url 'kocokan_kelompok' k.id %}" class="px-3 py-2.5 rounded-xl bg-stone-900 text-white font-bold text-xs flex items-center justify-center hover:bg-amber-700" title="Buka Kocokan">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- MODAL BUAT KELOMPOK BARU (VIEWPORT CENTERED LOCK) -->
+<div id="modalTambahKelompok" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-md p-6 sm:p-7 relative animate-bounce-short">
+    <div class="flex items-center justify-between pb-3.5 border-b border-stone-100 mb-4">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+          <i data-lucide="folder-plus" class="w-4 h-4"></i>
+        </div>
+        <h3 class="font-extrabold text-stone-900 text-base">Buat Kelompok Arisan Baru</h3>
+      </div>
+      <button onclick="closeModalTambahKelompok()" class="w-8 h-8 rounded-full hover:bg-stone-100 flex items-center justify-center text-stone-400 hover:text-stone-700 transition-colors">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <form method="POST" action="{% url 'kelompok_list' %}" class="space-y-3.5">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="tambah_kelompok">
+
+      <div>
+        <label class="block text-[11px] font-bold text-stone-700 uppercase tracking-wider mb-1">Nama Kelompok Arisan *</label>
+        <input type="text" name="nama_kelompok" required placeholder="Contoh: Arisan Ibu-Ibu RT 05" 
+               class="liquid-input-concave text-xs">
+      </div>
+
+      <div>
+        <label class="block text-[11px] font-bold text-stone-700 uppercase tracking-wider mb-1">Nominal Iuran per Orang (Rp) *</label>
+        <input type="number" name="nominal_iuran" required placeholder="Contoh: 200000" 
+               class="liquid-input-concave text-xs">
+      </div>
+
+      <div>
+        <label class="block text-[11px] font-bold text-stone-700 uppercase tracking-wider mb-1">Periode Pengocokan</label>
+        <select name="periode_kocok" class="liquid-input-concave text-xs">
+          <option value="bulanan">Bulanan</option>
+          <option value="mingguan">Mingguan</option>
+        </select>
+      </div>
+
+      <div class="pt-3 flex gap-2.5">
+        <button type="button" onclick="closeModalTambahKelompok()" class="w-1/2 py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">
+          Batal
+        </button>
+        <button type="submit" class="w-1/2 btn-convex-gold text-xs !py-2.5">
+          Buat Kelompok
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL TAMBAH PESERTA KE KELOMPOK (VIEWPORT CENTERED LOCK) -->
+<div id="modalTambahPeserta" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-md p-6 sm:p-7 relative animate-bounce-short">
+    <div class="flex items-center justify-between pb-3.5 border-b border-stone-100 mb-4">
+      <div>
+        <h3 class="font-extrabold text-stone-900 text-base">Daftarkan Warga ke Grup</h3>
+        <p id="labelKelompokTujuan" class="text-xs text-amber-800 font-bold mt-0.5"></p>
+      </div>
+      <button onclick="closeModalTambahPeserta()" class="w-8 h-8 rounded-full hover:bg-stone-100 flex items-center justify-center text-stone-400 hover:text-stone-700 transition-colors">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <form method="POST" action="{% url 'kelompok_list' %}" class="space-y-3.5">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="tambah_peserta">
+      <input type="hidden" id="inputKelompokId" name="kelompok_id" value="">
+
+      <div>
+        <label class="block text-[11px] font-bold text-stone-700 uppercase tracking-wider mb-1">Pilih Warga yang Terdaftar *</label>
+        <select name="anggota_id" required class="liquid-input-concave text-xs">
+          <option value="">-- Pilih Anggota Warga --</option>
+          {% for a in anggota_all %}
+            <option value="{{ a.id }}">{{ a.nama }} ({{ a.no_telepon|default:"Tanpa HP" }})</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <p class="text-[11px] text-stone-500">
+        Nomor undian lot akan dibuatkan secara berurutan otomatis (Lot #01, #02, dst.).
+      </p>
+
+      <div class="pt-3 flex gap-2.5">
+        <button type="button" onclick="closeModalTambahPeserta()" class="w-1/2 py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">
+          Batal
+        </button>
+        <button type="submit" class="w-1/2 btn-convex-gold text-xs !py-2.5">
+          Simpan Peserta
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function openModalTambahKelompok() {
+    const modal = document.getElementById('modalTambahKelompok');
+    if (modal) {
+      modal.classList.remove('hidden');
+      if (typeof lockBodyScroll === 'function') lockBodyScroll();
+    }
+  }
+
+  function closeModalTambahKelompok() {
+    const modal = document.getElementById('modalTambahKelompok');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+  }
+
+  function openModalTambahPeserta(kelompokId, namaKelompok) {
+    document.getElementById('inputKelompokId').value = kelompokId;
+    document.getElementById('labelKelompokTujuan').textContent = "Kelompok: " + namaKelompok;
+    const modal = document.getElementById('modalTambahPeserta');
+    if (modal) {
+      modal.classList.remove('hidden');
+      if (typeof lockBodyScroll === 'function') lockBodyScroll();
+    }
+  }
+
+  function closeModalTambahPeserta() {
+    const modal = document.getElementById('modalTambahPeserta');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+  }
+</script>
+{% endblock %}

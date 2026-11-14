@@ -1,0 +1,645 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Ruang Pengundian Live - {{ kelompok.nama_kelompok }}{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+  <!-- Header Section -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-2">
+        {% if user_role == 'ketua' %}
+          <span class="px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-black flex items-center gap-1.5 shadow-sm">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-100 animate-ping"></span>
+            👑 Ketua
+          </span>
+        {% else %}
+          <span class="px-3 py-1 rounded-full bg-white text-stone-700 text-xs font-bold flex items-center gap-1.5 border border-stone-200 shadow-sm">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            👤 Anggota
+          </span>
+        {% endif %}
+        <span class="text-xs text-stone-400 font-medium">Putaran Ke-{{ kelompok.putaran_berikutnya }}</span>
+      </div>
+      <h2 class="text-2xl font-black text-stone-900 mt-1 tracking-tight">Ruang Pengundian Live Arisan</h2>
+      <p class="text-xs text-stone-500">
+        Kelompok: <strong class="text-amber-900">{{ kelompok.nama_kelompok }}</strong> [Room: <strong class="text-amber-800">{{ kelompok.kode_room }}</strong>] &bull; Iuran: Rp {{ kelompok.nominal_iuran|floatformat:0 }} ({{ kelompok.frekuensi_setor }})
+      </p>
+    </div>
+
+    <!-- Quick Link Back to Dashboard (3D Convex) -->
+    <div>
+      <a href="{% url 'dashboard' %}" class="btn-convex-pearl">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        <span>Kembali ke Dashboard</span>
+      </a>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================
+       MAIN RAFFLE INTERACTIVE ARENA
+       ======================================================================== -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+    <!-- LEFT COL: GOLDEN LIQUID SPHERE & ACTION (7 COLS) -->
+    <div class="lg:col-span-7 bg-white/75 border border-white/95 rounded-3xl p-8 text-center relative overflow-hidden shadow-lg backdrop-blur-2xl">
+      <div class="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-amber-300/20 blur-3xl pointer-events-none"></div>
+
+      <!-- Pot Hadiah Banner & Sound Effect Toggle (Fitur C) -->
+      <div class="flex items-center justify-between gap-2.5 mb-6 max-w-sm mx-auto flex-wrap">
+        <div class="px-4 py-2 rounded-full bg-white/95 border border-amber-300 text-stone-900 text-xs font-bold shadow-sm flex items-center gap-1.5">
+          <i data-lucide="award" class="w-4 h-4 text-amber-600"></i>
+          <span>Pot: <strong class="text-amber-800 text-sm font-black">Rp {{ kelompok.total_pot_hadiah|floatformat:0 }}</strong></span>
+        </div>
+
+        <button type="button" onclick="toggleSound()" id="btnSoundToggle" 
+                class="px-3.5 py-2 rounded-full bg-white/90 border border-stone-200 hover:border-amber-400 text-stone-700 text-xs font-bold shadow-sm flex items-center gap-1.5 transition-colors" title="Nyalakan/Matikan Efek Suara">
+          <i data-lucide="volume-2" id="soundIcon" class="w-4 h-4 text-amber-600"></i>
+          <span id="soundLabel">Audio: On</span>
+        </button>
+      </div>
+
+      <!-- ====================================================================
+           THE CRYSTAL GLASS LOTTERY GLOBE (BOLA KACA ARISAN & GULUNGAN LOT)
+           ==================================================================== -->
+      <div class="crystal-globe-wrapper">
+        <div id="raffleSphere" class="crystal-globe-sphere {% if user_role == 'ketua' and sisa_kandidat_count > 0 %}cursor-pointer{% endif %}" 
+             {% if user_role == 'ketua' and sisa_kandidat_count > 0 %}onclick="mulaiPengocokan()"{% endif %}>
+          
+          <!-- Specular Curved Glare Highlight -->
+          <div class="globe-glass-glare"></div>
+          <div class="globe-glass-rim"></div>
+
+          <!-- Chamber: 8 Floating Mini Rolled Lots inside the glass sphere -->
+          <div id="globeLotChamber" class="globe-lot-chamber">
+            <div class="mini-lot-roll roll-1">#01</div>
+            <div class="mini-lot-roll roll-2">#02</div>
+            <div class="mini-lot-roll roll-3">#03</div>
+            <div class="mini-lot-roll roll-4">#04</div>
+            <div class="mini-lot-roll roll-5">#05</div>
+            <div class="mini-lot-roll roll-6">#06</div>
+            <div class="mini-lot-roll roll-7">#07</div>
+            <div class="mini-lot-roll roll-8">#08</div>
+          </div>
+
+          <!-- Center Floating 3D Text Core (Murni Teks Emas 3D Melayang Tanpa Box/Petak) -->
+          <div class="globe-digital-core flex flex-col items-center justify-center select-none pointer-events-none">
+            <div class="w-8 h-8 mb-1 rounded-full bg-amber-400/20 flex items-center justify-center text-amber-300 drop-shadow-[0_0_12px_rgba(251,191,36,0.9)]">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+            </div>
+            <span id="sphereLot" class="text-3xl sm:text-4xl font-black tracking-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] filter [text-shadow:_0_0_20px_rgba(251,191,36,0.95)]">Lot ?</span>
+            <span id="sphereNama" class="text-xs font-extrabold text-amber-200 mt-1 drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)] tracking-wide">
+              {% if user_role == 'ketua' %}Klik Bola untuk Kocok{% else %}Menunggu Ketua Memutar{% endif %}
+            </span>
+          </div>
+        </div>
+
+        <!-- 3D Golden Pedestal Base Under the Crystal Sphere -->
+        <div class="crystal-globe-pedestal">
+          <div class="pedestal-gold-ring"></div>
+          <div class="pedestal-shadow"></div>
+        </div>
+      </div>
+
+      <!-- Action Button or Spectator Notice (3D Convex) -->
+      <div class="mt-8 max-w-sm mx-auto">
+        {% if user_role == 'ketua' %}
+          {% if sisa_kandidat_count > 0 %}
+            <button id="btnKocok" onclick="mulaiPengocokan()" class="btn-convex-gold w-full !py-4 text-sm !rounded-2xl">
+              <i data-lucide="sparkles" class="w-5 h-5 text-amber-100"></i>
+              <span>PUTAR RODA UNDIAN SEKARANG</span>
+            </button>
+          {% else %}
+            <div class="p-4 rounded-2xl bg-amber-50 text-amber-900 text-xs font-bold border border-amber-200 shadow-sm">
+              🎉 Seluruh peserta dalam siklus ini sudah pernah menang!
+            </div>
+          {% endif %}
+        {% else %}
+          <!-- Spectator Notice for Anggota -->
+          <div class="p-4 rounded-2xl bg-white text-stone-600 text-xs font-semibold border border-stone-200 flex items-center justify-center gap-2 shadow-sm">
+            <i data-lucide="shield" class="w-4 h-4 text-amber-500"></i>
+            <span>Mode Penonton: Hanya Ketua Kelompok yang berwenang menekan tombol putar.</span>
+          </div>
+        {% endif %}
+      </div>
+
+      <p class="text-[11px] text-stone-500 mt-4">
+        ⚡ <strong>Aturan Arisan Sah:</strong> Seluruh warga yang <strong>BELUM PERNAH MENANG</strong> masuk ke dalam kotak undian ini. Berapa pun kas yang terkumpul, kocokan tetap dapat dilakukan. Nama yang keluar tidak akan keluar lagi 2x dalam 1 siklus.
+      </p>
+    </div>
+
+
+    <!-- RIGHT COL: CANDIDATE POOL & VERIFICATION (5 COLS) -->
+    <div class="lg:col-span-5 space-y-5">
+
+      <!-- Candidate Status Box (3D Convex) -->
+      <div class="bg-white/80 backdrop-blur-xl border border-white/95 rounded-3xl p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="font-black text-stone-900 text-sm">Status Kandidat Undian</h3>
+            <p class="text-[11px] text-stone-400">Nama pemenang terkunci otomatis</p>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-black border border-amber-300/50">
+            {{ sisa_kandidat_count }} Warga Mengantre
+          </span>
+        </div>
+
+        <div class="space-y-2.5 max-h-[360px] overflow-y-auto pr-1">
+          {% for p in semua_peserta %}
+            <div class="p-3 rounded-2xl flex items-center justify-between gap-2 text-xs border transition-all 
+                        {% if p.status_menang %}
+                          bg-stone-50/80 border-stone-200 opacity-60
+                        {% else %}
+                          bg-white/90 border-stone-200 hover:border-amber-400
+                        {% endif %}">
+              
+              <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                <span class="w-8 h-8 rounded-xl font-black flex items-center justify-center text-xs flex-shrink-0
+                             {% if p.status_menang %}bg-stone-200 text-stone-600
+                             {% else %}bg-gradient-to-tr from-amber-500 to-amber-400 text-white shadow-sm{% endif %}">
+                  #{{ p.nomor_undian|stringformat:"02d" }}
+                </span>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5 min-w-0">
+                    <p class="font-bold text-stone-900 truncate">{{ p.anggota.nama }}</p>
+                    {% if p.is_ketua %}
+                      <span class="text-[10px] font-bold text-amber-600 flex-shrink-0">👑</span>
+                    {% endif %}
+                  </div>
+                  <p class="text-[10px] text-stone-500 truncate">{{ p.anggota.no_telepon|default:"Tanpa HP" }}</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
+                {% if p.status_setor %}
+                  <span class="text-[10px] text-emerald-700 font-bold">✓ Lunas</span>
+                {% else %}
+                  <span class="text-[10px] text-amber-700 font-medium">⏳ Belum Bayar</span>
+                {% endif %}
+
+                {% if p.status_menang %}
+                  <span class="px-2 py-0.5 rounded-full bg-stone-200 text-stone-700 font-bold text-[10px]">
+                    Sudah Menang
+                  </span>
+                {% else %}
+                  <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-black text-[10px] shadow-sm">
+                    Siap Kocok
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Riwayat Pemenang Sebelumnya -->
+      <div class="bg-white/80 backdrop-blur-xl border border-white/95 rounded-3xl p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <h3 class="font-black text-stone-900 text-sm">Riwayat Pemenang Sebelumnya</h3>
+          {% if user_role == 'ketua' and riwayat_list %}
+            <button type="button" 
+                    onclick="openModalHapusSemuaRiwayat()" 
+                    class="px-2.5 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-[10px] font-extrabold flex items-center gap-1 shadow-xs transition-all active:scale-95 cursor-pointer" 
+                    title="Hapus / Reset Seluruh Riwayat Pemenang">
+              <i data-lucide="trash-2" class="w-3 h-3 text-rose-600 pointer-events-none"></i>
+              <span>Hapus Semua</span>
+            </button>
+          {% endif %}
+        </div>
+        <div class="space-y-2 max-h-[200px] overflow-y-auto pr-1">
+          {% for r in riwayat_list %}
+            <div class="p-3 rounded-2xl bg-white border border-stone-200 text-xs flex items-center justify-between gap-2 shadow-sm">
+              <div class="min-w-0 flex-1">
+                <p class="font-bold text-stone-900 truncate">Periode Ke-{{ r.periode_ke }}: {{ r.peserta_menang.anggota.nama }}</p>
+                <p class="text-[10px] text-stone-400">{{ r.tanggal_kocok|date:"d M Y" }}</p>
+              </div>
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <a href="{% url 'kuitansi_detail' r.id %}" target="_blank" class="px-2.5 py-1 rounded-xl bg-amber-100 text-amber-900 font-bold text-[10px] hover:bg-amber-200 flex items-center gap-1 border border-amber-300/60 shadow-sm" title="Lihat Kuitansi Digital">
+                  <i data-lucide="receipt" class="w-3 h-3"></i>
+                  <span>Kuitansi</span>
+                </a>
+                {% if user_role == 'ketua' %}
+                  <button type="button" 
+                          onclick="openModalHapusRiwayat('{{ r.id }}', '{{ r.periode_ke }}', '{{ r.peserta_menang.anggota.nama|escapejs }}')" 
+                          class="p-1.5 rounded-xl text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-transparent hover:border-rose-200 active:scale-90 transition-all flex items-center justify-center cursor-pointer" 
+                          title="Hapus / Batalkan Kemenangan Putaran Ini">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600 pointer-events-none"></i>
+                  </button>
+                {% endif %}
+              </div>
+            </div>
+          {% empty %}
+            <p class="text-xs text-stone-400 italic text-center py-4">Belum ada putaran pengundian sebelumnya.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- ========================================================================
+     MODAL POPUP PENGUMUMAN PEMENANG & KUITANSI (VIEWPORT CENTERED LOCK)
+     ======================================================================== -->
+<div id="modalPemenang" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-md p-8 text-center relative animate-bounce-short">
+    
+    <!-- Trophy Icon 3D -->
+    <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-amber-400 to-amber-200 text-amber-900 flex items-center justify-center shadow-2xl mb-4 border-2 border-white">
+      <i data-lucide="trophy" class="w-10 h-10"></i>
+    </div>
+
+    <span class="px-3.5 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-black uppercase tracking-wider border border-amber-300/60 shadow-sm">
+      Selamat Kepada Pemenang!
+    </span>
+
+    <h2 id="modalPemenangNama" class="text-2xl sm:text-3xl font-black text-stone-900 mt-2">Nama Pemenang</h2>
+    
+    <div class="p-4 rounded-2xl bg-white/80 border border-stone-200 mt-4 space-y-1 text-xs shadow-sm">
+      <p class="text-stone-500">Nomor Lot Undian: <strong id="modalPemenangLot" class="text-stone-900 font-bold text-sm">#00</strong></p>
+      <p class="text-stone-500">Hadiah Tunai Arisan: <strong id="modalPemenangHadiah" class="text-amber-800 font-black text-base">Rp 0</strong></p>
+      <p class="text-stone-500">Putaran Pengundian: <strong id="modalPemenangPeriode" class="text-stone-900 font-bold">Periode Ke-1</strong></p>
+    </div>
+
+    <div class="flex flex-col gap-2.5 mt-6">
+      <a id="modalBtnKuitansi" href="#" target="_blank" class="btn-convex-gold w-full !py-3.5 text-xs !rounded-2xl">
+        <i data-lucide="printer" class="w-4 h-4 text-amber-100"></i>
+        <span>Cetak Kuitansi Resmi Penyerahan</span>
+      </a>
+
+      <a id="modalBtnWA" href="#" target="_blank" class="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-1.5 transition-colors">
+        <i data-lucide="share-2" class="w-4 h-4"></i>
+        <span>Kirim Kuitansi ke WhatsApp Pemenang</span>
+      </a>
+
+      <button onclick="location.reload()" class="w-full py-3 rounded-2xl border border-stone-200 text-stone-700 font-bold text-xs hover:bg-stone-50 transition-colors">
+        Tutup &amp; Segarkan Halaman
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================
+     MODAL BATALKAN / HAPUS PENGUNDIAN (VIEWPORT CENTERED LOCK - KHUSUS KETUA)
+     ======================================================================== -->
+<div id="modalHapusRiwayat" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-sm p-6 text-center relative animate-bounce-short">
+    <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shadow-inner mb-4">
+      <i data-lucide="trash-2" class="w-7 h-7"></i>
+    </div>
+    
+    <h3 class="font-black text-stone-900 text-lg">Hapus Putaran Ini?</h3>
+    <p class="text-xs text-stone-600 mt-1 mb-4" id="textInfoHapusRiwayat">
+      Pengundian putaran akan dibatalkan.
+    </p>
+
+    <div class="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-950 text-left text-[11px] mb-4 space-y-1.5">
+      <p class="font-bold flex items-center gap-1.5 text-amber-900">
+        <i data-lucide="info" class="w-3.5 h-3.5 text-amber-600"></i>
+        <span>Pengembalian Status Otomatis</span>
+      </p>
+      <p class="text-stone-600 leading-relaxed">
+        Pemenang pada putaran ini akan <strong>dikembalikan ke status BELUM MENANG</strong> (masuk kembali ke daftar siap undi). Rekaman kuitansi putaran ini akan dihapus.
+      </p>
+    </div>
+
+    <form id="formHapusRiwayat" method="POST" action="" class="space-y-3">
+      {% csrf_token %}
+      <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <button type="button" onclick="closeModalHapusRiwayat()" class="py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">
+          Tutup
+        </button>
+        <button type="submit" class="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          <span>Ya, Hapus Putaran</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================================================
+     MODAL HAPUS SEMUA RIWAYAT PEMENANG (VIEWPORT CENTERED LOCK - KHUSUS KETUA)
+     ======================================================================== -->
+<div id="modalHapusSemuaRiwayat" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-sm p-6 text-center relative animate-bounce-short">
+    <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shadow-inner mb-4">
+      <i data-lucide="trash-2" class="w-7 h-7"></i>
+    </div>
+    
+    <h3 class="font-black text-stone-900 text-lg">Hapus Semua Riwayat?</h3>
+    <p class="text-xs text-stone-600 mt-1 mb-4 leading-relaxed">
+      Seluruh riwayat kocokan di kelompok ini akan dihapus bersih.
+    </p>
+
+    <div class="p-3.5 rounded-2xl bg-rose-50/90 border border-rose-200 text-rose-950 text-left text-[11px] mb-4 space-y-1.5">
+      <p class="font-bold flex items-center gap-1.5 text-rose-900">
+        <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-rose-600"></i>
+        <span>Reset Total Siklus Pengundian</span>
+      </p>
+      <p class="text-stone-600 leading-relaxed">
+        Seluruh rekaman <strong>{{ riwayat_list.count }} putaran kocokan</strong> akan dihapus. Semua warga yang sudah menang akan <strong>dikembalikan ke status BELUM MENANG</strong>. Putaran berikutnya akan dimulai kembali dari <strong>Putaran Ke-1</strong>.
+      </p>
+    </div>
+
+    <form method="POST" action="{% url 'riwayat_hapus_semua' kelompok.id %}" class="space-y-3">
+      {% csrf_token %}
+      <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <button type="button" onclick="closeModalHapusSemuaRiwayat()" class="py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">
+          Batal
+        </button>
+        <button type="submit" class="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          <span>Ya, Hapus Semua</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<!-- Canvas Confetti -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+  // Candidate pool data from server (all members who haven't won yet)
+  const candidates = [
+    {% for p in kandidat_siap %}
+      { id: {{ p.id }}, lot: {{ p.nomor_undian }}, nama: "{{ p.anggota.nama|escapejs }}" },
+    {% endfor %}
+  ];
+
+  let isRaffling = false;
+
+  // =========================================================================
+  // FITUR C: WEBAUDIO SOUND ENGINE (100% OFFLINE SYNTHESIS)
+  // =========================================================================
+  let audioCtx = null;
+  let isSoundMuted = false;
+  let rollingInterval = null;
+
+  function initAudio() {
+    if (!audioCtx) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) audioCtx = new AudioContext();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  function playRollingSound() {
+    if (isSoundMuted) return;
+    initAudio();
+    if (!audioCtx) return;
+
+    stopRollingSound();
+    rollingInterval = setInterval(() => {
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        // Denting koin dan putaran bola kaca
+        const freqs = [380, 520, 680, 840, 1060];
+        osc.frequency.value = freqs[Math.floor(Math.random() * freqs.length)];
+        osc.type = 'triangle';
+        
+        gain.gain.setValueAtTime(0.09, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
+      } catch(e) {}
+    }, 85);
+  }
+
+  function stopRollingSound() {
+    if (rollingInterval) {
+      clearInterval(rollingInterval);
+      rollingInterval = null;
+    }
+  }
+
+  function playVictoryFanfare() {
+    if (isSoundMuted) return;
+    initAudio();
+    if (!audioCtx) return;
+
+    // Nada Terompet Kemenangan (C5 -> E5 -> G5 -> C6 Triumphant)
+    const notes = [
+      { f: 523.25, d: 0.16, wait: 0 },
+      { f: 659.25, d: 0.16, wait: 0.16 },
+      { f: 783.99, d: 0.22, wait: 0.32 },
+      { f: 1046.50, d: 0.85, wait: 0.54 }
+    ];
+
+    notes.forEach(n => {
+      setTimeout(() => {
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+
+          osc.type = 'sawtooth'; // Brass / trumpet timbre
+          osc.frequency.setValueAtTime(n.f, audioCtx.currentTime);
+
+          gain.gain.setValueAtTime(0.20, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + n.d);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start();
+          osc.stop(audioCtx.currentTime + n.d);
+        } catch(e) {}
+      }, n.wait * 1000);
+    });
+  }
+
+  function toggleSound() {
+    isSoundMuted = !isSoundMuted;
+    const icon = document.getElementById('soundIcon');
+    const label = document.getElementById('soundLabel');
+    if (icon && label) {
+      if (isSoundMuted) {
+        icon.setAttribute('data-lucide', 'volume-x');
+        label.innerText = 'Audio: Off';
+      } else {
+        icon.setAttribute('data-lucide', 'volume-2');
+        label.innerText = 'Audio: On';
+        initAudio();
+      }
+      lucide.createIcons();
+    }
+  }
+
+  // =========================================================================
+  // LOGIKA PENGUNDIAN LIVE (THE CRYSTAL GLOBE DRAW)
+  // =========================================================================
+  function mulaiPengocokan() {
+    {% if user_role != 'ketua' %}
+      alert('Akses Ditolak! Hanya Ketua Kelompok yang berwenang memutar roda undian.');
+      return;
+    {% endif %}
+
+    if (isRaffling) return;
+    if (candidates.length === 0) {
+      alert('Seluruh anggota sudah pernah menang dalam siklus ini! Siklus arisan telah lengkap.');
+      return;
+    }
+
+    isRaffling = true;
+    initAudio();
+    playRollingSound();
+
+    const sphere = document.getElementById('raffleSphere');
+    const sphereLot = document.getElementById('sphereLot');
+    const sphereNama = document.getElementById('sphereNama');
+    const btnKocok = document.getElementById('btnKocok');
+
+    if (btnKocok) btnKocok.disabled = true;
+    sphere.classList.add('spinning');
+
+    // Fast cycling animation di dalam bola kristal
+    let counter = 0;
+    const interval = setInterval(() => {
+      const randomCand = candidates[Math.floor(Math.random() * candidates.length)];
+      sphereLot.innerText = `Lot #${String(randomCand.lot).padStart(2, '0')}`;
+      sphereNama.innerText = randomCand.nama;
+      counter++;
+    }, 75);
+
+    // Call Backend API to pick true winner securely
+    fetch("{% url 'proses_kocok_api' kelompok.id %}", {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}',
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      setTimeout(() => {
+        clearInterval(interval);
+        stopRollingSound();
+        sphere.classList.remove('spinning');
+        isRaffling = false;
+
+        if (data.status === 'success') {
+          sphereLot.innerText = `Lot #${String(data.nomor_undian).padStart(2, '0')}`;
+          sphereNama.innerText = data.pemenang_nama;
+
+          // Terompet Kemenangan & Hujan Konfeti
+          playVictoryFanfare();
+          triggerConfetti();
+
+          // Show Modal Kemenangan
+          setTimeout(() => {
+            showWinnerModal(data);
+          }, 800);
+        } else {
+          alert(data.message || 'Gagal memproses undian.');
+          if (btnKocok) btnKocok.disabled = false;
+        }
+      }, 3000);
+    })
+    .catch(err => {
+      clearInterval(interval);
+      stopRollingSound();
+      sphere.classList.remove('spinning');
+      isRaffling = false;
+      if (btnKocok) btnKocok.disabled = false;
+      alert('Terjadi kesalahan jaringan.');
+    });
+  }
+
+  function triggerConfetti() {
+    confetti({
+      particleCount: 140,
+      spread: 75,
+      origin: { y: 0.6 },
+      colors: ['#FBBF24', '#F59E0B', '#FDE68A', '#EF4444', '#10B981', '#FFFFFF']
+    });
+  }
+
+  function showWinnerModal(data) {
+    const modal = document.getElementById('modalPemenang');
+    document.getElementById('modalPemenangNama').innerText = data.pemenang_nama;
+    document.getElementById('modalPemenangLot').innerText = `#${String(data.nomor_undian).padStart(2, '0')}`;
+    document.getElementById('modalPemenangHadiah').innerText = data.total_hadiah;
+    document.getElementById('modalPemenangPeriode').innerText = `Periode Ke-${data.periode_ke}`;
+    
+    const kuitansiUrl = `${window.location.origin}/kuitansi/${data.kuitansi_id}/`;
+    document.getElementById('modalBtnKuitansi').href = kuitansiUrl;
+
+    // Direct WhatsApp Share (Fitur E)
+    const waBtn = document.getElementById('modalBtnWA');
+    if (waBtn) {
+      const waText = encodeURIComponent(`🎉 *SELAMAT KEPADA PEMENANG ARISAN!* 🎉\nKelompok: *{{ kelompok.nama_kelompok }}*\nPutaran Ke: *${data.periode_ke}*\n\nNama: *${data.pemenang_nama}*\nNomor Lot: *#${String(data.nomor_undian).padStart(2, '0')}*\nTotal Hadiah: *${data.total_hadiah}*\n\nLihat Kuitansi Resmi Digital Sah:\n${kuitansiUrl}`);
+      const cleanPhone = (data.kontak || '').replace(/[^0-9]/g, '');
+      waBtn.href = cleanPhone ? `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${waText}` : `https://api.whatsapp.com/send?text=${waText}`;
+    }
+
+    modal.classList.remove('hidden');
+    if (typeof lockBodyScroll === 'function') lockBodyScroll();
+    lucide.createIcons();
+  }
+
+  window.openModalHapusRiwayat = function(riwayatId, periode, namaPemenang) {
+    const modal = document.getElementById('modalHapusRiwayat');
+    const form = document.getElementById('formHapusRiwayat');
+    const textInfo = document.getElementById('textInfoHapusRiwayat');
+    if (modal && form) {
+      form.action = `/riwayat/hapus/${riwayatId}/`;
+      if (textInfo) {
+        textInfo.innerHTML = `Hapus kemenangan <strong class="text-stone-900">${namaPemenang}</strong> pada <strong class="text-amber-900">Periode Ke-${periode}</strong>?`;
+      }
+      modal.classList.remove('hidden');
+      if (typeof lockBodyScroll === 'function') lockBodyScroll();
+      if (window.lucide) lucide.createIcons();
+    }
+  };
+
+  window.closeModalHapusRiwayat = function() {
+    const modal = document.getElementById('modalHapusRiwayat');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+  };
+
+  window.openModalHapusSemuaRiwayat = function() {
+    const modal = document.getElementById('modalHapusSemuaRiwayat');
+    if (modal) {
+      modal.classList.remove('hidden');
+      if (typeof lockBodyScroll === 'function') lockBodyScroll();
+      if (window.lucide) lucide.createIcons();
+    }
+  };
+
+  window.closeModalHapusSemuaRiwayat = function() {
+    const modal = document.getElementById('modalHapusSemuaRiwayat');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+  };
+
+  // Compatibility aliases
+  function openModalHapusRiwayat(id, periode, nama) { window.openModalHapusRiwayat(id, periode, nama); }
+  function closeModalHapusRiwayat() { window.closeModalHapusRiwayat(); }
+  function openModalHapusSemuaRiwayat() { window.openModalHapusSemuaRiwayat(); }
+  function closeModalHapusSemuaRiwayat() { window.closeModalHapusSemuaRiwayat(); }
+</script>
+{% endblock %}

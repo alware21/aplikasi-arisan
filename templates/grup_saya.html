@@ -1,0 +1,716 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pusat Kendali Multi-Arisan &bull; Arisan Digital{% endblock %}
+
+{% block content %}
+<div class="space-y-8 max-w-7xl mx-auto">
+
+  <!-- ========================================================================
+       1. HEADER PROFILE & STATUS AKUN DENGAN TOMBOL LOGOUT RESMI
+       ======================================================================== -->
+  <div class="card-glass-champagne p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+    <div class="flex items-start sm:items-center gap-4">
+      <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-amber-500 to-amber-300 text-white font-black text-2xl flex items-center justify-center flex-shrink-0 shadow-lg border-2 border-white/80">
+        {{ user_nama|default:"User"|slice:":2"|upper }}
+      </div>
+      <div>
+        <div class="flex flex-wrap items-center gap-2">
+          <h1 class="text-xl sm:text-2xl font-black text-stone-900 tracking-tight leading-tight">
+            {{ user_nama }}
+          </h1>
+          {% if user_role == 'ketua' %}
+            <span class="badge-role-ketua-3d"><span>👑</span><span>KETUA</span></span>
+          {% else %}
+            <span class="badge-role-anggota-3d"><span>👤</span><span>ANGGOTA</span></span>
+          {% endif %}
+        </div>
+        <p class="text-xs text-stone-600 mt-1 flex flex-wrap items-center gap-3 font-medium">
+          <span><strong class="text-stone-700">Kontak:</strong> {{ user_hp|default:"Nomor HP belum disetel" }}</span>
+          <span>&bull;</span>
+          <span><strong class="text-amber-800">{{ total_grup_diikuti }}</strong> Program Arisan Diikuti</span>
+          <span>&bull;</span>
+          <span>Ruang Terbuka: <strong class="text-stone-900">{{ kelompok.nama_kelompok }}</strong></span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Tombol Keluar Resmi (Logout) -->
+    <div class="flex items-center gap-3 w-full sm:w-auto">
+      <button type="button" onclick="confirmLogout()" 
+              class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-b from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-extrabold text-xs shadow-lg shadow-rose-600/25 border border-rose-300/40 transition-all active:scale-95">
+        <i data-lucide="log-out" class="w-4 h-4"></i>
+        <span>Keluar dari Sesi Arisan</span>
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================
+       2. MULTI-ARISAN HUB: DAFTAR SEMUA KELOMPOK YANG DIIKUTI
+       ======================================================================== -->
+  <div>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+      <div>
+        <h2 class="text-lg font-black text-stone-900 tracking-tight">Daftar Kelompok Arisan Anda</h2>
+        <p class="text-xs text-stone-500">Anda dapat beralih ruang arisan kapan saja secara instan sesuai peran Anda di masing-masing kelompok.</p>
+      </div>
+      <span class="text-xs font-bold px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300/60 self-start sm:self-auto">
+        {{ daftar_keanggotaan|length }} Ruang Terdaftar
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {% for p in daftar_keanggotaan %}
+        <div class="relative rounded-3xl p-5 transition-all duration-300 flex flex-col justify-between 
+                    {% if p.kelompok.id == kelompok.id %}
+                      bg-gradient-to-b from-amber-50/90 to-white border-2 border-amber-400 shadow-xl shadow-amber-500/10
+                    {% else %}
+                      bg-white/85 hover:bg-white border border-stone-200/90 hover:border-amber-300 shadow-sm hover:shadow-md
+                    {% endif %}">
+          
+          <div>
+            <!-- Header Card: Nama & Badge Status -->
+            <div class="flex items-start justify-between gap-2 mb-3">
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-1.5 mb-1.5">
+                  {% if p.is_ketua %}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-black tracking-wide shadow-sm">
+                      👑 KETUA
+                    </span>
+                  {% else %}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-700 text-[10px] font-bold border border-stone-200">
+                      👤 ANGGOTA
+                    </span>
+                  {% endif %}
+
+                  {% if p.kelompok.is_selesai %}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-stone-200/90 text-stone-700 text-[10px] font-bold border border-stone-300">
+                      ✓ SELESAI
+                    </span>
+                  {% else %}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100/80 text-amber-900 text-[10px] font-bold border border-amber-300/60">
+                      ⚡ PUTARAN {{ p.kelompok.putaran_berikutnya }}
+                    </span>
+                  {% endif %}
+
+                  {% if p.kelompok.id == kelompok.id %}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-black tracking-wide shadow-sm">
+                      ● AKTIF
+                    </span>
+                  {% endif %}
+                </div>
+                <h3 class="font-black text-stone-900 text-base leading-snug">
+                  {{ p.kelompok.nama_kelompok }}
+                </h3>
+              </div>
+
+              <!-- Nomor Undian Badge -->
+              <div class="w-11 h-11 rounded-2xl bg-amber-100/90 border border-amber-300/60 text-amber-900 flex flex-col items-center justify-center flex-shrink-0 shadow-sm">
+                <span class="text-[8px] font-extrabold uppercase text-amber-700 leading-none">LOT</span>
+                <span class="text-sm font-black leading-tight">#{{ p.nomor_undian|stringformat:"02d" }}</span>
+              </div>
+            </div>
+
+            <!-- Info Detail Kelompok -->
+            <div class="space-y-2 py-3 my-2 border-y border-stone-100 text-xs">
+              <div class="flex justify-between items-center">
+                <span class="text-stone-400 text-[11px]">Kode Room:</span>
+                <div class="flex items-center gap-1.5">
+                  <strong class="font-mono text-amber-900 font-bold">{{ p.kelompok.kode_room }}</strong>
+                  <button type="button" onclick="copyRoomCode('{{ p.kelompok.kode_room }}')" class="text-stone-400 hover:text-amber-700 p-0.5">
+                    <i data-lucide="copy" class="w-3 h-3"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="flex justify-between items-center">
+                <span class="text-stone-400 text-[11px]">Iuran Putaran:</span>
+                <strong class="text-stone-900 font-bold">Rp {{ p.kelompok.nominal_iuran|floatformat:0 }}</strong>
+              </div>
+
+              <div class="flex justify-between items-center">
+                <span class="text-stone-400 text-[11px]">Periode Kocok:</span>
+                <span class="text-stone-700 font-medium">{{ p.kelompok.get_periode_kocok_display }}</span>
+              </div>
+
+              <div class="flex justify-between items-center">
+                <span class="text-stone-400 text-[11px]">Setoran Fisik Saya:</span>
+                {% if p.status_setor %}
+                  <span class="text-emerald-700 font-bold flex items-center gap-1 text-[11px]">
+                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i>
+                    Lunas Disetor
+                  </span>
+                {% else %}
+                  <span class="text-amber-700 font-bold flex items-center gap-1 text-[11px]">
+                    <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-600"></i>
+                    Belum Setor Tunai
+                  </span>
+                {% endif %}
+              </div>
+
+              <div class="flex justify-between items-center">
+                <span class="text-stone-400 text-[11px]">Status Undian:</span>
+                {% if p.status_menang %}
+                  <span class="px-2 py-0.5 rounded-full bg-stone-200 text-stone-700 text-[10px] font-bold">
+                    🏆 Pernah Menang
+                  </span>
+                {% else %}
+                  <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-bold">
+                    🎟️ Siap Masuk Kotak
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons (Buka Ruang & Hapus/Keluar Manual) -->
+          <div class="pt-3 flex items-center gap-2">
+            {% if p.kelompok.id == kelompok.id %}
+              <a href="{% url 'dashboard' %}" class="btn-convex-pearl flex-1 !py-2.5 text-xs text-center flex items-center justify-center gap-2">
+                <i data-lucide="layout-grid" class="w-4 h-4 text-amber-600"></i>
+                <span>Buka Dashboard</span>
+              </a>
+            {% else %}
+              <a href="{% url 'switch_kelompok' p.kelompok.id %}" class="btn-convex-gold flex-1 !py-2.5 text-xs text-center flex items-center justify-center gap-2">
+                <span>Beralih Ruang</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </a>
+            {% endif %}
+
+            {% if p.is_ketua %}
+              <button type="button" 
+                      onclick="openModalHapusKelompok('{{ p.kelompok.id }}', '{{ p.kelompok.nama_kelompok|escapejs }}', {% if p.kelompok.is_selesai %}true{% else %}false{% endif %})" 
+                      class="w-10 h-10 rounded-2xl bg-stone-100 hover:bg-rose-50 text-stone-400 hover:text-rose-600 border border-stone-200 hover:border-rose-200 flex items-center justify-center transition-all flex-shrink-0"
+                      title="Hapus Program Arisan Ini">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            {% else %}
+              <button type="button" 
+                      onclick="openModalKeluarKelompok('{{ p.kelompok.id }}', '{{ p.kelompok.nama_kelompok|escapejs }}', {% if p.kelompok.is_selesai %}true{% else %}false{% endif %}, {% if p.status_menang %}true{% else %}false{% endif %})" 
+                      class="w-10 h-10 rounded-2xl bg-stone-100 hover:bg-rose-50 text-stone-400 hover:text-rose-600 border border-stone-200 hover:border-rose-200 flex items-center justify-center transition-all flex-shrink-0"
+                      title="Keluar dari Program Arisan Ini">
+                <i data-lucide="user-minus" class="w-4 h-4"></i>
+              </button>
+            {% endif %}
+          </div>
+
+        </div>
+      {% empty %}
+        <div class="col-span-full p-8 text-center bg-white rounded-3xl border border-stone-200">
+          <p class="text-stone-500 text-sm">Anda belum terdaftar di kelompok arisan mana pun.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+
+  <!-- ========================================================================
+       3. SECTION AKSI: GABUNG PROGRAM LAIN & BUAT PROGRAM ARISAN BARU
+       ======================================================================== -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
+    
+    <!-- Kartu A: Gabung Arisan Lain dengan Kode Room -->
+    <div class="bg-white/90 border border-white/95 rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col justify-between">
+      <div>
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center shadow-sm">
+            <i data-lucide="key-round" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-stone-900 text-base">Gabung Kelompok Arisan Lain</h3>
+            <p class="text-[11px] text-stone-500">Gunakan Kode Room dari tetangga atau kerabat</p>
+          </div>
+        </div>
+
+        <p class="text-xs text-stone-600 mb-4 leading-relaxed">
+          Punya undangan arisan dari RT sebelah, kantor, atau keluarga? Cukup masukkan 6 digit Kode Room mereka di bawah ini. Anda akan otomatis terdaftar sebagai anggota baru.
+        </p>
+
+        <form method="POST" action="{% url 'gabung_kelompok_baru' %}" class="space-y-3">
+          {% csrf_token %}
+          <div>
+            <label class="block text-xs font-bold text-stone-700 mb-1.5">Kode Room Arisan <span class="text-rose-500">*</span></label>
+            <div class="relative">
+              <input type="text" name="kode_room" required 
+                     placeholder="Contoh: RT0526" 
+                     maxlength="10"
+                     class="liquid-input-concave font-mono font-black text-stone-900 uppercase tracking-widest pl-10">
+              <i data-lucide="hash" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400"></i>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-convex-pearl w-full !py-3 text-xs flex items-center justify-center gap-2">
+            <i data-lucide="user-plus" class="w-4 h-4 text-amber-700"></i>
+            <span>Gabung ke Kelompok Tersebut</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+
+    <!-- Kartu B: Buka Program Arisan Baru (Otomatis Jadi Ketua) -->
+    <div class="bg-white/90 border border-white/95 rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col justify-between">
+      <div>
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-400 text-white flex items-center justify-center shadow-md">
+            <i data-lucide="crown" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-stone-900 text-base">Buat Program Arisan Baru</h3>
+            <p class="text-[11px] text-stone-500">Anda otomatis menjadi Ketua (Host) pengelola</p>
+          </div>
+        </div>
+
+        <p class="text-xs text-stone-600 mb-4 leading-relaxed">
+          Ingin memulai kegiatan arisan baru bersama warga atau komunitas Anda? Isi detail dasar program di bawah ini. Anda akan mendapatkan Kode Room eksklusif untuk dibagikan ke warga.
+        </p>
+
+        <form method="POST" action="{% url 'buat_kelompok_baru' %}" class="space-y-3">
+          {% csrf_token %}
+          <div>
+            <label class="block text-xs font-bold text-stone-700 mb-1">Nama Program Arisan <span class="text-rose-500">*</span></label>
+            <input type="text" name="nama_kelompok" required 
+                   placeholder="Misal: Arisan Warga RT 06 / Arisan Keluarga Besar" 
+                   class="liquid-input-concave text-xs">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-stone-700 mb-1">Nominal Iuran (Rp) <span class="text-rose-500">*</span></label>
+              <input type="number" name="nominal_iuran" value="20000" min="1000" step="1000" required 
+                     class="liquid-input-concave text-xs font-bold">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-700 mb-1">Periode Kocokan</label>
+              <select name="periode_kocok" class="liquid-input-concave text-xs font-bold">
+                <option value="bulanan" selected>Bulanan</option>
+                <option value="mingguan">Mingguan</option>
+                <option value="dua_mingguan">2 Mingguan</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-convex-gold w-full !py-3 text-xs flex items-center justify-center gap-2 mt-2">
+            <i data-lucide="plus-circle" class="w-4 h-4 text-white"></i>
+            <span>Buat Program Arisan Sekarang</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================================================
+       4. PENGARSIPAN & PEMBERSIHAN RUANG (ZONA AMAN ANTI-SALAH PENCET)
+       Ditempatkan di bagian paling bawah agar aman dari salah pencet ibu-ibu.
+       ======================================================================== -->
+  <div class="mt-8 pt-6 border-t border-stone-200/80">
+    <div class="rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-stone-100/90 via-amber-50/50 to-white border border-stone-200/90 shadow-sm">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-start sm:items-center gap-3.5">
+          <div class="w-11 h-11 rounded-2xl bg-amber-100/80 text-amber-800 flex items-center justify-center flex-shrink-0 shadow-xs">
+            <i data-lucide="archive" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h4 class="font-black text-stone-900 text-sm">Pembersihan Ruang &amp; Arsip Arisan</h4>
+            <p class="text-[11px] text-stone-500 leading-relaxed">
+              Program arisan sudah tuntas? Bersihkan riwayat ruang yang telah selesai secara otomatis tanpa mengganggu kegiatan yang sedang berjalan.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5">
+          <!-- Tombol Shortcut Utama: Hanya Bersihkan Ruang Selesai (Foolproof Safety) -->
+          <button type="button" onclick="openModalBersihkanSelesai()" class="btn-convex-pearl text-xs !py-2.5 !px-4 text-stone-800 flex items-center gap-1.5 shadow-xs hover:border-amber-400">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-600"></i>
+            <span>Bersihkan Ruang Selesai</span>
+          </button>
+
+          <!-- Toggle Zona Bahaya (Reset Total) -->
+          <button type="button" onclick="toggleDangerZone()" id="btnToggleDanger" class="text-xs text-stone-400 hover:text-rose-600 px-3 py-2 rounded-xl transition-colors font-bold flex items-center gap-1">
+            <span>Zona Pengurus</span>
+            <i data-lucide="chevron-down" id="iconToggleDanger" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Collapsible Danger Zone (Tersembunyi by default!) -->
+      <div id="dangerZoneBox" class="hidden mt-4 pt-4 border-t border-stone-200">
+        <div class="p-4 rounded-2xl bg-rose-50/80 border border-rose-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <p class="text-xs font-black text-rose-900 flex items-center gap-1.5">
+              <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-600"></i>
+              Reset Total Seluruh Program Arisan (Demo/Pembersihan Pabrik)
+            </p>
+            <p class="text-[11px] text-rose-700 mt-0.5">
+              Tindakan ini menghapus seluruh program arisan dan mengembalikan aplikasi ke kondisi awal. Dilindungi ganda dengan PIN dan kata konfirmasi.
+            </p>
+          </div>
+          <button type="button" onclick="openModalResetTotal()" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-1.5 flex-shrink-0 active:scale-95 transition-all">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span>Reset Total Aplikasi</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- ========================================================================
+     MODAL KONFIRMASI LOGOUT (VIEWPORT CENTERED LOCK)
+     ======================================================================== -->
+<div id="modalConfirmLogout" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-sm p-6 text-center relative animate-bounce-short">
+    <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shadow-inner mb-4">
+      <i data-lucide="alert-triangle" class="w-7 h-7"></i>
+    </div>
+    
+    <h3 class="font-black text-stone-900 text-lg">Keluar dari Sesi Arisan?</h3>
+    <p class="text-xs text-stone-600 mt-2 mb-6">
+      Sesi Anda sebagai <strong class="text-stone-900">{{ user_nama }}</strong> akan diakhiri. Anda perlu memasukkan nama atau nomor WhatsApp kembali untuk masuk.
+    </p>
+
+    <div class="grid grid-cols-2 gap-3">
+      <button type="button" onclick="closeConfirmLogout()" class="py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">
+        Batal
+      </button>
+      <a href="{% url 'logout' %}" class="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow-md flex items-center justify-center gap-1.5">
+        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+        <span>Ya, Keluar</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================
+     MODAL HAPUS KELOMPOK (KHUSUS KETUA - VIEWPORT CENTERED LOCK)
+     ======================================================================== -->
+<div id="modalHapusKelompok" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-sm p-6 text-center relative animate-bounce-short">
+    <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shadow-inner mb-4">
+      <i data-lucide="trash-2" class="w-7 h-7"></i>
+    </div>
+    
+    <h3 class="font-black text-stone-900 text-lg">Hapus Program Arisan?</h3>
+    <p class="text-xs text-stone-600 mt-1 mb-4" id="textNamaKelompokHapus">
+      Program: <strong>-</strong>
+    </p>
+
+    <div id="warningArisanAktif" class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-left text-[11px] mb-4 space-y-1">
+      <p class="font-bold flex items-center gap-1.5 text-amber-950">
+        <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-amber-600"></i>
+        <span>Peringatan Arisan Masih Berjalan!</span>
+      </p>
+      <p class="text-stone-600 leading-relaxed">
+        Kelompok ini masih dalam siklus berjalan. Masukkan PIN Pengurus (<span class="font-mono font-bold">1234</span>) untuk memastikan Anda tidak salah pencet:
+      </p>
+    </div>
+
+    <form id="formHapusKelompok" method="POST" action="" class="space-y-3">
+      {% csrf_token %}
+      <div id="containerPinHapus">
+        <input type="password" name="pin" id="inputPinHapus" maxlength="6" placeholder="Ketik PIN Pengurus (1234)"
+               class="liquid-input-concave text-center font-mono font-black tracking-widest text-sm !bg-white">
+      </div>
+
+      <div class="grid grid-cols-2 gap-2.5 pt-2">
+        <button type="button" onclick="closeModalHapusKelompok()" class="py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">
+          Batal
+        </button>
+        <button type="submit" class="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          <span>Ya, Hapus</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================================================
+     MODAL KELUAR KELOMPOK (KHUSUS ANGGOTA - VIEWPORT CENTERED LOCK)
+     ======================================================================== -->
+<div id="modalKeluarKelompok" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-sm p-6 text-center relative animate-bounce-short">
+    <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shadow-inner mb-4">
+      <i data-lucide="user-minus" class="w-7 h-7"></i>
+    </div>
+    
+    <h3 class="font-black text-stone-900 text-lg">Keluar dari Kelompok Ini?</h3>
+    <p class="text-xs text-stone-600 mt-1 mb-4" id="textNamaKelompokKeluar">
+      Kelompok: <strong>-</strong>
+    </p>
+
+    <div class="p-3 rounded-2xl bg-stone-50 border border-stone-200 text-stone-600 text-left text-[11px] mb-4">
+      <p class="leading-relaxed">
+        Keanggotaan Anda di kelompok ini akan dilepas dari daftar Anda. Kelompok arisan bagi warga lainnya tetap berjalan normal.
+      </p>
+    </div>
+
+    <form id="formKeluarKelompok" method="POST" action="" class="space-y-3">
+      {% csrf_token %}
+      <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <button type="button" onclick="closeModalKeluarKelompok()" class="py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">
+          Batal
+        </button>
+        <button type="submit" class="py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-extrabold shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+          <i data-lucide="user-minus" class="w-3.5 h-3.5"></i>
+          <span>Ya, Keluar</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================================================
+     MODAL BERSIHKAN RUANG SELESAI (VIEWPORT CENTERED LOCK)
+     ======================================================================== -->
+<div id="modalBersihkanSelesai" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-sm p-6 text-center relative animate-bounce-short">
+    <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center shadow-inner mb-4">
+      <i data-lucide="sparkles" class="w-7 h-7"></i>
+    </div>
+    
+    <h3 class="font-black text-stone-900 text-lg">Bersihkan Ruang Selesai?</h3>
+    <p class="text-xs text-stone-600 mt-1 mb-4">
+      Sistem akan secara cerdas membersihkan seluruh ruang arisan yang <strong>siklus putarannya telah tuntas 100%</strong>.
+    </p>
+
+    <div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-left text-[11px] mb-4 space-y-1">
+      <p class="font-bold flex items-center gap-1.5 text-emerald-800">
+        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+        <span>Jaminan Keamanan Arisan Aktif</span>
+      </p>
+      <p class="text-stone-600 leading-relaxed">
+        Seluruh ruang arisan yang <strong>masih berjalan TIDAK AKAN disentuh</strong>. Masukkan PIN Pengurus (<span class="font-mono font-bold">1234</span>) untuk konfirmasi:
+      </p>
+    </div>
+
+    <form method="POST" action="{% url 'bersihkan_kelompok_selesai' %}" class="space-y-3">
+      {% csrf_token %}
+      <input type="password" name="pin" required maxlength="6" placeholder="Ketik PIN Pengurus (1234)"
+             class="liquid-input-concave text-center font-mono font-black tracking-widest text-sm !bg-white">
+
+      <div class="grid grid-cols-2 gap-2.5 pt-2">
+        <button type="button" onclick="closeModalBersihkanSelesai()" class="py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">
+          Batal
+        </button>
+        <button type="submit" class="btn-convex-gold text-xs !py-2.5 flex items-center justify-center gap-1.5 shadow-md">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+          <span>Bersihkan Selesai</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================================================
+     MODAL RESET TOTAL (VIEWPORT CENTERED LOCK - ZONA BAHAYA)
+     ======================================================================== -->
+<div id="modalResetTotal" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-sm p-6 text-center relative animate-bounce-short">
+    <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shadow-inner mb-4">
+      <i data-lucide="alert-octagon" class="w-7 h-7"></i>
+    </div>
+    
+    <h3 class="font-black text-rose-900 text-lg">Reset Total Seluruh Arisan?</h3>
+    <p class="text-xs text-rose-700 mt-1 mb-4 leading-relaxed">
+      PERINGATAN: Tindakan ini akan menghapus <strong>SEMUA ruang arisan</strong> (baik yang aktif maupun selesai) dan mengosongkan data.
+    </p>
+
+    <form method="POST" action="{% url 'reset_total_kelompok' %}" class="space-y-3">
+      {% csrf_token %}
+      <div class="text-left space-y-1">
+        <label class="block text-[11px] font-bold text-stone-700">1. Masukkan PIN Pengurus (1234):</label>
+        <input type="password" name="pin" required maxlength="6" placeholder="1234"
+               class="liquid-input-concave text-center font-mono font-black tracking-widest text-sm !bg-white">
+      </div>
+
+      <div class="text-left space-y-1">
+        <label class="block text-[11px] font-bold text-stone-700">2. Ketik kata "RESET" dengan huruf besar:</label>
+        <input type="text" name="konfirmasi" required maxlength="10" placeholder="Ketik RESET"
+               class="liquid-input-concave text-center font-mono font-black tracking-widest text-sm !bg-white uppercase">
+      </div>
+
+      <div class="grid grid-cols-2 gap-2.5 pt-3">
+        <button type="button" onclick="closeModalResetTotal()" class="py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">
+          Batal
+        </button>
+        <button type="submit" class="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          <span>Reset Total</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // 1. Modal Logout
+  function confirmLogout() {
+    const modal = document.getElementById('modalConfirmLogout');
+    if (modal) {
+      modal.classList.remove('hidden');
+      if (typeof lockBodyScroll === 'function') lockBodyScroll();
+    }
+  }
+
+  function closeConfirmLogout() {
+    const modal = document.getElementById('modalConfirmLogout');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+  }
+
+  // 2. Toggle Danger Zone Accordion
+  function toggleDangerZone() {
+    const box = document.getElementById('dangerZoneBox');
+    const icon = document.getElementById('iconToggleDanger');
+    if (box) {
+      const isHidden = box.classList.contains('hidden');
+      if (isHidden) {
+        box.classList.remove('hidden');
+        if (icon) icon.setAttribute('data-lucide', 'chevron-up');
+      } else {
+        box.classList.add('hidden');
+        if (icon) icon.setAttribute('data-lucide', 'chevron-down');
+      }
+      lucide.createIcons();
+    }
+  }
+
+  // 3. Modal Hapus Kelompok (Ketua)
+  function openModalHapusKelompok(kelompokId, namaKelompok, isSelesai) {
+    const modal = document.getElementById('modalHapusKelompok');
+    const form = document.getElementById('formHapusKelompok');
+    const textNama = document.getElementById('textNamaKelompokHapus');
+    const warningAktif = document.getElementById('warningArisanAktif');
+    const containerPin = document.getElementById('containerPinHapus');
+    const inputPin = document.getElementById('inputPinHapus');
+
+    if (modal && form) {
+      form.action = `/grup/hapus/${kelompokId}/`;
+      if (textNama) textNama.innerHTML = `Program: <strong class="text-stone-900">${namaKelompok}</strong>`;
+
+      if (isSelesai) {
+        if (warningAktif) warningAktif.classList.add('hidden');
+        if (containerPin) containerPin.classList.add('hidden');
+        if (inputPin) inputPin.required = false;
+      } else {
+        if (warningAktif) warningAktif.classList.remove('hidden');
+        if (containerPin) containerPin.classList.remove('hidden');
+        if (inputPin) {
+          inputPin.required = true;
+          inputPin.value = '';
+          setTimeout(() => inputPin.focus(), 150);
+        }
+      }
+
+      modal.classList.remove('hidden');
+      if (typeof lockBodyScroll === 'function') lockBodyScroll();
+    }
+  }
+
+  function closeModalHapusKelompok() {
+    const modal = document.getElementById('modalHapusKelompok');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+  }
+
+  // 4. Modal Keluar Kelompok (Anggota)
+  function openModalKeluarKelompok(kelompokId, namaKelompok, isSelesai, statusMenang) {
+    if (statusMenang && !isSelesai) {
+      alert(`Pemberitahuan Warga:\nAnda sudah memenangkan arisan pada putaran sebelumnya. Sesuai asas gotong royong warga, Anda tidak dapat keluar sampai seluruh putaran arisan "${namaKelompok}" selesai!`);
+      return;
+    }
+
+    const modal = document.getElementById('modalKeluarKelompok');
+    const form = document.getElementById('formKeluarKelompok');
+    const textNama = document.getElementById('textNamaKelompokKeluar');
+
+    if (modal && form) {
+      form.action = `/grup/keluar/${kelompokId}/`;
+      if (textNama) textNama.innerHTML = `Kelompok: <strong class="text-stone-900">${namaKelompok}</strong>`;
+      modal.classList.remove('hidden');
+      if (typeof lockBodyScroll === 'function') lockBodyScroll();
+    }
+  }
+
+  function closeModalKeluarKelompok() {
+    const modal = document.getElementById('modalKeluarKelompok');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+  }
+
+  // 5. Modal Bersihkan Selesai (Batch Clean)
+  function openModalBersihkanSelesai() {
+    const modal = document.getElementById('modalBersihkanSelesai');
+    if (modal) {
+      modal.classList.remove('hidden');
+      if (typeof lockBodyScroll === 'function') lockBodyScroll();
+      const pinInput = modal.querySelector('input[name="pin"]');
+      if (pinInput) {
+        pinInput.value = '';
+        setTimeout(() => pinInput.focus(), 150);
+      }
+    }
+  }
+
+  function closeModalBersihkanSelesai() {
+    const modal = document.getElementById('modalBersihkanSelesai');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+  }
+
+  // 6. Modal Reset Total
+  function openModalResetTotal() {
+    const modal = document.getElementById('modalResetTotal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      if (typeof lockBodyScroll === 'function') lockBodyScroll();
+      const pinInput = modal.querySelector('input[name="pin"]');
+      if (pinInput) {
+        pinInput.value = '';
+        setTimeout(() => pinInput.focus(), 150);
+      }
+    }
+  }
+
+  function closeModalResetTotal() {
+    const modal = document.getElementById('modalResetTotal');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+  }
+
+  // Attach all handlers to window
+  window.confirmLogout = confirmLogout;
+  window.closeConfirmLogout = closeConfirmLogout;
+  window.toggleDangerZone = toggleDangerZone;
+  window.openModalBuatKelompok = openModalBuatKelompok;
+  window.closeModalBuatKelompok = closeModalBuatKelompok;
+  window.openModalGabungRoom = openModalGabungRoom;
+  window.closeModalGabungRoom = closeModalGabungRoom;
+  window.openModalHapusKelompok = openModalHapusKelompok;
+  window.closeModalHapusKelompok = closeModalHapusKelompok;
+  window.openModalKeluarKelompok = openModalKeluarKelompok;
+  window.closeModalKeluarKelompok = closeModalKeluarKelompok;
+  window.openModalBersihkanSelesai = openModalBersihkanSelesai;
+  window.closeModalBersihkanSelesai = closeModalBersihkanSelesai;
+  window.openModalResetTotal = openModalResetTotal;
+  window.closeModalResetTotal = closeModalResetTotal;
+</script>
+{% endblock %}

@@ -1,0 +1,430 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Masuk - Arisan Digital by Alware Platform</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- PWA & Mobile Web App Manifest -->
+  <link rel="manifest" href="{% static 'manifest.json' %}">
+  <meta name="theme-color" content="#D97706">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Arisan Digital">
+  <link rel="apple-touch-icon" href="{% static 'img/icon-192.png' %}">
+  <link rel="icon" type="image/png" sizes="192x192" href="{% static 'img/icon-192.png' %}">
+  <link rel="icon" type="image/svg+xml" href="{% static 'img/logo.svg' %}">
+
+  <!-- Custom Liquid 3D Glass CSS -->
+  <link rel="stylesheet" href="{% static 'css/liquid_glass.css' %}">
+</head>
+<body class="p-3 md:p-6 lg:p-8 flex items-center justify-center min-h-screen">
+
+  <!-- ========================================================================
+       1. OPENING ANIMATION: LIQUID MORPH SPLASH SCREEN (HANYA LAYAR AWAL)
+       ======================================================================== -->
+  <div id="splash-overlay">
+    <div class="splash-logo-container flex flex-col items-center">
+      <div class="w-24 h-24 mb-4">
+        <img src="{% static 'img/logo.svg' %}" alt="Logo Arisan Digital" class="w-full h-full drop-shadow-2xl">
+      </div>
+      <h1 class="text-3xl font-black text-white tracking-wide">ARISAN DIGITAL</h1>
+      <p class="text-amber-100 text-xs mt-1 font-semibold tracking-wider">by Alware Platform</p>
+      <div class="flex items-center gap-2 mt-6 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-semibold">
+        <span class="w-2 h-2 rounded-full bg-amber-200 animate-ping"></span>
+        Memuat Sistem Portal &amp; Peran...
+      </div>
+    </div>
+  </div>
+
+  <!-- PWA Install Prompt Banner (Floating Top Capsule) -->
+  <div id="pwaInstallBanner" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-[100000] flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-amber-600/95 backdrop-blur-xl text-white text-xs font-bold shadow-2xl border border-amber-300/40">
+    <i data-lucide="smartphone" class="w-4 h-4 text-amber-200"></i>
+    <span>Pasang di Layar Utama HP?</span>
+    <button type="button" onclick="installPWA()" class="px-3 py-1 rounded-xl bg-white text-amber-900 font-extrabold text-[11px] hover:bg-amber-100 shadow-sm transition-all active:scale-95">
+      Install
+    </button>
+    <button type="button" onclick="document.getElementById('pwaInstallBanner').classList.add('hidden')" class="text-amber-200 hover:text-white p-0.5">
+      <i data-lucide="x" class="w-4 h-4"></i>
+    </button>
+  </div>
+
+  <!-- ========================================================================
+       2. MAIN FLOATING THICK CONVEX ACRYLIC GLASS PORTAL CARD
+       ======================================================================== -->
+  <div class="modal-glass-thick w-full max-w-[620px] p-6 sm:p-10 relative">
+    
+    <!-- Ambient Champagne Glow Orbs -->
+    <div class="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-amber-300/30 blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-amber-400/20 blur-3xl pointer-events-none"></div>
+
+    <!-- Header Logo & Title (Pure Freestanding Golden Mark) -->
+    <div class="flex flex-col items-center text-center mb-8 relative z-10">
+      <div class="w-20 h-20 mb-3 flex items-center justify-center">
+        <img src="{% static 'img/logo.svg' %}" alt="Logo Arisan Digital" class="w-full h-full object-contain drop-shadow-[0_8px_20px_rgba(245,158,11,0.5)]">
+      </div>
+      <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-[11px] font-extrabold uppercase tracking-wider mb-2 border border-amber-300/60 shadow-sm">
+        Platform Arisan Warga Terpadu
+      </span>
+      <h1 class="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">Pilih Peran Anda</h1>
+      <p class="text-xs sm:text-sm text-stone-500 mt-1">Silakan tentukan apakah Anda masuk sebagai Ketua atau Anggota</p>
+    </div>
+
+    <!-- Django Flash Messages (Alerts) -->
+    {% if messages %}
+      <div class="mb-6 space-y-2 relative z-10">
+        {% for message in messages %}
+          <div class="p-3.5 rounded-2xl flex items-center gap-2.5 text-xs font-bold {% if message.tags == 'error' %}bg-rose-50 text-rose-800 border border-rose-200{% else %}bg-amber-50 text-amber-900 border border-amber-200{% endif %}">
+            <i data-lucide="info" class="w-4 h-4 flex-shrink-0"></i>
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Role Switcher Tabs (3D Convex Pills) -->
+    <div class="flex gap-2 p-1.5 rounded-2xl bg-amber-50/80 border border-amber-200/60 mb-6 relative z-10 shadow-inner">
+      <button type="button" id="tabBtnKetua" onclick="switchRole('ketua')" class="role-tab-btn-3d active">
+        <span class="flex items-center justify-center gap-2">
+          <span>👑</span>
+          <span>Ketua</span>
+        </span>
+      </button>
+      <button type="button" id="tabBtnAnggota" onclick="switchRole('anggota')" class="role-tab-btn-3d">
+        <span class="flex items-center justify-center gap-2">
+          <span>👤</span>
+          <span>Anggota</span>
+        </span>
+      </button>
+    </div>
+
+    <!-- ====================================================================
+         FORM 1: KETUA KELOMPOK (OPERATOR UTAMA)
+         ==================================================================== -->
+    <form id="formKetua" method="POST" action="{% url 'portal' %}" class="space-y-4 relative z-10">
+      {% csrf_token %}
+      <input type="hidden" name="peran" value="ketua">
+
+      <!-- Section: Data Personal Ketua (Kaca Cembung Tebal) -->
+      <div class="p-4 sm:p-5 rounded-3xl bg-white/70 border border-amber-200/60 space-y-3.5 shadow-sm">
+        <div class="flex items-center gap-2 text-xs font-black text-amber-900 uppercase tracking-wider">
+          <i data-lucide="user-check" class="w-4 h-4 text-amber-600"></i>
+          <span>1. Data Personal Ketua (Pengurus)</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-stone-700 mb-1.5">Nama Lengkap Ketua <span class="text-rose-500">*</span></label>
+          <input type="text" name="nama" required class="liquid-input-concave" placeholder="Contoh: Ibu Hj. Nurhaliza">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-stone-700 mb-1.5">No. WhatsApp / HP</label>
+            <input type="text" name="no_telepon" class="liquid-input-concave" placeholder="08xxxxxxxxxx">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-stone-700 mb-1.5">PIN Pengurus Ketua <span class="text-rose-500">*</span></label>
+            <input type="password" name="pin" value="1234" required class="liquid-input-concave font-mono text-center tracking-widest" placeholder="1234">
+            <span class="text-[10px] text-stone-400 mt-1 block">Default PIN keamanan: 1234</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-stone-700 mb-1.5">Alamat Rumah</label>
+          <input type="text" name="alamat" class="liquid-input-concave" placeholder="Contoh: Jl. Melati No. 12, RT 05">
+        </div>
+      </div>
+
+      <!-- Section: Aturan Arisan & Kelompok -->
+      <div class="p-4 sm:p-5 rounded-3xl bg-white/70 border border-amber-200/60 space-y-3.5 shadow-sm">
+        <div class="flex items-center gap-2 text-xs font-black text-amber-900 uppercase tracking-wider">
+          <i data-lucide="sliders" class="w-4 h-4 text-amber-600"></i>
+          <span>2. Aturan &amp; Pengaturan Arisan</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-stone-700 mb-1.5">Nama Kelompok Arisan</label>
+          <input type="text" name="nama_kelompok" class="liquid-input-concave" placeholder="Contoh: Arisan Guyub Rukun RT 05">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-stone-700 mb-1.5">Nominal Iuran (Rp)</label>
+            <input type="number" name="nominal_iuran" value="200000" min="10000" step="5000" required class="liquid-input-concave font-bold text-amber-900">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-stone-700 mb-1.5">Periode Kocokan</label>
+            <select name="periode_kocok" id="periodeKocokSelect" onchange="updateAturanSetor()" class="liquid-input-concave font-bold text-stone-800">
+              <option value="mingguan">Mingguan (Tiap Minggu)</option>
+              <option value="bulanan" selected>Bulanan (Tiap Bulan)</option>
+              <option value="tahunan">Tahunan (Tiap Tahun)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Dynamic Relational Rule Banner (3D Convex) -->
+        <div id="aturanSetorBanner" class="p-3.5 rounded-2xl bg-gradient-to-r from-amber-100 to-amber-50 border border-amber-300 text-xs font-bold text-amber-900 flex items-center gap-2 shadow-sm">
+          <i data-lucide="sparkles" class="w-4 h-4 text-amber-600 flex-shrink-0"></i>
+          <span id="aturanSetorText">⚡ Aturan: Periode kocok <strong>Bulanan</strong> &rarr; Frekuensi setoran wajib <strong>MINGGUAN</strong>.</span>
+        </div>
+      </div>
+
+      <!-- Submit Ketua (3D Convex) -->
+      <button type="submit" class="btn-convex-gold w-full !py-4 text-sm !rounded-2xl">
+        <i data-lucide="shield-check" class="w-5 h-5"></i>
+        <span>Buka Ruang &amp; Masuk Sebagai Ketua</span>
+      </button>
+
+      <p class="text-[11px] text-stone-400 text-center">
+        * Ketua akan terdaftar di Lot #01 dengan lencana <span class="text-amber-800 font-bold">👑 KETUA</span> dan memiliki kontrol penuh pengocokan &amp; status setor.
+      </p>
+    </form>
+
+
+    <!-- ====================================================================
+         FORM 2: ANGGOTA (PESERTA BERGABUNG VIA KODE ROOM)
+         ==================================================================== -->
+    <form id="formAnggota" method="POST" action="{% url 'portal' %}" class="space-y-4 relative z-10 hidden">
+      {% csrf_token %}
+      <input type="hidden" name="peran" value="anggota">
+
+      <!-- Section: Data Personal Anggota -->
+      <div class="p-4 sm:p-5 rounded-3xl bg-white/70 border border-amber-200/60 space-y-3.5 shadow-sm">
+        <div class="flex items-center gap-2 text-xs font-black text-amber-900 uppercase tracking-wider">
+          <i data-lucide="user" class="w-4 h-4 text-amber-600"></i>
+          <span>1. Data Personal Anggota Baru</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-stone-700 mb-1.5">Nama Lengkap Anda <span class="text-rose-500">*</span></label>
+          <input type="text" name="nama" required class="liquid-input-concave" placeholder="Masukkan nama lengkap Anda">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-stone-700 mb-1.5">No. WhatsApp / HP</label>
+            <input type="text" name="no_telepon" class="liquid-input-concave" placeholder="08xxxxxxxxxx">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-stone-700 mb-1.5">Alamat Rumah</label>
+            <input type="text" name="alamat" class="liquid-input-concave" placeholder="Contoh: RT 05 / No. 10">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Kode Room Undangan -->
+      <div class="p-4 sm:p-5 rounded-3xl bg-white/70 border border-amber-200/60 space-y-3.5 shadow-sm">
+        <div class="flex items-center gap-2 text-xs font-black text-amber-900 uppercase tracking-wider">
+          <i data-lucide="key" class="w-4 h-4 text-amber-600"></i>
+          <span>2. Masukkan Kode Room Kelompok Arisan</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-stone-700 mb-1.5">Kode Room Undangan <span class="text-rose-500">*</span></label>
+          <input type="text" name="kode_room" id="portalKodeRoom" value="{% if request.GET.room %}{{ request.GET.room }}{% elif kelompok_default %}{{ kelompok_default.kode_room }}{% endif %}" required 
+                 class="liquid-input-concave text-center font-mono font-black text-lg tracking-widest text-amber-900 uppercase" 
+                 placeholder="KODE ROOM (6 KARAKTER)">
+          <div class="flex items-center justify-between text-[11px] text-stone-400 mt-1.5">
+            <span>Minta kode 6 karakter ini kepada Ketua Kelompok Anda.</span>
+            {% if kelompok_default %}
+              <span class="text-amber-800 font-bold">Tersedia: {{ kelompok_default.kode_room }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Anggota (3D Convex) -->
+      <button type="submit" class="btn-convex-gold w-full !py-4 text-sm !rounded-2xl">
+        <i data-lucide="log-in" class="w-5 h-5"></i>
+        <span>Gabung ke Ruang Arisan (Anggota)</span>
+      </button>
+
+      <p class="text-[11px] text-stone-400 text-center">
+        * Anggota akan mendapatkan Nomor Lot Undian otomatis, tiket pribadi, dan mode penonton undian live.
+      </p>
+    </form>
+
+    <!-- Tombol Bantuan Ramah Ibu-Ibu -->
+    <div class="mt-4 pt-3 border-t border-amber-200/50 text-center relative z-10">
+      <button type="button" onclick="openModalPanduanWarga()" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/90 hover:bg-white text-stone-700 text-xs font-bold border border-amber-200/90 shadow-sm transition-all hover:scale-105 active:scale-95">
+        <i data-lucide="help-circle" class="w-4 h-4 text-amber-600"></i>
+        <span>Ibu-Ibu Bingung Cara Gabung? Klik Panduan Mudah Di Sini ➔</span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ========================================================================
+       MODAL PANDUAN MUDAH UNTUK IBU-IBU / WARGA (FAQ RAMAH PENGGUNA)
+       ======================================================================== -->
+  <div id="modalPanduanWarga" class="modal-viewport-center hidden">
+    <div class="modal-glass-thick w-full max-w-lg p-6 sm:p-8 text-left relative animate-bounce-short max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-stone-200/60 mb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-black">
+            <i data-lucide="book-open" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-stone-900 text-base">Panduan Gampang Gabung Arisan</h3>
+            <p class="text-[11px] text-stone-500 font-medium">Khusus Warga &amp; Ibu-Ibu yang Baru Bergabung</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeModalPanduanWarga()" class="w-7 h-7 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-500">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <!-- Kasus 1: Arisan Tatap Muka / Balai Warga (Offline) -->
+        <div class="p-4 rounded-2xl bg-amber-50/80 border border-amber-200/80 space-y-2">
+          <h4 class="font-black text-amber-950 flex items-center gap-1.5 text-xs sm:text-sm">
+            <span>📱</span>
+            <span>Cara Gabung Saat Kumpul Arisan (100% Bebas Kuota):</span>
+          </h4>
+          <ol class="space-y-2 text-stone-700 pl-4 list-decimal leading-relaxed">
+            <li><strong>Tanya WiFi / Hotspot Ketua:</strong> Cukup sambungkan HP Ibu ke Hotspot HP Ketua atau WiFi balai warga. <em>(Tenang, tidak menyedot kuota internet sama sekali!)</em></li>
+            <li><strong>Buka Link Arisan:</strong> Buka link yang dikirimkan Ketua di grup WhatsApp, atau buka browser lalu ketik alamat yang ada di layar laptop Ketua.</li>
+            <li><strong>Pilih Tombol "Anggota":</strong> Ketik nama lengkap Ibu dan masukkan <strong>Kode Room 6 huruf</strong> yang dibagikan Ketua.</li>
+            <li><strong>Tekan "Gabung":</strong> Selesai! Ibu langsung dapat <strong>Nomor Undian Lot</strong> dan bisa nonton kocokan bola kaca langsung dari layar HP masing-masing!</li>
+          </ol>
+        </div>
+
+        <!-- Kasus 2: Kalau Mau Dari Rumah Masing-Masing (Online) -->
+        <div class="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200/80 space-y-2">
+          <h4 class="font-black text-emerald-950 flex items-center gap-1.5 text-xs sm:text-sm">
+            <span>🌐</span>
+            <span>Bisa Nggak Kalau dari Rumah Masing-Masing?</span>
+          </h4>
+          <p class="text-stone-700 leading-relaxed">
+            <strong>BISA BANGET!</strong> Jika aplikasi arisan ini dipasang online di internet (cloud), Ibu-Ibu tinggal klik link WhatsApp kapan saja dari rumah masing-masing pakai kuota seluler biasa tanpa perlu sambung WiFi Ketua lagi.
+          </p>
+        </div>
+
+        <!-- Kasus 3: Butuh Bantuan? -->
+        <div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 text-stone-600 text-[11px]">
+          💡 <strong>Tips Santai:</strong> Kalau Ibu-Ibu tidak membawa HP atau bingung, <strong>Ketua Arisan bisa langsung mendaftarkan nama Ibu dari laptop</strong> lewat tombol <em>"Tambah Warga Baru"</em>. Nomor undian tetap sah dan tercatat resmi!
+        </div>
+      </div>
+
+      <div class="pt-4 mt-2">
+        <button type="button" onclick="closeModalPanduanWarga()" class="btn-convex-gold w-full !py-3 text-xs !rounded-xl">
+          <span>Saya Mengerti, Terima Kasih!</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lucide Icons & Interactivity -->
+  <script>
+    lucide.createIcons();
+
+    // Trigger Liquid Morph Splash Screen Transition Cepat & Responsif
+    window.addEventListener('DOMContentLoaded', () => {
+      const splash = document.getElementById('splash-overlay');
+      if (splash) {
+        setTimeout(() => {
+          splash.classList.add('liquid-collapsed');
+          setTimeout(() => splash.remove(), 450);
+        }, 180);
+      }
+      updateAturanSetor();
+
+      // Jika membuka dari Scan QR Code Room, otomatis buka Tab Anggota
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('room')) {
+        switchRole('anggota');
+      }
+    });
+
+    // Switch between Ketua and Anggota Tab
+    function switchRole(role) {
+      const tabKetua = document.getElementById('tabBtnKetua');
+      const tabAnggota = document.getElementById('tabBtnAnggota');
+      const formKetua = document.getElementById('formKetua');
+      const formAnggota = document.getElementById('formAnggota');
+
+      if (role === 'ketua') {
+        tabKetua.classList.add('active');
+        tabAnggota.classList.remove('active');
+        formKetua.classList.remove('hidden');
+        formAnggota.classList.add('hidden');
+      } else {
+        tabAnggota.classList.add('active');
+        tabKetua.classList.remove('active');
+        formAnggota.classList.remove('hidden');
+        formKetua.classList.add('hidden');
+      }
+      lucide.createIcons();
+    }
+
+    // Modal Panduan Ramah Ibu-Ibu / Warga
+    function openModalPanduanWarga() {
+      const m = document.getElementById('modalPanduanWarga');
+      if (m) {
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+      }
+    }
+
+    function closeModalPanduanWarga() {
+      const m = document.getElementById('modalPanduanWarga');
+      if (m) {
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+      }
+    }
+
+    // Dynamic Relational Business Rule for Arisan Period vs Payment Frequency
+    function updateAturanSetor() {
+      const select = document.getElementById('periodeKocokSelect');
+      const textElem = document.getElementById('aturanSetorText');
+      if (!select || !textElem) return;
+
+      const val = select.value;
+      if (val === 'mingguan') {
+        textElem.innerHTML = '⚡ Aturan: Periode kocok <strong>Mingguan</strong> &rarr; Frekuensi setoran wajib <strong>HARIAN</strong>.';
+      } else if (val === 'tahunan') {
+        textElem.innerHTML = '⚡ Aturan: Periode kocok <strong>Tahunan</strong> &rarr; Frekuensi setoran wajib <strong>BULANAN</strong>.';
+      } else {
+        textElem.innerHTML = '⚡ Aturan: Periode kocok <strong>Bulanan</strong> &rarr; Frekuensi setoran wajib <strong>MINGGUAN</strong>.';
+      }
+    }
+
+    // PWA Service Worker & Install Prompt
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/static/js/sw.js').catch(() => {});
+      });
+    }
+
+    let deferredInstallPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const banner = document.getElementById('pwaInstallBanner');
+      if (banner) banner.classList.remove('hidden');
+    });
+
+    function installPWA() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then(() => {
+          deferredInstallPrompt = null;
+          const banner = document.getElementById('pwaInstallBanner');
+          if (banner) banner.classList.add('hidden');
+        });
+      }
+    }
+  </script>
+
+</body>
+</html>

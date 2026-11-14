@@ -1,0 +1,16 @@
+*.pyc
+__pycache__/
+build/
+dist/
+*.spec
+.env
+.venv/
+env/
+venv/
+*.log
+ArisanDigital.exe
+db.sqlite3
+staticfiles/
+.vscode/
+~$*
+*.tmp

@@ -1,0 +1,427 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Riwayat &amp; Transparansi Kas &bull; {{ kelompok.nama_kelompok }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-7xl mx-auto">
+
+  <!-- ========================================================================
+       1. HEADER BANNER: TRANSPARANSI KAS & AKUNTABILITAS
+       ======================================================================== -->
+  <div class="card-glass-champagne p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+    <div class="space-y-2 max-w-2xl">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 text-xs font-black uppercase tracking-wider">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+          Akuntabilitas Terverifikasi
+        </span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight leading-tight">
+        Riwayat &amp; Transparansi Kas
+      </h1>
+      <p class="text-xs sm:text-sm text-stone-600 font-medium leading-relaxed">
+        Laporan arus kas real-time, pencatatan iuran transparan, dan arsip digital pemenang undian kelompok <strong class="text-amber-900">{{ kelompok.nama_kelompok }}</strong>.
+      </p>
+    </div>
+
+    <!-- Quick Action Broadcast WA & Cetak Rekap -->
+    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+      <a href="https://api.whatsapp.com/send?text={{ wa_broadcast_encoded }}" target="_blank" 
+         class="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-b from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-extrabold text-xs shadow-lg shadow-emerald-600/25 border border-emerald-300/40 transition-all active:scale-95">
+        <i data-lucide="share-2" class="w-4 h-4"></i>
+        <span>Broadcast ke WhatsApp</span>
+      </a>
+
+      <button onclick="window.print()" class="btn-convex-pearl flex-1 md:flex-initial text-xs">
+        <i data-lucide="printer" class="w-4 h-4 text-stone-600"></i>
+        <span>Cetak Rekap Kas</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       2. RINGKASAN METRIK KEUANGAN REAL-TIME (4 STAT CARDS)
+       ======================================================================== -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    
+    <!-- Stat 1: Kas Masuk Saat Ini -->
+    <div class="stat-card-clean">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-[11px] font-extrabold uppercase tracking-wider text-stone-500">Kas Masuk Saat Ini</span>
+        <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-200">
+          <i data-lucide="wallet" class="w-4 h-4"></i>
+        </div>
+      </div>
+      <p class="text-2xl font-black text-stone-900 tracking-tight">Rp {{ total_kas_terkumpul|floatformat:0 }}</p>
+      <div class="mt-2 flex items-center gap-2">
+        <div class="flex-1 bg-stone-100 rounded-full h-1.5 overflow-hidden">
+          <div class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: {{ kelompok.persentase_kelunasan }}%"></div>
+        </div>
+        <span class="text-[10px] font-bold text-emerald-700">{{ kelompok.persentase_kelunasan }}%</span>
+      </div>
+      <p class="text-[10px] text-stone-400 font-medium mt-1">{{ kelompok.total_lunas_count }} dari {{ kelompok.total_peserta }} warga lunas</p>
+    </div>
+
+    <!-- Stat 2: Total Hadiah Sudah Keluar -->
+    <div class="stat-card-clean">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-[11px] font-extrabold uppercase tracking-wider text-stone-500">Total Hadiah Diserahkan</span>
+        <div class="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center text-amber-700 border border-amber-200">
+          <i data-lucide="award" class="w-4 h-4"></i>
+        </div>
+      </div>
+      <p class="text-2xl font-black text-amber-900 tracking-tight">Rp {{ total_hadiah_keluar|floatformat:0 }}</p>
+      <p class="text-[10px] text-stone-500 font-semibold mt-2">
+        Terbagi untuk <strong class="text-amber-800">{{ riwayat_list.count }}</strong> pemenang putaran
+      </p>
+    </div>
+
+    <!-- Stat 3: Target Pot Putaran Aktif -->
+    <div class="stat-card-clean">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-[11px] font-extrabold uppercase tracking-wider text-stone-500">Target Pot Putaran</span>
+        <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-200">
+          <i data-lucide="target" class="w-4 h-4"></i>
+        </div>
+      </div>
+      <p class="text-2xl font-black text-stone-900 tracking-tight">Rp {{ total_pot_hadiah|floatformat:0 }}</p>
+      <p class="text-[10px] text-stone-500 font-semibold mt-2">
+        Kekurangan: <strong class="text-rose-600">Rp {{ sisa_kekurangan|floatformat:0 }}</strong>
+      </p>
+    </div>
+
+    <!-- Stat 4: Putaran & Jatuh Tempo -->
+    <div class="stat-card-clean">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-[11px] font-extrabold uppercase tracking-wider text-stone-500">Putaran Berikutnya</span>
+        <div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-700">
+          <i data-lucide="calendar" class="w-4 h-4"></i>
+        </div>
+      </div>
+      <p class="text-2xl font-black text-amber-800 tracking-tight">Putaran #{{ kelompok.putaran_berikutnya }}</p>
+      <p class="text-[10px] text-stone-500 font-semibold mt-2">
+        Jatuh Tempo: <strong>{{ kelompok.deadline_kocok|date:"d M Y" }}</strong>
+      </p>
+    </div>
+
+  </div>
+
+  <!-- ========================================================================
+       3. KONTEN UTAMA: 2 KOLOM (HALL OF FAME PEMENANG & STATUS KAS WARGA)
+       ======================================================================== -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- KOLOM KIRI (7/12): ARSIP PEMENANG & KUITANSI RESMI -->
+    <div class="lg:col-span-7 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
+        <div>
+          <h2 class="text-lg font-black text-stone-900 tracking-tight flex items-center gap-2">
+            <i data-lucide="trophy" class="w-5 h-5 text-amber-600"></i>
+            Hall of Fame Pemenang Undian
+          </h2>
+          <p class="text-xs text-stone-500 font-medium">Daftar seluruh pemenang yang telah sah memenangkan arisan.</p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-black">
+            {{ riwayat_list.count }} Kali Dikocok
+          </span>
+          {% if user_role == 'ketua' and riwayat_list %}
+            <button type="button" 
+                    onclick="openModalHapusSemuaRiwayat()" 
+                    class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-xs font-extrabold flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer" 
+                    title="Hapus / Reset Seluruh Riwayat Pemenang">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600 pointer-events-none"></i>
+              <span>Hapus Semua Riwayat</span>
+            </button>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if riwayat_list %}
+        <div class="space-y-3">
+          {% for r in riwayat_list %}
+            <div class="member-capsule-3d group">
+              <div class="flex items-center gap-4">
+                <!-- Round Lot Badge -->
+                <div class="lot-coin-3d w-12 h-12 flex-shrink-0 text-sm">
+                  <span>#{{ r.periode_ke|stringformat:"02d" }}</span>
+                </div>
+
+                <!-- Info Pemenang -->
+                <div>
+                  <div class="flex items-center gap-2">
+                    <h3 class="font-black text-stone-900 text-sm leading-tight">{{ r.peserta_menang.anggota.nama }}</h3>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-100/80 text-amber-900 font-bold border border-amber-300">
+                      Lot #{{ r.peserta_menang.nomor_undian|stringformat:"02d" }}
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-stone-500 mt-1 flex items-center gap-2">
+                    <span><i data-lucide="calendar" class="w-3 h-3 inline mr-1 text-stone-400"></i>{{ r.tanggal_kocok|date:"d M Y" }}</span>
+                    <span>&bull;</span>
+                    <span class="text-stone-600 font-medium">{{ r.catatan|default:"Pengocokan Sah" }}</span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Nominal & Tombol Kuitansi -->
+              <div class="flex items-center justify-between sm:justify-end gap-2.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-stone-200/50 flex-wrap">
+                <div class="text-left sm:text-right">
+                  <span class="text-[10px] text-stone-400 font-bold block uppercase tracking-wider">Hadiah Diterima</span>
+                  <strong class="text-sm font-black text-amber-800 font-mono">Rp {{ r.total_diterima|floatformat:0 }}</strong>
+                </div>
+
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                  <a href="{% url 'kuitansi_detail' r.id %}" target="_blank" class="btn-micro-3d flex items-center gap-1 text-xs !w-auto !px-2.5" title="Lihat Kuitansi Resmi">
+                    <i data-lucide="receipt" class="w-3.5 h-3.5 text-amber-700"></i>
+                    <span>Kuitansi</span>
+                  </a>
+
+                  {% if user_role == 'ketua' %}
+                    <button type="button" 
+                            onclick="openModalHapusRiwayat('{{ r.id }}', '{{ r.periode_ke }}', '{{ r.peserta_menang.anggota.nama|escapejs }}')" 
+                            class="btn-micro-3d danger !text-rose-600 hover:!bg-rose-50 active:scale-90 transition-all flex items-center justify-center cursor-pointer" 
+                            title="Hapus / Batalkan Kemenangan Putaran Ini">
+                      <i data-lucide="trash-2" class="w-4 h-4 text-rose-600 pointer-events-none"></i>
+                    </button>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <!-- Empty State Elegan -->
+        <div class="p-12 text-center rounded-3xl bg-white/70 border border-stone-200/70 shadow-sm">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center border-2 border-amber-200">
+            <i data-lucide="sparkles" class="w-8 h-8"></i>
+          </div>
+          <h3 class="font-black text-stone-800 text-base mb-1">Belum Ada Pengundian Dilakukan</h3>
+          <p class="text-xs text-stone-500 max-w-sm mx-auto mb-5">
+            Pengundian periode ke-1 belum dilaksanakan. Buka Ruang Kocokan Live untuk memutar bola undian emas 3D!
+          </p>
+          <a href="{% url 'kocokan_view' %}" class="btn-convex-gold text-xs inline-flex">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>Buka Ruang Kocokan Live</span>
+          </a>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- KOLOM KANAN (5/12): STATUS KELUNASAN IURAN & ATURAN KELOMPOK -->
+    <div class="lg:col-span-5 space-y-6">
+
+      <!-- Box 1: Status Warga Belum Setor (Pengingat Cepat WA) -->
+      <div class="card-glass-champagne p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-amber-900/10 pb-3">
+          <h3 class="font-black text-sm text-stone-900 flex items-center gap-2">
+            <i data-lucide="alert-circle" class="w-4 h-4 text-rose-500"></i>
+            Warga Belum Setor Iuran
+          </h3>
+          <span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 font-extrabold text-[11px]">
+            {{ peserta_belum.count }} Warga
+          </span>
+        </div>
+
+        {% if peserta_belum %}
+          <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+            {% for p in peserta_belum %}
+              <div class="p-3 rounded-2xl bg-white/90 border border-stone-200/70 flex items-center justify-between gap-3 shadow-xs">
+                <div class="flex items-center gap-2.5 overflow-hidden">
+                  <div class="w-7 h-7 rounded-full bg-rose-50 text-rose-700 font-black text-xs flex items-center justify-center border border-rose-200 flex-shrink-0">
+                    #{{ p.nomor_undian|stringformat:"02d" }}
+                  </div>
+                  <div class="truncate">
+                    <p class="text-xs font-bold text-stone-900 truncate">{{ p.anggota.nama }}</p>
+                    <p class="text-[10px] text-stone-400 font-mono">{{ p.anggota.no_telepon|default:"Tidak ada HP" }}</p>
+                  </div>
+                </div>
+
+                {% if p.anggota.no_telepon %}
+                  <a href="https://api.whatsapp.com/send?phone={{ p.anggota.no_telepon }}&text=Halo%20{{ p.anggota.nama|urlencode }},%20mengingatkan%20iuran%20arisan%20{{ kelompok.nama_kelompok|urlencode }}%20sebesar%20Rp%20{{ kelompok.nominal_iuran|floatformat:0 }}%20untuk%20putaran%20ini.%20Terima%20kasih!" 
+                     target="_blank" title="Kirim Pengingat WA Pribadi" 
+                     class="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-bold flex items-center gap-1 border border-emerald-200 transition-colors flex-shrink-0">
+                    <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                    <span>Tagih</span>
+                  </a>
+                {% else %}
+                  <span class="text-[10px] font-semibold text-stone-400">Rp {{ kelompok.nominal_iuran|floatformat:0 }}</span>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-center">
+            <i data-lucide="check-circle" class="w-6 h-6 text-emerald-600 mx-auto mb-1"></i>
+            <p class="text-xs font-bold text-emerald-900">Seluruh Warga Telah Lunas!</p>
+            <p class="text-[10px] text-emerald-700 mt-0.5">Kas terkumpul 100% dan siap untuk pengundian penuh.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Box 2: Aturan Resmi Kelompok Arisan -->
+      <div class="p-5 rounded-3xl bg-white/80 border border-stone-200/80 space-y-3.5 shadow-sm">
+        <h3 class="font-black text-sm text-stone-900 flex items-center gap-2">
+          <i data-lucide="book-open" class="w-4 h-4 text-amber-700"></i>
+          Aturan Main Kelompok
+        </h3>
+
+        <div class="space-y-2 text-xs text-stone-600">
+          <div class="flex items-start gap-2.5">
+            <i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5"></i>
+            <span><strong>Periode &amp; Setoran:</strong> Periode kocokan <strong>{{ kelompok.get_periode_kocok_display }}</strong> dengan frekuensi iuran <strong>{{ kelompok.frekuensi_setor }}</strong>.</span>
+          </div>
+
+          <div class="flex items-start gap-2.5">
+            <i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5"></i>
+            <span><strong>Fair Play (Tanpa Duplikat):</strong> Anggota yang sudah pernah menang <em>tidak akan keluar lagi</em> dalam 1 siklus sampai semua anggota mendapat giliran.</span>
+          </div>
+
+          <div class="flex items-start gap-2.5">
+            <i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5"></i>
+            <span><strong>Pengundian Fleksibel:</strong> Berapa pun nominal kas yang terkumpul pada hari pengundian, roda undian tetap sah untuk diputar.</span>
+          </div>
+
+          <div class="flex items-start gap-2.5">
+            <i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5"></i>
+            <span><strong>Sistem Auto-Draw:</strong> Jika Ketua lupa mengocok hingga melewati batas jatuh tempo ({{ kelompok.durasi_hari }} hari), sistem otomatis mengundi kandidat secara objektif.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- ========================================================================
+     MODAL BATALKAN / HAPUS PENGUNDIAN (VIEWPORT CENTERED LOCK - KHUSUS KETUA)
+     ======================================================================== -->
+<div id="modalHapusRiwayat" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-sm p-6 text-center relative animate-bounce-short">
+    <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shadow-inner mb-4">
+      <i data-lucide="trash-2" class="w-7 h-7"></i>
+    </div>
+    
+    <h3 class="font-black text-stone-900 text-lg">Hapus Putaran Ini?</h3>
+    <p class="text-xs text-stone-600 mt-1 mb-4" id="textInfoHapusRiwayat">
+      Pengundian putaran akan dibatalkan.
+    </p>
+
+    <div class="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-950 text-left text-[11px] mb-4 space-y-1.5">
+      <p class="font-bold flex items-center gap-1.5 text-amber-900">
+        <i data-lucide="info" class="w-3.5 h-3.5 text-amber-600"></i>
+        <span>Pengembalian Status Otomatis</span>
+      </p>
+      <p class="text-stone-600 leading-relaxed">
+        Pemenang pada putaran ini akan <strong>dikembalikan ke status BELUM MENANG</strong> (masuk kembali ke daftar siap undi). Rekaman kuitansi putaran ini akan dihapus.
+      </p>
+    </div>
+
+    <form id="formHapusRiwayat" method="POST" action="" class="space-y-3">
+      {% csrf_token %}
+      <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <button type="button" onclick="closeModalHapusRiwayat()" class="py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">
+          Tutup
+        </button>
+        <button type="submit" class="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          <span>Ya, Hapus Putaran</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================================================
+     MODAL HAPUS SEMUA RIWAYAT PEMENANG (VIEWPORT CENTERED LOCK - KHUSUS KETUA)
+     ======================================================================== -->
+<div id="modalHapusSemuaRiwayat" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-sm p-6 text-center relative animate-bounce-short">
+    <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shadow-inner mb-4">
+      <i data-lucide="trash-2" class="w-7 h-7"></i>
+    </div>
+    
+    <h3 class="font-black text-stone-900 text-lg">Hapus Semua Riwayat?</h3>
+    <p class="text-xs text-stone-600 mt-1 mb-4 leading-relaxed">
+      Seluruh riwayat kocokan di kelompok ini akan dihapus bersih.
+    </p>
+
+    <div class="p-3.5 rounded-2xl bg-rose-50/90 border border-rose-200 text-rose-950 text-left text-[11px] mb-4 space-y-1.5">
+      <p class="font-bold flex items-center gap-1.5 text-rose-900">
+        <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-rose-600"></i>
+        <span>Reset Total Siklus Pengundian</span>
+      </p>
+      <p class="text-stone-600 leading-relaxed">
+        Seluruh rekaman <strong>{{ riwayat_list.count }} putaran kocokan</strong> akan dihapus. Semua warga yang sudah menang akan <strong>dikembalikan ke status BELUM MENANG</strong>. Putaran berikutnya akan dimulai kembali dari <strong>Putaran Ke-1</strong>.
+      </p>
+    </div>
+
+    <form method="POST" action="{% url 'riwayat_hapus_semua' kelompok.id %}" class="space-y-3">
+      {% csrf_token %}
+      <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <button type="button" onclick="closeModalHapusSemuaRiwayat()" class="py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">
+          Batal
+        </button>
+        <button type="submit" class="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          <span>Ya, Hapus Semua</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.openModalHapusRiwayat = function(riwayatId, periode, namaPemenang) {
+    const modal = document.getElementById('modalHapusRiwayat');
+    const form = document.getElementById('formHapusRiwayat');
+    const textInfo = document.getElementById('textInfoHapusRiwayat');
+    if (modal && form) {
+      form.action = `/riwayat/hapus/${riwayatId}/`;
+      if (textInfo) {
+        textInfo.innerHTML = `Hapus kemenangan <strong class="text-stone-900">${namaPemenang}</strong> pada <strong class="text-amber-900">Periode Ke-${periode}</strong>?`;
+      }
+      modal.classList.remove('hidden');
+      if (typeof lockBodyScroll === 'function') lockBodyScroll();
+      if (window.lucide) lucide.createIcons();
+    }
+  };
+
+  window.closeModalHapusRiwayat = function() {
+    const modal = document.getElementById('modalHapusRiwayat');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+  };
+
+  window.openModalHapusSemuaRiwayat = function() {
+    const modal = document.getElementById('modalHapusSemuaRiwayat');
+    if (modal) {
+      modal.classList.remove('hidden');
+      if (typeof lockBodyScroll === 'function') lockBodyScroll();
+      if (window.lucide) lucide.createIcons();
+    }
+  };
+
+  window.closeModalHapusSemuaRiwayat = function() {
+    const modal = document.getElementById('modalHapusSemuaRiwayat');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+  };
+
+  // Aliases for inline invocation compatibility
+  function openModalHapusRiwayat(id, periode, nama) { window.openModalHapusRiwayat(id, periode, nama); }
+  function closeModalHapusRiwayat() { window.closeModalHapusRiwayat(); }
+  function openModalHapusSemuaRiwayat() { window.openModalHapusSemuaRiwayat(); }
+  function closeModalHapusSemuaRiwayat() { window.closeModalHapusSemuaRiwayat(); }
+</script>
+{% endblock %}

@@ -1,0 +1,126 @@
+<mxfile host="65bd71144e">
+    <diagram name="Struktur Menu Arisan Digital" id="menu-arisan-digital">
+        <mxGraphModel dx="1200" dy="850" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="900" background="#f8fafc" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+
+                <!-- Header Title -->
+                <mxCell id="title" value="Struktur Hierarki Menu: Sistem Aplikasi Arisan Digital" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=22;fontStyle=1;fontColor=#0f172a;fontFamily=Helvetica;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="30" width="700" height="35" as="geometry"/>
+                </mxCell>
+                <mxCell id="subtitle" value="Perancangan Menu: Berbasis Peran Ketua Kelompok (Host) vs Anggota Biasa (Peserta) Tanpa Superadmin" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontColor=#64748b;fontFamily=Helvetica;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="65" width="750" height="25" as="geometry"/>
+                </mxCell>
+
+                <!-- Legend Box -->
+                <mxCell id="legend_box" value="" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#cbd5e1;strokeWidth=1;" parent="1" vertex="1">
+                    <mxGeometry x="830" y="30" width="310" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend_text" value="&lt;font color=&quot;#0284c7&quot;&gt;&lt;b&gt;■ Front End&lt;/b&gt;&lt;/font&gt; : Akses Seluruh Peserta&lt;br&gt;&lt;font color=&quot;#d97706&quot;&gt;&lt;b&gt;■ Back End&lt;/b&gt;&lt;/font&gt; : Akses Eksklusif Ketua (Host)&lt;br&gt;Sistem Navigasi Bebas Dashboard Superadmin" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#334155;fontFamily=Helvetica;" parent="1" vertex="1">
+                    <mxGeometry x="830" y="30" width="310" height="60" as="geometry"/>
+                </mxCell>
+
+                <!-- ROOT NODE -->
+                <mxCell id="node_root" value="&lt;b style=&quot;font-size: 15px;&quot;&gt;Sistem Aplikasi Arisan Digital&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 11px; opacity: 0.85;&quot;&gt;Arsitektur Navigasi Berbasis Kelompok (Group/Room Role)&lt;/font&gt;" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#1e293b;strokeColor=#0f172a;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;shadow=1;fontFamily=Helvetica;" parent="1" vertex="1">
+                    <mxGeometry x="400" y="125" width="400" height="60" as="geometry"/>
+                </mxCell>
+
+                <!-- FRONT END SECTION -->
+                <mxCell id="node_fe" value="&lt;b style=&quot;font-size: 14px;&quot;&gt;FRONT END (Tampilan Anggota)&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10.5px;&quot;&gt;Dapat Diakses Bebas oleh Seluruh Peserta Arisan&lt;/font&gt;" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#0284c7;strokeColor=#0369a1;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;shadow=1;fontFamily=Helvetica;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="235" width="460" height="55" as="geometry"/>
+                </mxCell>
+
+                <!-- BACK END SECTION -->
+                <mxCell id="node_be" value="&lt;b style=&quot;font-size: 14px;&quot;&gt;BACK END (Panel Ketua Kelompok)&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10.5px;&quot;&gt;Hak Akses Khusus Ketua Kelompok (Host / Pengocok)&lt;/font&gt;" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#d97706;strokeColor=#b45309;strokeWidth=2;fontColor=#ffffff;align=center;verticalAlign=middle;shadow=1;fontFamily=Helvetica;" parent="1" vertex="1">
+                    <mxGeometry x="660" y="235" width="460" height="55" as="geometry"/>
+                </mxCell>
+
+                <!-- Connectors Root to FE & BE -->
+                <mxCell id="edge_root_fe" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#64748b;strokeWidth=2;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" parent="1" source="node_root" target="node_fe" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_root_be" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#64748b;strokeWidth=2;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" parent="1" source="node_root" target="node_be" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+
+                <!-- FRONT END ITEMS (5 Nodes) -->
+                <mxCell id="fe_item_1" value="&lt;b style=&quot;color: #0369a1; font-size: 12px;&quot;&gt;1. Beranda &amp;amp; Masuk Kelompok (Join Group)&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748b&quot; style=&quot;font-size: 10px;&quot;&gt;Input Nama, No. WhatsApp, dan Kode Undangan / QR Grup&lt;/font&gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#f0f9ff;strokeColor=#0284c7;strokeWidth=1.5;align=left;verticalAlign=middle;spacingLeft=15;fontFamily=Helvetica;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="325" width="460" height="55" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="fe_item_2" value="&lt;b style=&quot;color: #0369a1; font-size: 12px;&quot;&gt;2. Kartu Undian Digital (My Lottery Ticket)&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748b&quot; style=&quot;font-size: 10px;&quot;&gt;Menampilkan Nomor Undian Lot Unik (#01, #02) &amp;amp; Status Menang&lt;/font&gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#f0f9ff;strokeColor=#0284c7;strokeWidth=1.5;align=left;verticalAlign=middle;spacingLeft=15;fontFamily=Helvetica;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="405" width="460" height="55" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="fe_item_3" value="&lt;b style=&quot;color: #0369a1; font-size: 12px;&quot;&gt;3. Papan Transparansi Peserta (Live Roster)&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748b&quot; style=&quot;font-size: 10px;&quot;&gt;Daftar seluruh peserta: membedakan yang sudah menang &amp;amp; belum&lt;/font&gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#f0f9ff;strokeColor=#0284c7;strokeWidth=1.5;align=left;verticalAlign=middle;spacingLeft=15;fontFamily=Helvetica;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="485" width="460" height="55" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="fe_item_4" value="&lt;b style=&quot;color: #0369a1; font-size: 12px;&quot;&gt;4. Ruang Nonton Pengundian (Live Draw Arena)&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748b&quot; style=&quot;font-size: 10px;&quot;&gt;Layar tontonan animasi live saat Ketua memutar undian lot digital&lt;/font&gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#f0f9ff;strokeColor=#0284c7;strokeWidth=1.5;align=left;verticalAlign=middle;spacingLeft=15;fontFamily=Helvetica;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="565" width="460" height="55" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="fe_item_5" value="&lt;b style=&quot;color: #0369a1; font-size: 12px;&quot;&gt;5. Galeri Kuitansi Digital (Official Receipts)&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748b&quot; style=&quot;font-size: 10px;&quot;&gt;Arsip kuitansi resmi pemenang tiap periode &amp;amp; unduh bukti PDF sah&lt;/font&gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#f0f9ff;strokeColor=#0284c7;strokeWidth=1.5;align=left;verticalAlign=middle;spacingLeft=15;fontFamily=Helvetica;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="645" width="460" height="55" as="geometry"/>
+                </mxCell>
+
+                <!-- BACK END ITEMS (5 Nodes) -->
+                <mxCell id="be_item_1" value="&lt;b style=&quot;color: #b45309; font-size: 12px;&quot;&gt;1. Buat &amp;amp; Atur Kelompok Arisan (Group Settings)&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748b&quot; style=&quot;font-size: 10px;&quot;&gt;Form buat kelompok baru, nominal iuran, jadwal, &amp;amp; kode undangan&lt;/font&gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#fffbeb;strokeColor=#d97706;strokeWidth=1.5;align=left;verticalAlign=middle;spacingLeft=15;fontFamily=Helvetica;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="660" y="325" width="460" height="55" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="be_item_2" value="&lt;b style=&quot;color: #b45309; font-size: 12px;&quot;&gt;2. Kelola Anggota &amp;amp; Kunci Kuota (Manage Participants)&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748b&quot; style=&quot;font-size: 10px;&quot;&gt;Verifikasi pendaftar, alokasi nomor lot, &amp;amp; kunci kuota grup&lt;/font&gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#fffbeb;strokeColor=#d97706;strokeWidth=1.5;align=left;verticalAlign=middle;spacingLeft=15;fontFamily=Helvetica;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="660" y="405" width="460" height="55" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="be_item_3" value="&lt;b style=&quot;color: #b45309; font-size: 12px;&quot;&gt;3. Konsol Tombol Pengocokan (Host Draw Console)&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748b&quot; style=&quot;font-size: 10px;&quot;&gt;Tombol picu undian acak (hanya menyaring peserta belum menang)&lt;/font&gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#fffbeb;strokeColor=#d97706;strokeWidth=1.5;align=left;verticalAlign=middle;spacingLeft=15;fontFamily=Helvetica;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="660" y="485" width="460" height="55" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="be_item_4" value="&lt;b style=&quot;color: #b45309; font-size: 12px;&quot;&gt;4. Pengesahan &amp;amp; Penerbitan Kuitansi (Issue Receipt)&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748b&quot; style=&quot;font-size: 10px;&quot;&gt;Kunci status __status_menang = True &amp;amp; terbitkan kuitansi digital&lt;/font&gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#fffbeb;strokeColor=#d97706;strokeWidth=1.5;align=left;verticalAlign=middle;spacingLeft=15;fontFamily=Helvetica;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="660" y="565" width="460" height="55" as="geometry"/>
+                </mxCell>
+
+                <mxCell id="be_item_5" value="&lt;b style=&quot;color: #b45309; font-size: 12px;&quot;&gt;5. Manajemen Periode &amp;amp; Tutup Buku (Lifecycle)&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#64748b&quot; style=&quot;font-size: 10px;&quot;&gt;Pindah putaran berikutnya (Periode 2, 3) atau tutup &amp;amp; arsipkan grup&lt;/font&gt;" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#fffbeb;strokeColor=#d97706;strokeWidth=1.5;align=left;verticalAlign=middle;spacingLeft=15;fontFamily=Helvetica;shadow=1;" parent="1" vertex="1">
+                    <mxGeometry x="660" y="645" width="460" height="55" as="geometry"/>
+                </mxCell>
+
+                <!-- Edge connectors FE list -->
+                <mxCell id="edge_fe_line" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#0284c7;strokeWidth=1.5;dashed=1;" parent="1" source="node_fe" target="fe_item_1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_fe_2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#0284c7;strokeWidth=1.5;dashed=1;" parent="1" source="node_fe" target="fe_item_2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_fe_3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#0284c7;strokeWidth=1.5;dashed=1;" parent="1" source="node_fe" target="fe_item_3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_fe_4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#0284c7;strokeWidth=1.5;dashed=1;" parent="1" source="node_fe" target="fe_item_4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_fe_5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#0284c7;strokeWidth=1.5;dashed=1;" parent="1" source="node_fe" target="fe_item_5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+
+                <!-- Edge connectors BE list -->
+                <mxCell id="edge_be_1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d97706;strokeWidth=1.5;dashed=1;" parent="1" source="node_be" target="be_item_1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_be_2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d97706;strokeWidth=1.5;dashed=1;" parent="1" source="node_be" target="be_item_2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_be_3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d97706;strokeWidth=1.5;dashed=1;" parent="1" source="node_be" target="be_item_3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_be_4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d97706;strokeWidth=1.5;dashed=1;" parent="1" source="node_be" target="be_item_4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_be_5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#d97706;strokeWidth=1.5;dashed=1;" parent="1" source="node_be" target="be_item_5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

@@ -1,0 +1,853 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Arisan - {{ kelompok.nama_kelompok }}{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+  <!-- ========================================================================
+       SECTION 1: HERO BANNER ARISAN DIGITAL (MEWAH & OTENTIK)
+       ======================================================================== -->
+  <div class="card-glass-champagne p-6 sm:p-8 relative overflow-hidden">
+    <!-- Ambient Golden Glow -->
+    <div class="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-amber-400/20 blur-3xl pointer-events-none"></div>
+
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+      
+      <!-- Left Content: Identitas & Aturan Arisan -->
+      <div class="max-w-2xl space-y-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[11px] font-black uppercase tracking-wider shadow-sm">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-200 animate-pulse"></span>
+            PUTARAN KE-{{ kelompok.putaran_berikutnya }}
+          </span>
+          <span class="px-3 py-1 rounded-full bg-white/95 border border-amber-300 text-amber-900 text-xs font-bold shadow-sm">
+            Room: <strong class="font-mono text-amber-800 text-xs ml-0.5">#{{ kelompok.kode_room }}</strong>
+          </span>
+          <button onclick="copyRoomCode('{{ kelompok.kode_room }}')" class="btn-convex-pearl text-xs !py-1 !px-2.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span>Salin</span>
+          </button>
+        </div>
+
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight leading-tight">
+            {{ kelompok.nama_kelompok }}
+          </h1>
+          <p class="text-xs text-stone-600 font-medium mt-1 leading-relaxed">
+            Sistem Gotong Royong Digital &bull; Transparan, Sah &amp; Kuitansi Resmi.
+          </p>
+        </div>
+        
+        <!-- Relational Business Rule Display: Berjejer ke Bawah Bersih & Seimbang -->
+        <div class="flex flex-col gap-1.5 text-xs font-semibold text-stone-700 pt-1 w-fit">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/85 border border-stone-200/80 shadow-xs w-fit">
+            <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-600 flex-shrink-0"></i>
+            <span>Kocokan: <strong class="text-stone-900 font-bold">{{ kelompok.get_periode_kocok_display }}</strong></span>
+          </div>
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/85 border border-stone-200/80 shadow-xs w-fit">
+            <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-600 flex-shrink-0"></i>
+            <span>Setoran: <strong class="text-amber-800 uppercase font-black">{{ kelompok.frekuensi_setor }}</strong></span>
+          </div>
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/85 border border-stone-200/80 shadow-xs w-fit">
+            <i data-lucide="coins" class="w-3.5 h-3.5 text-amber-600 flex-shrink-0"></i>
+            <span>Iuran: <strong class="text-stone-900 font-bold">Rp {{ kelompok.nominal_iuran|floatformat:0 }}</strong></span>
+          </div>
+        </div>
+
+        <!-- Quick Action Buttons on Banner (3D Convex) -->
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+          <a href="{% url 'kocokan_view' %}" class="btn-convex-gold text-xs !py-3 !px-5">
+            <i data-lucide="sparkles" class="w-4 h-4 text-amber-100"></i>
+            <span>Masuk Ruang Pengundian Live ➔</span>
+          </a>
+
+          <button type="button" onclick="shareGroupToWhatsApp()" class="btn-convex-pearl text-xs !py-3 !px-4 text-emerald-800 border-emerald-200 hover:bg-emerald-50">
+            <i data-lucide="share-2" class="w-4 h-4 text-emerald-600"></i>
+            <span>Undang via WhatsApp</span>
+          </button>
+
+          <button type="button" onclick="copyInviteLink()" class="btn-convex-pearl text-xs !py-3 !px-4 text-stone-700">
+            <i data-lucide="copy" class="w-4 h-4 text-amber-600"></i>
+            <span>Salin Link Room</span>
+          </button>
+
+          <button type="button" onclick="openModalPanduanKetua()" class="btn-convex-pearl text-xs !py-3 !px-4 text-amber-900 border-amber-200 hover:bg-amber-50">
+            <i data-lucide="help-circle" class="w-4 h-4 text-amber-600"></i>
+            <span>Panduan Sambung Warga</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Visual: 3D Golden Arisan Tumbler Mascot Card -->
+      <div class="hidden lg:flex items-center justify-center flex-shrink-0">
+        <div class="w-44 h-44 rounded-3xl bg-gradient-to-b from-white/95 to-amber-50/90 border-2 border-white shadow-xl shadow-amber-500/15 p-4 flex flex-col items-center justify-center text-center relative group hover:scale-105 transition-all duration-300">
+          <div class="w-20 h-20 mb-2 drop-shadow-md">
+            <img src="{% static 'img/logo.svg' %}" alt="Arisan Mascot" class="w-full h-full">
+          </div>
+          <span class="px-2.5 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-black tracking-wide shadow-xs">
+            ARISAN RESMI
+          </span>
+          <p class="text-[10px] text-stone-500 font-bold mt-1">Lot Undian Sah</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ========================================================================
+       SECTION 2: JATUH TEMPO & SISTEM TERKOCOK OTOMATIS WIDGET
+       ======================================================================== -->
+  <div class="p-3.5 sm:p-4 rounded-2xl bg-white/75 border border-white/95 shadow-sm backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center flex-shrink-0">
+        <i data-lucide="alarm-clock" class="w-4.5 h-4.5"></i>
+      </div>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h4 class="font-extrabold text-stone-900 text-xs sm:text-sm">Jadwal Pengundian Putaran Ke-{{ kelompok.putaran_berikutnya }}</h4>
+          <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-black">
+            Sisa {{ sisa_hari_kocok }} Hari
+          </span>
+        </div>
+        <p class="text-[11px] text-stone-500 mt-0.5">
+          Jatuh Tempo: <strong>{{ deadline_kocok|date:"d M Y" }}</strong> &bull; Siklus: {{ kelompok.durasi_hari }} Hari per Periode
+        </p>
+      </div>
+    </div>
+
+    <div class="px-3 py-1.5 rounded-xl bg-amber-50/80 border border-amber-200/60 text-[11px] text-amber-900 font-medium flex items-center gap-1.5 flex-shrink-0">
+      <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-amber-600 flex-shrink-0"></i>
+      <span>⚡ <strong>Auto-Draw:</strong> Pengundian otomatis jika melewati batas {{ kelompok.durasi_hari }} hari.</span>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================
+       SECTION 3: AKUMULASI TARGET REALTIME OTOMATIS (4 KARTU STATISTIK 3D)
+       ======================================================================== -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    
+    <!-- Card 1: Total Anggota -->
+    <div class="p-5 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/95 shadow-sm flex items-center justify-between">
+      <div>
+        <p class="text-xs font-bold text-stone-500 uppercase tracking-wider">Total Anggota</p>
+        <h4 id="statTotalPeserta" class="text-xl sm:text-2xl font-black font-mono text-stone-900 mt-1 break-words">{{ kelompok.total_peserta }} Warga</h4>
+        <p class="text-[11px] text-stone-400 mt-0.5">Otomatis hitung target pot</p>
+      </div>
+      <div class="w-12 h-12 rounded-2xl bg-stone-100 text-stone-700 flex items-center justify-center">
+        <i data-lucide="users" class="w-6 h-6"></i>
+      </div>
+    </div>
+
+    <!-- Card 2: Target Pot Real-time (Otomatis Naik jika Anggota Nambah) -->
+    <div class="p-5 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/95 shadow-sm flex items-center justify-between">
+      <div>
+        <p class="text-xs font-bold text-stone-500 uppercase tracking-wider">Target Pot Periode</p>
+        <h4 id="statTargetPot" class="text-xl sm:text-2xl font-black font-mono text-amber-700 mt-1 break-words">Rp {{ target_pot|floatformat:0 }}</h4>
+        <p class="text-[11px] text-stone-400 mt-0.5">{{ kelompok.total_peserta }} warga &times; Rp {{ kelompok.nominal_iuran|floatformat:0 }}</p>
+      </div>
+      <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
+        <i data-lucide="target" class="w-6 h-6"></i>
+      </div>
+    </div>
+
+    <!-- Card 3: Kas Riil Terkumpul -->
+    <div class="p-5 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/95 shadow-sm flex items-center justify-between">
+      <div>
+        <p class="text-xs font-bold text-stone-500 uppercase tracking-wider">Uang Kas Terkumpul</p>
+        <h4 id="statKasTerkumpul" class="text-xl sm:text-2xl font-black font-mono text-emerald-700 mt-1 break-words">Rp {{ total_kas_terkumpul|floatformat:0 }}</h4>
+        <p id="statSubLunas" class="text-[11px] text-stone-400 mt-0.5">{{ total_lunas }} / {{ kelompok.total_peserta }} warga sudah lunas</p>
+      </div>
+      <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+        <i data-lucide="wallet" class="w-6 h-6"></i>
+      </div>
+    </div>
+
+    <!-- Card 4: Sisa Belum Tertagih -->
+    <div class="p-5 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/95 shadow-sm flex items-center justify-between">
+      <div>
+        <p class="text-xs font-bold text-stone-500 uppercase tracking-wider">Sisa Belum Lunas</p>
+        <h4 id="statSisaKekurangan" class="text-xl sm:text-2xl font-black font-mono text-stone-900 mt-1 break-words">Rp {{ sisa_kekurangan|floatformat:0 }}</h4>
+        <p class="text-[11px] text-amber-700 font-bold mt-0.5">Tetap bisa dikocok kapan saja</p>
+      </div>
+      <div class="w-12 h-12 rounded-2xl bg-amber-100/50 text-amber-800 flex items-center justify-center">
+        <i data-lucide="hourglass" class="w-6 h-6"></i>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- Progress Bar Akumulasi Kas -->
+  <div class="p-5 rounded-3xl bg-white/70 border border-white/90 shadow-sm backdrop-blur-xl">
+    <div class="flex items-center justify-between text-xs font-bold mb-2">
+      <span class="text-stone-700">Progres Kelunasan Kas Periode Ini:</span>
+      <span id="statPersentaseText" class="text-amber-800">{{ persentase_lunas }}% Terkumpul</span>
+    </div>
+    <div class="w-full bg-stone-100 h-3 rounded-full overflow-hidden p-0.5 border border-stone-200">
+      <div id="statProgressBar" class="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-600 transition-all duration-500" style="width: {{ persentase_lunas }}%;"></div>
+    </div>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-stone-400 mt-2 gap-1.5">
+      <div class="flex items-center justify-between w-full sm:w-auto gap-4">
+        <span>Rp 0</span>
+        <span class="sm:hidden font-bold text-stone-700">Rp {{ target_pot|floatformat:0 }}</span>
+      </div>
+      <span class="italic text-stone-500 text-center sm:text-left">*Berapa pun nominal yang terkumpul, Ketua tetap berhak memutar undian.</span>
+      <span id="statProgressMax" class="hidden sm:inline font-bold text-stone-700">Rp {{ target_pot|floatformat:0 }}</span>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================
+       SECTION 4: BALOK KACA BENING 3D CEMBUNG (DAFTAR NAMA ANGGOTA)
+       ======================================================================== -->
+  <div>
+    
+    <!-- Title & Action Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h3 class="text-xl font-black text-stone-900 tracking-tight">Daftar Anggota Kelompok Arisan</h3>
+          <span class="px-3 py-0.5 rounded-full bg-white/80 text-stone-800 text-xs font-extrabold border border-stone-200 shadow-sm">
+            {{ peserta_list.count }} Warga Terdaftar
+          </span>
+        </div>
+        <p class="text-xs text-stone-500 mt-0.5">
+          Pemenang undian tidak diulang dalam siklus yang sama sampai seluruh anggota menang.
+        </p>
+      </div>
+
+      <!-- Action Button (Role-Adaptive: Ketua vs Anggota) -->
+      {% if user_role == 'ketua' %}
+        <div class="flex items-center gap-2 flex-wrap">
+          <button type="button" onclick="openModalTandaiSemuaLunas()" class="btn-convex-pearl text-xs !py-2.5 !px-3.5 !bg-emerald-50/90 !border-emerald-300 text-emerald-950 font-black hover:!bg-emerald-100 flex items-center gap-1.5 shadow-sm" title="Tandai seluruh anggota lunas serentak saat pertemuan arisan">
+            <i data-lucide="check-check" class="w-3.5 h-3.5 text-emerald-700"></i>
+            <span>Tandai Semua Lunas</span>
+          </button>
+          {% if kelompok.riwayat.exists %}
+            <button onclick="openModalBukaSetoran()" class="btn-convex-pearl text-xs !py-2.5 !px-3.5 !bg-amber-50/90 !border-amber-300 text-amber-950 font-black hover:!bg-amber-100 flex items-center gap-1.5 shadow-sm" title="Mulai pengumpulan iuran putaran berikutnya">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-amber-700"></i>
+              <span>Buka Setoran Periode Ke-{{ kelompok.putaran_berikutnya }}</span>
+            </button>
+          {% endif %}
+          <button onclick="openModalTambahAnggota()" class="btn-convex-pearl text-xs !py-2.5 !px-4">
+            <i data-lucide="user-plus" class="w-4 h-4 text-amber-600"></i>
+            <span>Tambah Warga Baru</span>
+          </button>
+        </div>
+      {% else %}
+        <div class="flex items-center gap-2">
+          <button onclick="openModalQuickActionAnggota()" class="btn-convex-pearl text-xs !py-2.5 !px-4">
+            <i data-lucide="ticket" class="w-4 h-4 text-amber-600"></i>
+            <span>Tiket Lot &amp; Status Saya</span>
+          </button>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Indikator Visual Putaran Arisan Berjalan (Typography & Status Bersih) -->
+    <div class="p-3.5 sm:p-4 mb-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-white/60 border border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+      <div class="flex items-center gap-3 min-w-0 flex-1">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 text-amber-950 flex items-center justify-center font-black shadow-md flex-shrink-0">
+          <i data-lucide="award" class="w-4.5 h-4.5"></i>
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-1.5 flex-wrap min-w-0">
+            <span class="text-xs font-black uppercase tracking-wider text-amber-900 whitespace-nowrap">Siklus Putaran</span>
+            <span class="px-2 py-0.5 rounded-md bg-amber-200/90 text-amber-950 text-[10px] font-black border border-amber-300/70 whitespace-nowrap inline-flex items-center leading-tight">Periode Ke-{{ kelompok.putaran_berikutnya }}</span>
+          </div>
+          <p class="text-xs text-stone-600 mt-0.5 truncate">
+            <strong>{{ kelompok.riwayat.count }}</strong> dari <strong>{{ kelompok.total_peserta }}</strong> warga telah menang &bull; 
+            <span class="text-amber-800 font-bold">{{ sisa_kandidat_siap }} warga</span> antre
+          </p>
+        </div>
+      </div>
+
+      {% if user_role == 'ketua' and kelompok.riwayat.exists %}
+        <button onclick="openModalBukaSetoran()" class="self-start sm:self-auto px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs shadow-md flex items-center gap-1.5 transition-all active:scale-95 flex-shrink-0" title="Mulai pengumpulan iuran putaran berikutnya">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+          <span>Buka Iuran Ke-{{ kelompok.putaran_berikutnya }}</span>
+        </button>
+      {% endif %}
+    </div>
+
+    <!-- Search Notice if searching -->
+    {% if query %}
+      <div class="p-3.5 mb-4 rounded-2xl bg-white/80 border border-stone-200 text-xs font-medium text-stone-900 flex items-center justify-between shadow-sm">
+        <span>Menampilkan hasil pencarian untuk: <strong>"{{ query }}"</strong> ({{ peserta_list.count }} ditemukan)</span>
+        <a href="{% url 'dashboard' %}" class="underline font-bold text-amber-700">Reset</a>
+      </div>
+    {% endif %}
+
+    <!-- BALOK KACA 3D CEMBUNG BENING TRANSPARAN (PURE CRYSTAL GLASS ROWS) -->
+    <div class="space-y-3.5">
+      {% for p in peserta_list %}
+        <div class="member-capsule-3d {% if p.is_ketua %}is-ketua-row{% endif %}">
+          
+          <!-- Col 1: Koin Lot 3D, Avatar, Nama & Lencana 3D -->
+          <div class="flex items-center gap-3 w-full sm:w-auto min-w-0 flex-1">
+            <!-- Koin Lot Emas 3D -->
+            <div class="lot-coin-3d flex-shrink-0" title="Nomor Lot Undian">
+              #{{ p.nomor_undian|stringformat:"02d" }}
+            </div>
+
+            <!-- Avatar & Details -->
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2 flex-wrap min-w-0">
+                <span class="font-extrabold text-stone-900 text-sm leading-snug break-words">{{ p.anggota.nama }}</span>
+                
+                <!-- Role Badge 3D (Ketua vs Anggota) -->
+                {% if p.is_ketua %}
+                  <span class="badge-role-ketua-3d flex-shrink-0">
+                    <span>👑</span>
+                    <span>KETUA</span>
+                  </span>
+                {% else %}
+                  <span class="badge-role-anggota-3d flex-shrink-0">
+                    <span>👤</span>
+                    <span>ANGGOTA</span>
+                  </span>
+                {% endif %}
+              </div>
+
+              <!-- Extra Meta: Menang status & ID -->
+              <div class="flex items-center gap-1.5 flex-wrap text-[11px] text-stone-500 mt-1">
+                <span class="font-mono">#A-{{ p.anggota.id|stringformat:"03d" }}</span>
+                <span>&bull;</span>
+                {% if p.status_menang %}
+                  <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center gap-1 text-[10px]">
+                    <i data-lucide="award" class="w-3 h-3 text-emerald-600"></i>
+                    Sudah Menang (Terkunci)
+                  </span>
+                {% else %}
+                  <span class="text-amber-800 font-semibold flex items-center gap-1 text-[10px]">
+                    <i data-lucide="circle-dot" class="w-3 h-3 text-amber-500"></i>
+                    Siap Masuk Kocokan
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Col 2: Kontak & Alamat -->
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs text-stone-600 w-full sm:w-auto min-w-0">
+            <!-- No WhatsApp -->
+            <div class="flex items-center gap-1.5 min-w-0">
+              <i data-lucide="phone" class="w-3.5 h-3.5 text-stone-400 flex-shrink-0"></i>
+              {% if p.anggota.no_telepon %}
+                <a href="https://wa.me/{{ p.anggota.no_telepon|cut:'-'|cut:' ' }}" target="_blank" class="hover:text-amber-700 hover:underline font-mono font-medium truncate">
+                  {{ p.anggota.no_telepon }}
+                </a>
+              {% else %}
+                <span class="text-stone-400 italic">Tanpa Kontak</span>
+              {% endif %}
+            </div>
+
+            <!-- Alamat -->
+            <div class="flex items-center gap-1.5 truncate max-w-[200px]" title="{{ p.anggota.alamat|default:'-' }}">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-stone-400 flex-shrink-0"></i>
+              <span class="truncate">{{ p.anggota.alamat|default:"-" }}</span>
+            </div>
+          </div>
+
+          <!-- Col 3: Status Setoran 3D Toggle & Tombol Aksi 3D -->
+          <div class="flex items-center justify-between sm:justify-end gap-2.5 flex-wrap w-full sm:w-auto">
+            
+            <!-- Tombol Status Setoran 3D Cembung (Interactive AJAX if Ketua) -->
+            {% if user_role == 'ketua' %}
+              <button type="button" 
+                      id="toggleBtn-{{ p.id }}" 
+                      onclick="toggleSetorAJAX('{{ p.id }}', '{{ p.anggota.nama|escapejs }}')" 
+                      class="btn-toggle-setor-3d {% if p.status_setor %}lunas{% else %}belum{% endif %}"
+                      title="Klik untuk mengubah status setoran">
+                {% if p.status_setor %}
+                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+                  <span>LUNAS SETOR</span>
+                {% else %}
+                  <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                  <span>BELUM SETOR</span>
+                {% endif %}
+              </button>
+            {% else %}
+              <!-- Read-only 3D badge for regular anggota -->
+              <span class="btn-toggle-setor-3d {% if p.status_setor %}lunas{% else %}belum{% endif %} cursor-default">
+                {% if p.status_setor %}
+                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+                  <span>LUNAS</span>
+                {% else %}
+                  <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                  <span>BELUM BAYAR</span>
+                {% endif %}
+              </span>
+            {% endif %}
+
+            <!-- Micro Action Buttons 3D (Khusus Ketua) -->
+            {% if user_role == 'ketua' %}
+              <div class="flex items-center gap-2">
+                
+                <!-- WhatsApp Pengingat Button 3D -->
+                {% if p.anggota.no_telepon and not p.status_setor %}
+                  <a href="https://wa.me/{{ p.anggota.no_telepon|cut:'-'|cut:' ' }}?text=Halo%20Bpk%2FIbu%20{{ p.anggota.nama|urlencode }},%20mengingatkan%20setoran%20arisan%20{{ kelompok.nama_kelompok|urlencode }}%20(Lot%20%23{{ p.nomor_undian }}%20periode%20{{ kelompok.get_periode_kocok_display|urlencode }})%20sebesar%20Rp%20{{ kelompok.nominal_iuran|floatformat:0 }}%20sudah%20dapat%20disetorkan.%20Terima%20kasih!" 
+                     target="_blank" 
+                     class="btn-micro-3d" 
+                     title="Kirim Pengingat WhatsApp">
+                    <i data-lucide="message-circle" class="w-4 h-4 text-emerald-600"></i>
+                  </a>
+                {% endif %}
+
+                <!-- Edit Anggota Button 3D -->
+                <button type="button" 
+                        onclick="openModalEditAnggota('{{ p.id }}', '{{ p.anggota.nama|escapejs }}', '{{ p.anggota.no_telepon|escapejs }}', '{{ p.anggota.alamat|escapejs }}')" 
+                        class="btn-micro-3d" 
+                        title="Edit Data Anggota">
+                  <i data-lucide="pencil" class="w-4 h-4"></i>
+                </button>
+
+                <!-- Delete Anggota Button 3D (Disabled for Ketua) -->
+                {% if not p.is_ketua %}
+                  <button type="button" 
+                          onclick="openModalHapusPeserta('{{ p.id }}', '{{ p.anggota.nama|escapejs }}', '{{ p.nomor_undian }}')" 
+                          class="btn-micro-3d danger" 
+                          title="Hapus dari Kelompok">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  </button>
+                {% endif %}
+
+              </div>
+            {% endif %}
+
+          </div>
+
+        </div>
+      {% empty %}
+        <div class="p-12 text-center rounded-3xl bg-white/60 border border-dashed border-stone-200">
+          <i data-lucide="users" class="w-10 h-10 mx-auto text-stone-300 mb-3"></i>
+          <p class="font-bold text-stone-800 text-sm">Belum ada anggota terdaftar</p>
+          <p class="text-xs text-stone-500 mt-1">Silakan bagikan Kode Room <strong>{{ kelompok.kode_room }}</strong> kepada calon anggota atau tambah manual.</p>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- ========================================================================
+     MODAL 2: EDIT DATA ANGGOTA (VIEWPORT CENTERED LOCK)
+     ======================================================================== -->
+<div id="modalEditAnggota" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-md p-6 sm:p-8 relative">
+    <div class="flex items-center justify-between mb-5">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-2xl bg-stone-100 text-stone-800 flex items-center justify-center shadow-sm">
+          <i data-lucide="pencil" class="w-5 h-5"></i>
+        </div>
+        <h4 class="font-extrabold text-stone-900 text-base">Edit Data Anggota</h4>
+      </div>
+      <button onclick="closeModalEditAnggota()" class="w-8 h-8 rounded-full hover:bg-stone-100 flex items-center justify-center text-stone-400 hover:text-stone-700">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <form id="formEditAnggota" method="POST" action="" class="space-y-4">
+      {% csrf_token %}
+      <div>
+        <label class="block text-xs font-bold text-stone-700 mb-1.5">Nama Lengkap Warga <span class="text-rose-500">*</span></label>
+        <input type="text" id="editNama" name="nama" required class="liquid-input-concave">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-stone-700 mb-1.5">Nomor WhatsApp / HP</label>
+        <input type="text" id="editTelepon" name="no_telepon" class="liquid-input-concave">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-stone-700 mb-1.5">Alamat Rumah</label>
+        <input type="text" id="editAlamat" name="alamat" class="liquid-input-concave">
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 pt-4">
+        <button type="button" onclick="closeModalEditAnggota()" class="px-5 py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">
+          Batal
+        </button>
+        <button type="submit" class="btn-convex-gold text-xs !py-2.5 !px-5">
+          Perbarui Data
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================================================
+     MODAL PANDUAN SAMBUNG WARGA (PANDUAN KETUA MENGHUBUNGKAN IBU-IBU)
+     ======================================================================== -->
+<div id="modalPanduanKetua" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-lg p-6 sm:p-8 text-left relative animate-bounce-short max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-3 border-b border-stone-200/60 mb-4">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-black">
+          <i data-lucide="help-circle" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-black text-stone-900 text-base">Panduan Sambung Warga ke Arisan</h3>
+          <p class="text-[11px] text-stone-500 font-medium">Bantu Ibu-Ibu Bergabung dengan Cepat &amp; Mudah</p>
+        </div>
+      </div>
+      <button type="button" onclick="closeModalPanduanKetua()" class="w-7 h-7 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-500">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <div class="space-y-4 text-xs">
+      <!-- Opsi A: Cara Paling Gampang (Ketua Input Sendiri) -->
+      <div class="p-4 rounded-2xl bg-amber-50/90 border border-amber-200 space-y-2">
+        <h4 class="font-black text-amber-950 flex items-center gap-1.5 text-xs sm:text-sm">
+          <span>⭐</span>
+          <span>Cara Paling Gampang (Tanpa Perlu Ibu-Ibu Buka HP):</span>
+        </h4>
+        <p class="text-stone-700 leading-relaxed">
+          Jika ada warga atau ibu-ibu yang tidak paham gadget atau tidak bawa HP, <strong>Ketua cukup klik tombol "+ Tambah Warga Baru"</strong> di bawah tabel peserta. Masukkan nama mereka, dan sistem otomatis membuatkan nomor lot undian resmi untuk mereka!
+        </p>
+      </div>
+
+      <!-- Opsi B: Warga Buka Sendiri di Pertemuan (Offline Hotspot) -->
+      <div class="p-4 rounded-2xl bg-sky-50/90 border border-sky-200 space-y-2">
+        <h4 class="font-black text-sky-950 flex items-center gap-1.5 text-xs sm:text-sm">
+          <span>📶</span>
+          <span>Jika Warga Ingin Buka di HP Sendiri Saat Pertemuan (Offline):</span>
+        </h4>
+        <ol class="space-y-1.5 text-stone-700 pl-4 list-decimal leading-relaxed">
+          <li>Nyalakan <strong>Hotspot Portabel di HP Anda</strong> (atau gunakan WiFi rumah/balai pertemuan).</li>
+          <li>Minta warga menyambungkan WiFi HP mereka ke Hotspot tersebut. <em>(100% aman, tidak menyedot kuota internet)</em>.</li>
+          <li>Kirim link arisan lewat WhatsApp grup warga via tombol <strong>"Undang via WhatsApp"</strong>.</li>
+          <li>Warga cukup klik link tersebut, ketik nama mereka, lalu tekan Gabung!</li>
+        </ol>
+      </div>
+
+      <!-- Opsi C: Dari Rumah Masing-Masing (Online Cloud) -->
+      <div class="p-4 rounded-2xl bg-emerald-50/90 border border-emerald-200 space-y-2">
+        <h4 class="font-black text-emerald-950 flex items-center gap-1.5 text-xs sm:text-sm">
+          <span>🌐</span>
+          <span>Ingin Warga Bisa Gabung Dari Rumah Kapan Saja? (Online Cloud):</span>
+        </h4>
+        <p class="text-stone-700 leading-relaxed">
+          Jika aplikasi ini di-online-kan (misalnya ditaruh di hosting cloud seperti Render / PythonAnywhere), warga tidak perlu satu WiFi lagi! Cukup klik link WA dari kasur atau dapur pakai kuota seluler biasa.
+        </p>
+      </div>
+    </div>
+
+    <div class="pt-4 mt-2">
+      <button type="button" onclick="closeModalPanduanKetua()" class="btn-convex-gold w-full !py-3 text-xs !rounded-xl">
+        <span>Tutup Panduan</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================
+     MODAL KONFIRMASI HAPUS PESERTA (VIEWPORT CENTERED LOCK - 3D EMAS)
+     ======================================================================== -->
+<div id="modalHapusPeserta" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-sm p-6 text-center relative animate-bounce-short">
+    <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shadow-inner mb-4">
+      <i data-lucide="user-x" class="w-7 h-7"></i>
+    </div>
+    
+    <h3 class="font-black text-stone-900 text-lg">Hapus Anggota?</h3>
+    <p class="text-xs text-stone-600 mt-1 mb-4" id="textNamaHapusPeserta">
+      Hapus peserta dari kelompok ini?
+    </p>
+
+    <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-left text-[11px] mb-4">
+      <p class="leading-relaxed">
+        Peserta ini akan dikeluarkan dari daftar undian. Target kas pot arisan otomatis disesuaikan dengan sisa anggota.
+      </p>
+    </div>
+
+    <form id="formHapusPeserta" method="POST" action="" class="space-y-3">
+      {% csrf_token %}
+      <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <button type="button" onclick="closeModalHapusPeserta()" class="py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">
+          Batal
+        </button>
+        <button type="submit" class="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          <span>Ya, Hapus</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================================================
+     MODAL BUKA SETORAN PUTARAN BARU (VIEWPORT CENTERED LOCK - KHUSUS KETUA)
+     ======================================================================== -->
+<div id="modalBukaSetoran" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-sm p-6 text-center relative animate-bounce-short">
+    <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center shadow-inner mb-4">
+      <i data-lucide="refresh-cw" class="w-7 h-7 text-amber-600"></i>
+    </div>
+    
+    <h3 class="font-black text-stone-900 text-lg">Buka Setoran Putaran Ke-{{ kelompok.putaran_berikutnya }}?</h3>
+    <p class="text-xs text-stone-600 mt-1 mb-4 leading-relaxed">
+      Tindakan ini akan menyetel kembali status setoran seluruh anggota menjadi <strong class="text-amber-900">BELUM SETOR</strong> untuk memulai penarikan iuran putaran baru.
+    </p>
+
+    <div class="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-950 text-left text-[11px] mb-4 space-y-1.5">
+      <p class="font-bold flex items-center gap-1.5 text-amber-900">
+        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-600"></i>
+        <span>Data Kemenangan Tetap Terjaga</span>
+      </p>
+      <p class="text-stone-600 leading-relaxed">
+        Seluruh riwayat pemenang putaran sebelumnya dan kuitansi resmi <strong>tetap tersimpan aman 100%</strong>. Anggota yang sudah menang tetap tidak akan diundi kembali dalam siklus ini.
+      </p>
+    </div>
+
+    <form method="POST" action="{% url 'buka_setoran_baru' kelompok.id %}" class="space-y-3">
+      {% csrf_token %}
+      <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <button type="button" onclick="closeModalBukaSetoran()" class="py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">
+          Batal
+        </button>
+        <button type="submit" class="btn-convex-gold text-xs !py-2.5 flex items-center justify-center gap-1.5 shadow-md">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i>
+          <span>Ya, Buka Setoran</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================================================
+     MODAL TANDAI SEMUA LUNAS (VIEWPORT CENTERED LOCK - KHUSUS KETUA)
+     ======================================================================== -->
+<div id="modalTandaiSemuaLunas" class="modal-viewport-center hidden">
+  <div class="modal-glass-thick w-full max-w-sm p-6 text-center relative animate-bounce-short">
+    <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center shadow-inner mb-4">
+      <i data-lucide="check-check" class="w-7 h-7 text-emerald-600"></i>
+    </div>
+    
+    <h3 class="font-black text-stone-900 text-lg">Tandai Semua Warga Lunas?</h3>
+    <p class="text-xs text-stone-600 mt-1 mb-4 leading-relaxed">
+      Sangat praktis untuk <strong>hari pertemuan arisan</strong> saat seluruh warga yang hadir menyetor iuran tunai serentak di tempat.
+    </p>
+
+    <div class="p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 text-left text-[11px] mb-4 space-y-1.5">
+      <p class="font-bold flex items-center gap-1.5 text-emerald-900">
+        <i data-lucide="info" class="w-3.5 h-3.5 text-emerald-600"></i>
+        <span>Kelunasan Massal Instan</span>
+      </p>
+      <p class="text-stone-600 leading-relaxed">
+        Seluruh <strong>{{ kelompok.total_peserta }} warga</strong> di kelompok ini akan langsung berstatus <strong class="text-emerald-700">LUNAS SETOR</strong> dan kas terkumpul menjadi 100%. Anda tetap bisa mengubah perorangan jika ada yang belum bayar.
+      </p>
+    </div>
+
+    <form method="POST" action="{% url 'tandai_semua_lunas' kelompok.id %}" class="space-y-3">
+      {% csrf_token %}
+      <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <button type="button" onclick="closeModalTandaiSemuaLunas()" class="py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">
+          Batal
+        </button>
+        <button type="submit" class="py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+          <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
+          <span>Ya, Semua Lunas</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // AJAX Toggle Status Setoran (Ketua Only) dengan Optimistic 0ms UI Update
+  function toggleSetorAJAX(pesertaId, nama) {
+    const btn = document.getElementById(`toggleBtn-${pesertaId}`);
+    if (!btn) return;
+
+    // 1. RESPON INSTAN LANGSUNG SAAT DISENTUH (0ms delay)
+    const isCurrentlyLunas = btn.classList.contains('lunas');
+    const willBeLunas = !isCurrentlyLunas;
+
+    if (willBeLunas) {
+      btn.className = 'btn-toggle-setor-3d lunas scale-95 transition-transform';
+      btn.innerHTML = `<i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i><span>LUNAS SETOR</span>`;
+      showToast(`✓ Setoran ${nama} ditandai LUNAS!`);
+    } else {
+      btn.className = 'btn-toggle-setor-3d belum scale-95 transition-transform';
+      btn.innerHTML = `<i data-lucide="clock" class="w-3.5 h-3.5"></i><span>BELUM SETOR</span>`;
+      showToast(`⏳ Setoran ${nama} ditandai BELUM BAYAR.`);
+    }
+    setTimeout(() => btn.classList.remove('scale-95'), 120);
+    lucide.createIcons();
+
+    // 2. Sinkronisasi Asinkron ke Server Django di Latar Belakang
+    fetch(`/peserta/toggle-setor/${pesertaId}/`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}',
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'success') {
+        // Update Real-Time Counter Stats
+        const statKas = document.getElementById('statKasTerkumpul');
+        const statSisa = document.getElementById('statSisaKekurangan');
+        const statSubLunas = document.getElementById('statSubLunas');
+        const statProgress = document.getElementById('statProgressBar');
+        const statPersenText = document.getElementById('statPersentaseText');
+
+        if (statKas) statKas.innerText = data.total_kas_formatted;
+        if (statSisa) statSisa.innerText = data.sisa_kekurangan_formatted;
+        if (statSubLunas) statSubLunas.innerText = `${data.total_lunas} / {{ kelompok.total_peserta }} warga sudah lunas`;
+        if (statProgress) statProgress.style.width = `${data.persentase_lunas}%`;
+        if (statPersenText) statPersenText.innerText = `${data.persentase_lunas}% Terkumpul`;
+      } else {
+        alert(data.message || 'Terjadi kesalahan.');
+        location.reload();
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert('Gagal menghubungi server.');
+      location.reload();
+    });
+  }
+
+  // Modals Controller (Viewport Centered Lock)
+  function openModalEditAnggota(pesertaId, nama, telp, alamat) {
+    const modal = document.getElementById('modalEditAnggota');
+    const form = document.getElementById('formEditAnggota');
+    if (modal && form) {
+      form.action = `/anggota/edit/${pesertaId}/`;
+      document.getElementById('editNama').value = nama;
+      document.getElementById('editTelepon').value = telp;
+      document.getElementById('editAlamat').value = alamat;
+
+      modal.classList.remove('hidden');
+      if (typeof lockBodyScroll === 'function') lockBodyScroll();
+    }
+  }
+
+  function closeModalEditAnggota() {
+    const modal = document.getElementById('modalEditAnggota');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+  }
+
+  function openModalHapusPeserta(pesertaId, nama, nomorLot) {
+    const modal = document.getElementById('modalHapusPeserta');
+    const form = document.getElementById('formHapusPeserta');
+    const textNama = document.getElementById('textNamaHapusPeserta');
+    if (modal && form) {
+      form.action = `/anggota/hapus/${pesertaId}/`;
+      if (textNama) textNama.innerHTML = `Hapus warga <strong class="text-stone-900">${nama}</strong> (Lot #${String(nomorLot).padStart(2, '0')}) dari kelompok arisan ini?`;
+      modal.classList.remove('hidden');
+      if (typeof lockBodyScroll === 'function') lockBodyScroll();
+    }
+  }
+
+  function closeModalHapusPeserta() {
+    const modal = document.getElementById('modalHapusPeserta');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+  }
+
+  // Controller Modal Buka Setoran Putaran Baru (Ketua)
+  function openModalBukaSetoran() {
+    const modal = document.getElementById('modalBukaSetoran');
+    if (modal) {
+      modal.classList.remove('hidden');
+      if (typeof lockBodyScroll === 'function') lockBodyScroll();
+    }
+  }
+
+  function closeModalBukaSetoran() {
+    const modal = document.getElementById('modalBukaSetoran');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+  }
+
+  // Controller Modal Tandai Semua Lunas (Ketua)
+  function openModalTandaiSemuaLunas() {
+    const modal = document.getElementById('modalTandaiSemuaLunas');
+    if (modal) {
+      modal.classList.remove('hidden');
+      if (typeof lockBodyScroll === 'function') lockBodyScroll();
+    }
+  }
+
+  function closeModalTandaiSemuaLunas() {
+    const modal = document.getElementById('modalTandaiSemuaLunas');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+  }
+
+  // Controller Modal Panduan Sambung Warga (Ketua)
+  function openModalPanduanKetua() {
+    const modal = document.getElementById('modalPanduanKetua');
+    if (modal) {
+      modal.classList.remove('hidden');
+      if (typeof lockBodyScroll === 'function') lockBodyScroll();
+    }
+  }
+
+  function closeModalPanduanKetua() {
+    const modal = document.getElementById('modalPanduanKetua');
+    if (modal) {
+      modal.classList.add('hidden');
+      if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+    }
+  }
+
+  // Global Window Attachments
+  window.toggleSetorAJAX = toggleSetorAJAX;
+  window.openModalEditAnggota = openModalEditAnggota;
+  window.closeModalEditAnggota = closeModalEditAnggota;
+  window.openModalHapusPeserta = openModalHapusPeserta;
+  window.closeModalHapusPeserta = closeModalHapusPeserta;
+  window.openModalBukaSetoran = openModalBukaSetoran;
+  window.closeModalBukaSetoran = closeModalBukaSetoran;
+  window.openModalTandaiSemuaLunas = openModalTandaiSemuaLunas;
+  window.closeModalTandaiSemuaLunas = closeModalTandaiSemuaLunas;
+  window.openModalPanduanKetua = openModalPanduanKetua;
+  window.closeModalPanduanKetua = closeModalPanduanKetua;
+  window.copyInviteLink = copyInviteLink;
+  window.shareGroupToWhatsApp = shareGroupToWhatsApp;
+
+  // =========================================================================
+  // KONTROL UNDANGAN WA & LINK ROOM (SEDERHANA, INSTAN, TANPA SCANNER)
+  // =========================================================================
+  function copyInviteLink() {
+    const inviteUrl = window.location.origin + '/portal/?room={{ kelompok.kode_room }}';
+    if (typeof copyToClipboard === 'function') {
+      copyToClipboard(inviteUrl, 'Link undangan room arisan berhasil disalin!');
+    } else {
+      navigator.clipboard.writeText(inviteUrl).then(() => {
+        showToast('Link undangan room arisan berhasil disalin!');
+      }).catch(() => {
+        showToast(inviteUrl);
+      });
+    }
+  }
+
+  function shareGroupToWhatsApp() {
+    const inviteUrl = window.location.origin + '/portal/?room={{ kelompok.kode_room }}';
+    const text = encodeURIComponent(`📢 Undangan Bergabung Arisan *{{ kelompok.nama_kelompok }}*!\nKode Room: *{{ kelompok.kode_room }}*\n\nKlik link di bawah ini untuk langsung bergabung tanpa ribet:\n${inviteUrl}`);
+    window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+  }
+</script>
+{% endblock %}

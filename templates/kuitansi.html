@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuitansi Sah Arisan Digital - Putaran Ke-{{ riwayat.periode_ke }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'css/liquid_glass.css' %}">
+  <style>
+    @media print {
+      body { background: #FFFFFF !important; padding: 0 !important; }
+      .no-print { display: none !important; }
+      .kuitansi-box { box-shadow: none !important; border: 2px solid #B45309 !important; }
+    }
+  </style>
+</head>
+<body class="bg-stone-100 min-h-screen p-4 sm:p-8 flex flex-col items-center justify-center">
+
+  <div class="no-print mb-6 flex flex-wrap items-center justify-center gap-3">
+    <button onclick="window.print()" class="px-5 py-2.5 rounded-full bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-2">
+      <span>🖨️ Cetak / Unduh Dokumen PDF</span>
+    </button>
+    
+    <a href="https://api.whatsapp.com/send?text=📜%20*KUITANSI%20RESMI%20ARISAN%20DIGITAL*%0A%0AKelompok%3A%20*{{ riwayat.kelompok.nama_kelompok|urlencode }}*%0APutaran%3A%20*Ke-{{ riwayat.periode_ke }}*%0APemenang%3A%20*{{ riwayat.peserta_menang.anggota.nama|urlencode }}*%20(Lot%20%23{{ riwayat.peserta_menang.nomor_undian }})%0ATotal%20Hadiah%3A%20*Rp%20{{ riwayat.total_diterima|floatformat:0 }}*%0AStatus%3A%20*TERVERIFIKASI%20SAH%20%26%20LUNAS*%0A%0AArisan%20Digital%20Gotong%20Royong%20%E2%80%A2%20Akuntabilitas%20Kas%20Transparan" 
+       target="_blank" 
+       class="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-2">
+      <span>📲 Bagikan ke WhatsApp</span>
+    </a>
+
+    <a href="{% url 'dashboard' %}" class="px-5 py-2.5 rounded-full bg-white border border-stone-300 text-stone-700 font-bold text-xs hover:bg-stone-50 transition-all">
+      Kembali ke Dashboard
+    </a>
+  </div>
+
+  <!-- KUITANSI RESMI EMAS & PUTIH -->
+  <div class="kuitansi-box w-full max-w-2xl bg-white border-4 border-double border-amber-600 rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+    
+    <!-- Watermark Logo Background -->
+    <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+      <img src="{% static 'img/logo.svg' %}" alt="Logo Watermark" class="w-96 h-96">
+    </div>
+
+    <!-- Header Kuitansi -->
+    <div class="flex items-center justify-between border-b-2 border-amber-200 pb-6 mb-6">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12">
+          <img src="{% static 'img/logo.svg' %}" alt="Logo" class="w-full h-full">
+        </div>
+        <div>
+          <h1 class="text-xl font-extrabold text-amber-950 tracking-wider">KUITANSI RESMI ARISAN</h1>
+          <p class="text-xs text-stone-500 font-medium">Sistem Pencatatan &amp; Pengocokan Digital Offline</p>
+        </div>
+      </div>
+
+      <div class="text-right">
+        <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-[11px] uppercase tracking-wider">
+          SAH &bull; TERKUNCI
+        </span>
+        <p class="text-[11px] text-stone-400 mt-1 font-mono">ID: TRX-{{ riwayat.id|stringformat:"04d" }}</p>
+      </div>
+    </div>
+
+    <!-- Data Transaksi Kuitansi -->
+    <div class="space-y-4 text-xs sm:text-sm">
+      <div class="grid grid-cols-3 py-2 border-b border-stone-100">
+        <span class="text-stone-500">Kelompok Arisan</span>
+        <span class="col-span-2 font-bold text-stone-900">: {{ riwayat.kelompok.nama_kelompok }}</span>
+      </div>
+
+      <div class="grid grid-cols-3 py-2 border-b border-stone-100">
+        <span class="text-stone-500">Putaran / Periode</span>
+        <span class="col-span-2 font-bold text-stone-900">: Putaran Ke-{{ riwayat.periode_ke }}</span>
+      </div>
+
+      <div class="grid grid-cols-3 py-2 border-b border-stone-100">
+        <span class="text-stone-500">Waktu &amp; Tanggal</span>
+        <span class="col-span-2 font-bold text-stone-900">: {{ riwayat.tanggal_kocok|date:"d F Y" }}</span>
+      </div>
+
+      <div class="grid grid-cols-3 py-2 border-b border-stone-100">
+        <span class="text-stone-500">Nomor Lot Undian</span>
+        <span class="col-span-2 font-bold text-amber-700 text-base">: Lot #{{ riwayat.peserta_menang.nomor_undian|stringformat:"02d" }}</span>
+      </div>
+
+      <div class="grid grid-cols-3 py-2 border-b border-stone-100 items-center">
+        <span class="text-stone-500">Nama Pemenang</span>
+        <span class="col-span-2 font-black text-amber-950 text-lg uppercase">: {{ riwayat.peserta_menang.anggota.nama }}</span>
+      </div>
+
+      <div class="grid grid-cols-3 py-2 border-b border-stone-100">
+        <span class="text-stone-500">Nomor Kontak / WA</span>
+        <span class="col-span-2 font-bold text-stone-900">: {{ riwayat.peserta_menang.anggota.no_telepon|default:"-" }}</span>
+      </div>
+
+      <!-- Nominal Hadiah Box -->
+      <div class="p-5 rounded-2xl bg-amber-50/80 border border-amber-200 mt-6 flex items-center justify-between">
+        <span class="font-bold text-xs uppercase text-amber-900 tracking-wider">Total Hadiah Diterima:</span>
+        <span class="text-2xl sm:text-3xl font-black text-amber-800 tracking-tight">
+          Rp {{ riwayat.total_diterima|floatformat:0 }}
+        </span>
+      </div>
+
+      <p class="text-[11px] text-stone-400 italic pt-2">
+        Catatan: {{ riwayat.catatan|default:"Kocokan sah dilaksanakan bersama warga dan telah diverifikasi oleh sistem digital." }}
+      </p>
+    </div>
+
+    <!-- Tanda Tangan Pengesahan & Stempel Digital Resmi (Fitur E) -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center mt-12 pt-6 border-t-2 border-stone-100 text-center text-xs">
+      <div>
+        <p class="text-stone-500">Penerima Hadiah,</p>
+        <div class="h-14"></div>
+        <p class="font-bold text-stone-900 underline">{{ riwayat.peserta_menang.anggota.nama }}</p>
+        <span class="text-[10px] text-stone-400">Pemenang Periode Ke-{{ riwayat.periode_ke }}</span>
+      </div>
+
+      <!-- Stempel Digital Resmi Merah Otentik -->
+      <div class="flex items-center justify-center my-2 sm:my-0">
+        <div class="w-28 h-28 rounded-full border-4 border-dashed border-rose-600/80 p-1 flex items-center justify-center -rotate-12 shadow-xs opacity-90">
+          <div class="w-full h-full rounded-full border-2 border-rose-600/80 flex flex-col items-center justify-center text-rose-700 font-black text-center p-1.5">
+            <span class="text-[7.5px] tracking-widest uppercase font-extrabold">★ ARISAN DIGITAL ★</span>
+            <span class="text-[11px] font-black tracking-wider py-0.5 border-y border-rose-600/60 my-0.5 w-full">LUNAS &amp; SAH</span>
+            <span class="text-[7.5px] font-mono tracking-tight font-bold">{{ riwayat.tanggal_kocok|date:"d.m.Y" }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="text-stone-500">Pengurus / Ketua Arisan,</p>
+        <div class="h-14"></div>
+        <p class="font-bold text-stone-900 underline">Ketua Kelompok (Host)</p>
+        <span class="text-[10px] text-stone-400">Verifikator Pengundian Sah</span>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
