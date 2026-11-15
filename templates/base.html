@@ -15,6 +15,14 @@
   <!-- Canvas Confetti (Preloaded) -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
+  <!-- HTMX (Local Offline-First) -->
+  <script src="{% static 'js/htmx.min.js' %}"></script>
+  <script>
+    document.addEventListener('htmx:configRequest', function(evt) {
+      evt.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    });
+  </script>
+
   <!-- PWA & Mobile Web App Manifest -->
   <link rel="manifest" href="{% static 'manifest.json' %}">
   <meta name="theme-color" content="#D97706">

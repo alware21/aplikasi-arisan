@@ -12,6 +12,14 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
+  <!-- HTMX (Local Offline-First) -->
+  <script src="{% static 'js/htmx.min.js' %}"></script>
+  <script>
+    document.addEventListener('htmx:configRequest', function(evt) {
+      evt.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    });
+  </script>
+
   <!-- PWA & Mobile Web App Manifest -->
   <link rel="manifest" href="{% static 'manifest.json' %}">
   <meta name="theme-color" content="#D97706">
