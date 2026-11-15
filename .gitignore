@@ -14,3 +14,7 @@ staticfiles/
 .vscode/
 ~$*
 *.tmp
+
+apk_source/
+apk_build_dir/
+upload_ke_github.bat
