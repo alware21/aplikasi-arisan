@@ -7,90 +7,92 @@
 <div class="space-y-8">
 
   <!-- ========================================================================
-       SECTION 1: HERO BANNER ARISAN DIGITAL (MEWAH & OTENTIK)
+       ZONA 1: CARD PROFIL & KENDALI ROOM (HERO SUMMARY & ACTION CONTROL)
        ======================================================================== -->
-  <div class="card-glass-champagne p-6 sm:p-8 relative overflow-hidden">
-    <!-- Ambient Golden Glow -->
-    <div class="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-amber-400/20 blur-3xl pointer-events-none"></div>
+  <div class="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200/90 shadow-sm relative overflow-hidden">
+    <!-- Subtle Golden Corner Accent -->
+    <div class="absolute right-0 top-0 w-80 h-80 rounded-full bg-gradient-to-br from-amber-400/10 via-amber-200/5 to-transparent blur-2xl pointer-events-none"></div>
 
-    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+    <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6 relative z-10">
       
-      <!-- Left Content: Identitas & Aturan Arisan -->
-      <div class="max-w-2xl space-y-3">
+      <!-- Sisi Kiri: Identitas Room & Aturan Arisan -->
+      <div class="space-y-4 max-w-2xl flex-1">
+        
+        <!-- Baris Status Ringkas (Kode Room cukup di Header Atas agar Zona 1 Bersih) -->
         <div class="flex flex-wrap items-center gap-2">
-          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[11px] font-black uppercase tracking-wider shadow-sm">
+          <span class="inline-flex items-center gap-1.5 h-7 px-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[11px] font-black uppercase tracking-wider shadow-sm">
             <span class="w-1.5 h-1.5 rounded-full bg-amber-200 animate-pulse"></span>
             PUTARAN KE-{{ kelompok.putaran_berikutnya }}
           </span>
-          <span class="px-3 py-1 rounded-full bg-white/95 border border-amber-300 text-amber-900 text-xs font-bold shadow-sm">
-            Room: <strong class="font-mono text-amber-800 text-xs ml-0.5">#{{ kelompok.kode_room }}</strong>
+          
+          <span class="inline-flex items-center h-7 px-3 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-[11px] font-extrabold">
+            {{ kelompok.total_peserta }} Peserta Terdaftar
           </span>
-          <button onclick="copyRoomCode('{{ kelompok.kode_room }}')" class="btn-convex-pearl text-xs !py-1 !px-2.5">
-            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-            <span>Salin</span>
-          </button>
         </div>
 
+        <!-- Nama Kelompok & Subtitle -->
         <div>
           <h1 class="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight leading-tight">
             {{ kelompok.nama_kelompok }}
           </h1>
-          <p class="text-xs text-stone-600 font-medium mt-1 leading-relaxed">
+          <p class="text-xs text-stone-500 font-medium mt-1 leading-relaxed">
             Sistem Gotong Royong Digital &bull; Transparan, Sah &amp; Kuitansi Resmi.
           </p>
         </div>
-        
-        <!-- Relational Business Rule Display: Berjejer ke Bawah Bersih & Seimbang -->
-        <div class="flex flex-col gap-1.5 text-xs font-semibold text-stone-700 pt-1 w-fit">
-          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/85 border border-stone-200/80 shadow-xs w-fit">
+
+        <!-- 3 Badge Pil Parameter Kelompok (Sejajar Rapi) -->
+        <div class="flex flex-wrap items-center gap-2 pt-1">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50/70 border border-amber-200/80 text-amber-950 text-xs font-semibold shadow-xs">
             <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-600 flex-shrink-0"></i>
             <span>Kocokan: <strong class="text-stone-900 font-bold">{{ kelompok.get_periode_kocok_display }}</strong></span>
           </div>
-          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/85 border border-stone-200/80 shadow-xs w-fit">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50/70 border border-amber-200/80 text-amber-950 text-xs font-semibold shadow-xs">
             <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-600 flex-shrink-0"></i>
             <span>Setoran: <strong class="text-amber-800 uppercase font-black">{{ kelompok.frekuensi_setor }}</strong></span>
           </div>
-          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/85 border border-stone-200/80 shadow-xs w-fit">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50/70 border border-amber-200/80 text-amber-950 text-xs font-semibold shadow-xs">
             <i data-lucide="coins" class="w-3.5 h-3.5 text-amber-600 flex-shrink-0"></i>
             <span>Iuran: <strong class="text-stone-900 font-bold">Rp {{ kelompok.nominal_iuran|floatformat:0 }}</strong></span>
           </div>
         </div>
 
-        <!-- Quick Action Buttons on Banner (3D Convex) -->
-        <div class="flex flex-wrap items-center gap-3 pt-2">
-          <a href="{% url 'kocokan_view' %}" class="btn-convex-gold text-xs !py-3 !px-5">
-            <i data-lucide="sparkles" class="w-4 h-4 text-amber-100"></i>
-            <span>Masuk Ruang Pengundian Live ➔</span>
-          </a>
+        <!-- Baris Info Jatuh Tempo Terintegrasi -->
+        <div class="p-3 rounded-2xl bg-stone-50/90 border border-stone-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-stone-700">
+          <div class="flex items-center gap-2 flex-wrap">
+            <i data-lucide="alarm-clock" class="w-4 h-4 text-amber-600 flex-shrink-0"></i>
+            <span>Jatuh Tempo: <strong>{{ deadline_kocok|date:"d M Y" }}</strong> (Siklus {{ kelompok.durasi_hari }} Hari)</span>
+            <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-black">Sisa {{ sisa_hari_kocok }} Hari</span>
+          </div>
+          <div class="text-[11px] text-stone-500 font-medium">
+            ⚡ Auto-Draw jika batas waktu lewat.
+          </div>
+        </div>
 
-          <button type="button" onclick="shareGroupToWhatsApp()" class="btn-convex-pearl text-xs !py-3 !px-4 text-emerald-800 border-emerald-200 hover:bg-emerald-50">
-            <i data-lucide="share-2" class="w-4 h-4 text-emerald-600"></i>
+      </div>
+
+      <!-- Sisi Kanan: Panel Tombol Aksi Terstruktur -->
+      <div class="flex flex-col gap-2.5 w-full lg:w-72 flex-shrink-0">
+        <a href="{% url 'kocokan_view' %}" class="btn-convex-gold text-xs !py-3.5 !px-5 w-full justify-center text-center shadow-md">
+          <i data-lucide="sparkles" class="w-4 h-4 text-amber-100"></i>
+          <span>Masuk Ruang Pengundian Live ➔</span>
+        </a>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
+          <button type="button" onclick="shareGroupToWhatsApp()" class="btn-convex-pearl text-xs !py-2.5 !px-3.5 text-emerald-800 border-emerald-200 hover:bg-emerald-50 w-full justify-center">
+            <i data-lucide="share-2" class="w-3.5 h-3.5 text-emerald-600"></i>
             <span>Undang via WhatsApp</span>
           </button>
 
-          <button type="button" onclick="copyInviteLink()" class="btn-convex-pearl text-xs !py-3 !px-4 text-stone-700">
-            <i data-lucide="copy" class="w-4 h-4 text-amber-600"></i>
+          <button type="button" onclick="copyInviteLink()" class="btn-convex-pearl text-xs !py-2.5 !px-3.5 text-stone-700 w-full justify-center">
+            <i data-lucide="copy" class="w-3.5 h-3.5 text-amber-600"></i>
             <span>Salin Link Room</span>
           </button>
-
-          <button type="button" onclick="openModalPanduanKetua()" class="btn-convex-pearl text-xs !py-3 !px-4 text-amber-900 border-amber-200 hover:bg-amber-50">
-            <i data-lucide="help-circle" class="w-4 h-4 text-amber-600"></i>
-            <span>Panduan Sambung Warga</span>
-          </button>
         </div>
-      </div>
 
-      <!-- Right Visual: 3D Golden Arisan Tumbler Mascot Card -->
-      <div class="hidden lg:flex items-center justify-center flex-shrink-0">
-        <div class="w-44 h-44 rounded-3xl bg-gradient-to-b from-white/95 to-amber-50/90 border-2 border-white shadow-xl shadow-amber-500/15 p-4 flex flex-col items-center justify-center text-center relative group hover:scale-105 transition-all duration-300">
-          <div class="w-20 h-20 mb-2 drop-shadow-md">
-            <img src="{% static 'img/logo.svg' %}" alt="Arisan Mascot" class="w-full h-full">
-          </div>
-          <span class="px-2.5 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-black tracking-wide shadow-xs">
-            ARISAN RESMI
-          </span>
-          <p class="text-[10px] text-stone-500 font-bold mt-1">Lot Undian Sah</p>
-        </div>
+        <button type="button" onclick="openModalPanduanKetua()" class="btn-convex-pearl text-xs !py-2 !px-3 text-amber-900 border-amber-200 hover:bg-amber-50 w-full justify-center">
+          <i data-lucide="help-circle" class="w-3.5 h-3.5 text-amber-600"></i>
+          <span>Panduan Sambung Warga</span>
+        </button>
       </div>
 
     </div>
@@ -98,113 +100,111 @@
 
 
   <!-- ========================================================================
-       SECTION 2: JATUH TEMPO & SISTEM TERKOCOK OTOMATIS WIDGET
+       ZONA 2: PANEL FINANSIAL & KAS (FINANCIAL KPI & SETTLEMENT)
        ======================================================================== -->
-  <div class="p-3.5 sm:p-4 rounded-2xl bg-white/75 border border-white/95 shadow-sm backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-3">
-    <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center flex-shrink-0">
-        <i data-lucide="alarm-clock" class="w-4.5 h-4.5"></i>
-      </div>
-      <div>
-        <div class="flex items-center gap-2 flex-wrap">
-          <h4 class="font-extrabold text-stone-900 text-xs sm:text-sm">Jadwal Pengundian Putaran Ke-{{ kelompok.putaran_berikutnya }}</h4>
-          <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-black">
-            Sisa {{ sisa_hari_kocok }} Hari
-          </span>
-        </div>
-        <p class="text-[11px] text-stone-500 mt-0.5">
-          Jatuh Tempo: <strong>{{ deadline_kocok|date:"d M Y" }}</strong> &bull; Siklus: {{ kelompok.durasi_hari }} Hari per Periode
-        </p>
-      </div>
-    </div>
-
-    <div class="px-3 py-1.5 rounded-xl bg-amber-50/80 border border-amber-200/60 text-[11px] text-amber-900 font-medium flex items-center gap-1.5 flex-shrink-0">
-      <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-amber-600 flex-shrink-0"></i>
-      <span>⚡ <strong>Auto-Draw:</strong> Pengundian otomatis jika melewati batas {{ kelompok.durasi_hari }} hari.</span>
-    </div>
-  </div>
-
-
-  <!-- ========================================================================
-       SECTION 3: AKUMULASI TARGET REALTIME OTOMATIS (4 KARTU STATISTIK 3D)
-       ======================================================================== -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+  <div class="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200/90 shadow-sm">
     
-    <!-- Card 1: Total Anggota -->
-    <div class="p-5 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/95 shadow-sm flex items-center justify-between">
-      <div>
-        <p class="text-xs font-bold text-stone-500 uppercase tracking-wider">Total Anggota</p>
-        <h4 id="statTotalPeserta" class="text-xl sm:text-2xl font-black font-mono text-stone-900 mt-1 break-words">{{ kelompok.total_peserta }} Warga</h4>
-        <p class="text-[11px] text-stone-400 mt-0.5">Otomatis hitung target pot</p>
+    <!-- Header Kontainer Finansial -->
+    <div class="flex items-center justify-between gap-3 mb-5 pb-3 border-b border-stone-100 flex-wrap">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-700 flex items-center justify-center">
+          <i data-lucide="pie-chart" class="w-4.5 h-4.5"></i>
+        </div>
+        <div>
+          <h3 class="text-xs sm:text-sm font-black uppercase tracking-wider text-stone-900">
+            Ringkasan Finansial &amp; Kas
+          </h3>
+          <p class="text-[11px] text-stone-400 font-medium">Akumulasi iuran periode Putaran Ke-{{ kelompok.putaran_berikutnya }}</p>
+        </div>
       </div>
-      <div class="w-12 h-12 rounded-2xl bg-stone-100 text-stone-700 flex items-center justify-center">
-        <i data-lucide="users" class="w-6 h-6"></i>
+
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-black shadow-xs">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          {{ persentase_lunas }}% Terkumpul
+        </span>
       </div>
     </div>
 
-    <!-- Card 2: Target Pot Real-time (Otomatis Naik jika Anggota Nambah) -->
-    <div class="p-5 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/95 shadow-sm flex items-center justify-between">
-      <div>
-        <p class="text-xs font-bold text-stone-500 uppercase tracking-wider">Target Pot Periode</p>
-        <h4 id="statTargetPot" class="text-xl sm:text-2xl font-black font-mono text-amber-700 mt-1 break-words">Rp {{ target_pot|floatformat:0 }}</h4>
-        <p class="text-[11px] text-stone-400 mt-0.5">{{ kelompok.total_peserta }} warga &times; Rp {{ kelompok.nominal_iuran|floatformat:0 }}</p>
+    <!-- 4 Kartu Metrik Finansial -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- Card 1: Total Anggota -->
+      <div class="p-4 rounded-2xl bg-stone-50/80 border border-stone-200/70 flex items-center justify-between">
+        <div>
+          <p class="text-[11px] font-bold text-stone-500 uppercase tracking-wider">Total Anggota</p>
+          <h4 id="statTotalPeserta" class="text-xl sm:text-2xl font-black font-mono text-stone-900 mt-0.5 break-words">{{ kelompok.total_peserta }} Warga</h4>
+          <p class="text-[10px] text-stone-400 mt-0.5">Otomatis hitung target pot</p>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-white text-stone-700 flex items-center justify-center shadow-xs border border-stone-200/50">
+          <i data-lucide="users" class="w-5 h-5"></i>
+        </div>
       </div>
-      <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
-        <i data-lucide="target" class="w-6 h-6"></i>
+
+      <!-- Card 2: Target Pot -->
+      <div class="p-4 rounded-2xl bg-amber-50/50 border border-amber-200/60 flex items-center justify-between">
+        <div>
+          <p class="text-[11px] font-bold text-amber-800 uppercase tracking-wider">Target Pot Periode</p>
+          <h4 id="statTargetPot" class="text-xl sm:text-2xl font-black font-mono text-amber-800 mt-0.5 break-words">Rp {{ target_pot|floatformat:0 }}</h4>
+          <p class="text-[10px] text-stone-400 mt-0.5">{{ kelompok.total_peserta }} warga &times; Rp {{ kelompok.nominal_iuran|floatformat:0 }}</p>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-white text-amber-700 flex items-center justify-center shadow-xs border border-amber-200/50">
+          <i data-lucide="target" class="w-5 h-5"></i>
+        </div>
       </div>
+
+      <!-- Card 3: Uang Kas Terkumpul -->
+      <div class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-200/60 flex items-center justify-between">
+        <div>
+          <p class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Uang Kas Terkumpul</p>
+          <h4 id="statKasTerkumpul" class="text-xl sm:text-2xl font-black font-mono text-emerald-700 mt-0.5 break-words">Rp {{ total_kas_terkumpul|floatformat:0 }}</h4>
+          <p id="statSubLunas" class="text-[10px] text-emerald-700/80 font-bold mt-0.5">{{ total_lunas }} / {{ kelompok.total_peserta }} warga lunas</p>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-white text-emerald-600 flex items-center justify-center shadow-xs border border-emerald-200/50">
+          <i data-lucide="wallet" class="w-5 h-5"></i>
+        </div>
+      </div>
+
+      <!-- Card 4: Sisa Belum Lunas -->
+      <div class="p-4 rounded-2xl bg-stone-50/80 border border-stone-200/70 flex items-center justify-between">
+        <div>
+          <p class="text-[11px] font-bold text-stone-500 uppercase tracking-wider">Sisa Belum Lunas</p>
+          <h4 id="statSisaKekurangan" class="text-xl sm:text-2xl font-black font-mono text-stone-900 mt-0.5 break-words">Rp {{ sisa_kekurangan|floatformat:0 }}</h4>
+          <p class="text-[10px] text-amber-700 font-bold mt-0.5">Bisa dikocok kapan saja</p>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-white text-amber-800 flex items-center justify-center shadow-xs border border-stone-200/50">
+          <i data-lucide="hourglass" class="w-5 h-5"></i>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Card 3: Kas Riil Terkumpul -->
-    <div class="p-5 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/95 shadow-sm flex items-center justify-between">
-      <div>
-        <p class="text-xs font-bold text-stone-500 uppercase tracking-wider">Uang Kas Terkumpul</p>
-        <h4 id="statKasTerkumpul" class="text-xl sm:text-2xl font-black font-mono text-emerald-700 mt-1 break-words">Rp {{ total_kas_terkumpul|floatformat:0 }}</h4>
-        <p id="statSubLunas" class="text-[11px] text-stone-400 mt-0.5">{{ total_lunas }} / {{ kelompok.total_peserta }} warga sudah lunas</p>
+    <!-- Progress Bar Kelunasan Terpadu di Dasar Zona 2 -->
+    <div class="mt-5 pt-4 border-t border-stone-100">
+      <div class="flex items-center justify-between text-xs font-bold mb-2">
+        <span class="text-stone-700 flex items-center gap-1.5">
+          <i data-lucide="trending-up" class="w-3.5 h-3.5 text-amber-600"></i>
+          <span>Progres Kelunasan Periode Ini:</span>
+        </span>
+        <span id="statPersentaseText" class="text-amber-800 font-mono">{{ persentase_lunas }}% Terkumpul</span>
       </div>
-      <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-        <i data-lucide="wallet" class="w-6 h-6"></i>
+      <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden p-0.5 border border-stone-200">
+        <div id="statProgressBar" class="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-600 transition-all duration-500" style="width: {{ persentase_lunas }}%;"></div>
       </div>
-    </div>
-
-    <!-- Card 4: Sisa Belum Tertagih -->
-    <div class="p-5 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/95 shadow-sm flex items-center justify-between">
-      <div>
-        <p class="text-xs font-bold text-stone-500 uppercase tracking-wider">Sisa Belum Lunas</p>
-        <h4 id="statSisaKekurangan" class="text-xl sm:text-2xl font-black font-mono text-stone-900 mt-1 break-words">Rp {{ sisa_kekurangan|floatformat:0 }}</h4>
-        <p class="text-[11px] text-amber-700 font-bold mt-0.5">Tetap bisa dikocok kapan saja</p>
-      </div>
-      <div class="w-12 h-12 rounded-2xl bg-amber-100/50 text-amber-800 flex items-center justify-center">
-        <i data-lucide="hourglass" class="w-6 h-6"></i>
-      </div>
-    </div>
-
-  </div>
-
-
-  <!-- Progress Bar Akumulasi Kas -->
-  <div class="p-5 rounded-3xl bg-white/70 border border-white/90 shadow-sm backdrop-blur-xl">
-    <div class="flex items-center justify-between text-xs font-bold mb-2">
-      <span class="text-stone-700">Progres Kelunasan Kas Periode Ini:</span>
-      <span id="statPersentaseText" class="text-amber-800">{{ persentase_lunas }}% Terkumpul</span>
-    </div>
-    <div class="w-full bg-stone-100 h-3 rounded-full overflow-hidden p-0.5 border border-stone-200">
-      <div id="statProgressBar" class="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-600 transition-all duration-500" style="width: {{ persentase_lunas }}%;"></div>
-    </div>
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-stone-400 mt-2 gap-1.5">
-      <div class="flex items-center justify-between w-full sm:w-auto gap-4">
+      <div class="flex items-center justify-between text-[11px] text-stone-400 mt-2">
         <span>Rp 0</span>
-        <span class="sm:hidden font-bold text-stone-700">Rp {{ target_pot|floatformat:0 }}</span>
+        <span class="italic text-stone-500 text-center">*Berapa pun nominal yang terkumpul, Ketua tetap berhak memutar undian.</span>
+        <span id="statProgressMax" class="font-bold text-stone-700">Rp {{ target_pot|floatformat:0 }}</span>
       </div>
-      <span class="italic text-stone-500 text-center sm:text-left">*Berapa pun nominal yang terkumpul, Ketua tetap berhak memutar undian.</span>
-      <span id="statProgressMax" class="hidden sm:inline font-bold text-stone-700">Rp {{ target_pot|floatformat:0 }}</span>
     </div>
+
   </div>
 
 
   <!-- ========================================================================
-       SECTION 4: BALOK KACA BENING 3D CEMBUNG (DAFTAR NAMA ANGGOTA)
+       ZONA 3: BUKU BESAR ANGGOTA & STATUS IURAN (MEMBER LEDGER CARD)
        ======================================================================== -->
-  <div>
+  <div class="p-6 sm:p-7 rounded-3xl bg-white border border-stone-200/90 shadow-sm">
     
     <!-- Title & Action Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
@@ -684,8 +684,12 @@
     setTimeout(() => btn.classList.remove('scale-95'), 120);
     lucide.createIcons();
 
-    // 2. Sinkronisasi Asinkron ke Server Django di Latar Belakang
-    fetch(`/peserta/toggle-setor/${pesertaId}/`, {
+    if (typeof window.markLocalMutation === 'function') {
+      window.markLocalMutation();
+    }
+
+    // 2. Sinkronisasi Asinkron ke REST API Django di Latar Belakang
+    fetch(`/api/v1/warga/${pesertaId}/setor/`, {
       method: 'POST',
       headers: {
         'X-CSRFToken': '{{ csrf_token }}',

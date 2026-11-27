@@ -1,3 +1,4 @@
+import hashlib
 import random
 import urllib.parse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -1057,6 +1058,208 @@ def tandai_semua_lunas(request, kelompok_id):
         return redirect('dashboard')
 
     return redirect('dashboard')
+
+
+# ==============================================================================
+# TAHAP 4: HEADLESS DJANGO REST API V1 & SMART DELTA HEARTBEAT POLLER
+# ==============================================================================
+
+def _format_rupiah(value):
+    """Memformat nilai desimal/angka menjadi string Rupiah bertitik."""
+    return f"Rp {int(value):,}".replace(",", ".")
+
+
+def _get_authorized_room(request, kode_room):
+    """Memvalidasi sesi aktif dan mengembalikan instance KelompokArisan yang berhak diakses."""
+    session_kelompok_id = request.session.get('kelompok_id')
+    if not session_kelompok_id:
+        return None, JsonResponse({'status': 'error', 'message': 'Sesi tidak aktif.'}, status=401)
+
+    kelompok = KelompokArisan.objects.filter(kode_room__iexact=kode_room).first()
+    if not kelompok:
+        return None, JsonResponse({'status': 'error', 'message': 'Room tidak ditemukan.'}, status=404)
+
+    if kelompok.id != session_kelompok_id:
+        user_nama = request.session.get('user_nama', '')
+        is_member = PesertaArisan.objects.filter(kelompok=kelompok, anggota__nama=user_nama).exists()
+        if not is_member:
+            return None, JsonResponse({'status': 'error', 'message': 'Akses room ditolak.'}, status=403)
+
+    return kelompok, None
+
+
+def _compute_room_version(kelompok):
+    """Menghitung hash sidik jari status room secara cepat tanpa migrasi skema DB."""
+    peserta_rows = list(
+        kelompok.peserta.values_list(
+            'id', 'nomor_undian', 'is_ketua', 'status_setor', 'status_menang', 'anggota__nama'
+        ).order_by('nomor_undian')
+    )
+    latest_riwayat = kelompok.riwayat.values_list('id', 'periode_ke').first()
+    riwayat_count = kelompok.riwayat.count()
+    raw = f"{kelompok.nama_kelompok}|{kelompok.nominal_iuran}|{kelompok.periode_kocok}|{riwayat_count}|{latest_riwayat}|{peserta_rows}"
+    return hashlib.md5(raw.encode('utf-8')).hexdigest()[:12], peserta_rows
+
+
+def _build_room_snapshot(kelompok, version, peserta_rows=None):
+    """Menyusun payload JSON ringkas untuk detail room, statistik finansial, dan peserta."""
+    if peserta_rows is None:
+        peserta_rows = list(
+            kelompok.peserta.values_list(
+                'id', 'nomor_undian', 'is_ketua', 'status_setor', 'status_menang', 'anggota__nama'
+            ).order_by('nomor_undian')
+        )
+
+    total_peserta = len(peserta_rows)
+    total_lunas = sum(1 for row in peserta_rows if row[3])
+    nominal = kelompok.nominal_iuran
+    target_pot = total_peserta * nominal
+    total_kas = total_lunas * nominal
+    sisa_kas = max(Decimal('0'), target_pot - total_kas)
+    persentase = min(100, int((total_kas / target_pot) * 100)) if target_pot > 0 else 0
+    latest_riwayat = kelompok.riwayat.select_related('peserta_menang__anggota').first()
+
+    return {
+        'has_update': True,
+        'version': version,
+        'room': {
+            'id': kelompok.id,
+            'nama_kelompok': kelompok.nama_kelompok,
+            'kode_room': kelompok.kode_room,
+            'putaran_berikutnya': kelompok.putaran_berikutnya,
+            'nominal_iuran': int(nominal),
+            'nominal_iuran_formatted': _format_rupiah(nominal),
+            'frekuensi_setor': kelompok.frekuensi_setor,
+            'sisa_hari_kocok': kelompok.sisa_hari_kocok,
+        },
+        'stats': {
+            'total_peserta': total_peserta,
+            'total_lunas': total_lunas,
+            'target_pot_formatted': _format_rupiah(target_pot),
+            'total_kas_formatted': _format_rupiah(total_kas),
+            'sisa_kekurangan_formatted': _format_rupiah(sisa_kas),
+            'persentase_lunas': persentase,
+        },
+        'members': [
+            {
+                'id': r[0],
+                'nomor_undian': r[1],
+                'is_ketua': r[2],
+                'status_setor': r[3],
+                'status_menang': r[4],
+                'nama': r[5],
+            }
+            for r in peserta_rows
+        ],
+        'latest_winner': {
+            'id': latest_riwayat.id,
+            'periode_ke': latest_riwayat.periode_ke,
+            'nama': latest_riwayat.peserta_menang.anggota.nama,
+            'nomor_undian': latest_riwayat.peserta_menang.nomor_undian,
+        } if latest_riwayat else None,
+    }
+
+
+def api_room_sync(request, kode_room):
+    """Smart Delta Heartbeat Poller: mengembalikan ~40 byte JSON jika belum ada mutasi."""
+    if request.method != 'GET':
+        return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
+
+    kelompok, err_resp = _get_authorized_room(request, kode_room)
+    if err_resp:
+        return err_resp
+
+    current_version, peserta_rows = _compute_room_version(kelompok)
+    client_version = request.GET.get('version') or request.GET.get('v') or ''
+
+    if client_version and client_version == current_version:
+        return JsonResponse({'has_update': False, 'version': current_version})
+
+    return JsonResponse(_build_room_snapshot(kelompok, current_version, peserta_rows))
+
+
+def api_room_detail(request, kode_room):
+    """Endpoint REST untuk mengambil metadata lengkap & KPI finansial sebuah room."""
+    if request.method != 'GET':
+        return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
+
+    kelompok, err_resp = _get_authorized_room(request, kode_room)
+    if err_resp:
+        return err_resp
+
+    version, peserta_rows = _compute_room_version(kelompok)
+    payload = _build_room_snapshot(kelompok, version, peserta_rows)
+    payload.pop('has_update', None)
+    payload['status'] = 'success'
+    return JsonResponse(payload)
+
+
+def api_room_warga(request, kode_room):
+    """Endpoint REST untuk mengambil daftar anggota & status iuran pada sebuah room."""
+    if request.method != 'GET':
+        return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
+
+    kelompok, err_resp = _get_authorized_room(request, kode_room)
+    if err_resp:
+        return err_resp
+
+    peserta_list = kelompok.peserta.select_related('anggota').order_by('nomor_undian')
+    return JsonResponse({
+        'status': 'success',
+        'kode_room': kelompok.kode_room,
+        'total': peserta_list.count(),
+        'warga': [
+            {
+                'id': p.id,
+                'nama': p.anggota.nama,
+                'no_telepon': p.anggota.no_telepon or '',
+                'nomor_undian': p.nomor_undian,
+                'is_ketua': p.is_ketua,
+                'status_setor': p.status_setor,
+                'status_menang': p.status_menang,
+            }
+            for p in peserta_list
+        ],
+    })
+
+
+def api_kas_riwayat(request):
+    """Endpoint REST ringkasan transparansi kas & riwayat pemenang room aktif."""
+    if request.method != 'GET':
+        return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
+
+    kelompok_id = request.session.get('kelompok_id')
+    if not kelompok_id:
+        return JsonResponse({'status': 'error', 'message': 'Sesi tidak aktif.'}, status=401)
+
+    kelompok = KelompokArisan.objects.filter(pk=kelompok_id).first()
+    if not kelompok:
+        return JsonResponse({'status': 'error', 'message': 'Room tidak ditemukan.'}, status=404)
+
+    riwayat_list = kelompok.riwayat.select_related('peserta_menang__anggota').order_by('-periode_ke')
+    total_hadiah_keluar = sum(r.total_diterima for r in riwayat_list)
+
+    return JsonResponse({
+        'status': 'success',
+        'kode_room': kelompok.kode_room,
+        'total_pot_formatted': _format_rupiah(kelompok.total_pot_hadiah),
+        'total_kas_terkumpul_formatted': _format_rupiah(kelompok.total_kas_terkumpul),
+        'sisa_kekurangan_formatted': _format_rupiah(kelompok.sisa_kekurangan_kas),
+        'total_hadiah_keluar_formatted': _format_rupiah(total_hadiah_keluar),
+        'riwayat': [
+            {
+                'id': r.id,
+                'periode_ke': r.periode_ke,
+                'pemenang': r.peserta_menang.anggota.nama,
+                'nomor_undian': r.peserta_menang.nomor_undian,
+                'tanggal_kocok': r.tanggal_kocok.isoformat(),
+                'total_diterima': int(r.total_diterima),
+                'total_diterima_formatted': _format_rupiah(r.total_diterima),
+            }
+            for r in riwayat_list
+        ],
+    })
+
 
 
 

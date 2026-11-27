@@ -43,4 +43,12 @@ urlpatterns = [
     path('grup/keluar/<int:kelompok_id>/', views.keluar_kelompok, name='keluar_kelompok'),
     path('grup/bersihkan-selesai/', views.bersihkan_kelompok_selesai, name='bersihkan_kelompok_selesai'),
     path('grup/reset-total/', views.reset_total_kelompok, name='reset_total_kelompok'),
+
+    # Headless Django REST API v1 & Smart Delta Sync
+    path('api/v1/rooms/<str:kode_room>/sync/', views.api_room_sync, name='api_room_sync'),
+    path('api/v1/rooms/<str:kode_room>/warga/', views.api_room_warga, name='api_room_warga'),
+    path('api/v1/rooms/<str:kode_room>/', views.api_room_detail, name='api_room_detail'),
+    path('api/v1/warga/<int:peserta_id>/setor/', views.toggle_setor_api, name='api_v1_toggle_setor'),
+    path('api/v1/kocokan/<int:kelompok_id>/putar/', views.proses_kocok_api, name='api_v1_proses_kocok'),
+    path('api/v1/kas/riwayat/', views.api_kas_riwayat, name='api_kas_riwayat'),
 ]

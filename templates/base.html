@@ -1,901 +1,1893 @@
 {% load static %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Arisan Digital by Alware Platform{% endblock %}</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}Arisan Digital by Alware Platform{% endblock %}
+    </title>
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- Canvas Confetti (Preloaded) -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Canvas Confetti (Preloaded) -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-  <!-- HTMX (Local Offline-First) -->
-  <script src="{% static 'js/htmx.min.js' %}"></script>
-  <script>
-    document.addEventListener('htmx:configRequest', function(evt) {
-      evt.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
-    });
-  </script>
+    <!-- HTMX (Local Offline-First) -->
+    <script src="{% static 'js/htmx.min.js' %}"></script>
+    <script>
+      document.addEventListener("htmx:configRequest", function (evt) {
+        evt.detail.headers["X-CSRFToken"] = "{{ csrf_token }}";
+      });
+    </script>
 
-  <!-- PWA & Mobile Web App Manifest -->
-  <link rel="manifest" href="{% static 'manifest.json' %}">
-  <meta name="theme-color" content="#D97706">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Arisan Digital">
-  <link rel="apple-touch-icon" href="{% static 'img/icon-192.png' %}">
-  <link rel="icon" type="image/png" sizes="192x192" href="{% static 'img/icon-192.png' %}">
-  <link rel="icon" type="image/svg+xml" href="{% static 'img/logo.svg' %}">
+    <!-- PWA & Mobile Web App Manifest -->
+    <link rel="manifest" href="{% static 'manifest.json' %}" />
+    <meta name="theme-color" content="#D97706" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Arisan Digital" />
+    <link rel="apple-touch-icon" href="{% static 'img/icon-192.png' %}" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="{% static 'img/icon-192.png' %}"
+    />
+    <link rel="icon" type="image/svg+xml" href="{% static 'img/logo.svg' %}" />
 
-  <!-- Custom Liquid 3D Glass CSS -->
-  <link rel="stylesheet" href="{% static 'css/liquid_glass.css' %}">
-</head>
-<body class="p-0 md:p-6 lg:p-8 flex items-center justify-center min-h-screen">
+    <!-- Custom Liquid 3D Glass CSS with Cache-Buster -->
+    <link
+      rel="stylesheet"
+      href="{% static 'css/liquid_glass.css' %}?v={% now 'U' %}"
+    />
 
-  <!-- Top Instant Navigation Laser Progress Bar -->
-  <div id="topProgressBar" class="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 z-[999999] transform -translate-x-full transition-transform duration-300 pointer-events-none"></div>
+    <!-- ========================================================================
+       PURE TRANSLUCENT LIQUID 3D GLASS TAB BAR (IDENTIK SIDEBAR DESKTOP)
+       Transparan Kaca Cembung Mewah, Bukan Putih, Bulat Sempurna, 5 Kolom Rata
+       ======================================================================== -->
+    <style>
+      /* 1. Latar Kaca Emas Cair Transparan (Floating Capsule) */
+      .mobile-bottom-tab-bar-shell,
+      .mobile-bottom-tab-bar {
+        position: fixed !important;
+        bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+        left: 14px !important;
+        right: 14px !important;
+        max-width: 420px !important;
+        margin: 0 auto !important;
+        height: 60px !important;
+        z-index: 99999 !important;
 
-  <!-- Toast Notification Capsule (3D Convex) -->
-  <div id="toastNotification" class="fixed top-4 right-4 z-50 transform translate-y-[-140%] opacity-0 transition-all duration-300 flex items-center gap-3 px-5 py-3 rounded-2xl bg-stone-900/95 backdrop-blur-xl text-white text-xs font-bold shadow-2xl border border-white/20">
-    <i data-lucide="check-circle-2" class="w-4 h-4 text-amber-300"></i>
-    <span id="toastMessage">Pesan Notifikasi</span>
-  </div>
+        background: linear-gradient(
+          180deg,
+          rgba(245, 158, 11, 0.9) 0%,
+          rgba(217, 119, 6, 0.88) 100%
+        ) !important;
+        backdrop-filter: blur(24px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+        border-radius: 9999px !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.55) !important;
+        border-top: 2px solid rgba(255, 255, 255, 0.85) !important;
+        box-shadow:
+          0 12px 32px -4px rgba(180, 83, 9, 0.4),
+          0 4px 12px rgba(0, 0, 0, 0.08),
+          inset 0 2.5px 3px rgba(255, 255, 255, 0.7),
+          inset 0 -2px 3px rgba(0, 0, 0, 0.18) !important;
+        padding: 4px 6px !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+      }
 
-  <!-- PWA Install Prompt Banner (Floating Top Capsule) -->
-  <div id="pwaInstallBanner" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-[100000] flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-amber-600/95 backdrop-blur-xl text-white text-xs font-bold shadow-2xl border border-amber-300/40">
-    <i data-lucide="smartphone" class="w-4 h-4 text-amber-200"></i>
-    <span>Pasang di Layar Utama HP?</span>
-    <button type="button" onclick="installPWA()" class="px-3 py-1 rounded-xl bg-white text-amber-900 font-extrabold text-[11px] hover:bg-amber-100 shadow-sm transition-all active:scale-95">
-      Install
-    </button>
-    <button type="button" onclick="document.getElementById('pwaInstallBanner').classList.add('hidden')" class="text-amber-200 hover:text-white p-0.5">
-      <i data-lucide="x" class="w-4 h-4"></i>
-    </button>
-  </div>
+      /* 2. Kapsul Indikator Kaca Cair Cembung (Persis Sidebar Desktop .sidebar-nav-item.active) */
+      .mobile-fluid-indicator {
+        position: absolute !important;
+        top: 5px !important;
+        bottom: 5px !important;
+        left: 6px !important;
+        width: calc((100% - 12px) / 5) !important;
+        border-radius: 9999px !important;
 
-  <!-- ========================================================================
+        /* KACA CAIR TRANSPARAN 3D CEMBUNG - BUKAN PUTIH PADAT! */
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.32) 0%,
+          rgba(255, 255, 255, 0.16) 100%
+        ) !important;
+        backdrop-filter: blur(14px) !important;
+        -webkit-backdrop-filter: blur(14px) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+        border-top: 2px solid rgba(255, 255, 255, 0.9) !important;
+        box-shadow:
+          0 8px 20px -3px rgba(0, 0, 0, 0.2),
+          inset 0 2.5px 3px rgba(255, 255, 255, 0.75),
+          inset 0 -2px 3px rgba(0, 0, 0, 0.15) !important;
+        pointer-events: none !important;
+        z-index: 1 !important;
+        transform: translateX(0%);
+        transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        will-change: transform !important;
+      }
+
+      /* Efek Merenggang Kenyal Saat Meluncur */
+      .mobile-fluid-indicator.is-stretching {
+        filter: drop-shadow(0 6px 14px rgba(255, 255, 255, 0.5)) !important;
+      }
+
+      /* 3. Grid 5 Kolom Murni (NOL WRAPPING - Jaminan 1 Baris Presisi) */
+      .mobile-tab-grid {
+        position: relative !important;
+        z-index: 2 !important;
+        width: 100% !important;
+        height: 100% !important;
+        display: grid !important;
+        grid-template-columns: repeat(5, 1fr) !important;
+        align-items: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+      }
+
+      /* 4. Item Tombol Tabbar */
+      .mobile-tab-item {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-decoration: none !important;
+        color: rgba(255, 255, 255, 0.72) !important;
+        background: transparent !important;
+        border: none !important;
+        outline: none !important;
+        cursor: pointer !important;
+        padding: 2px 0 !important;
+        height: 100% !important;
+        transition:
+          transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+          color 0.2s ease !important;
+        user-select: none !important;
+        -webkit-tap-highlight-color: transparent !important;
+      }
+
+      .mobile-tab-item:active {
+        transform: scale(0.92) !important;
+      }
+
+      .mobile-tab-icon-wrapper,
+      .mobile-tab-icon-circle {
+        width: 28px !important;
+        height: 28px !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: transparent !important; /* HILANGKAN WARNA PUTIH PADAT! */
+        border: none !important;
+        box-shadow: none !important;
+        color: rgba(255, 255, 255, 0.85) !important;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      }
+
+      /* Ikon Plus di Tengah */
+      .mobile-tab-plus .plus-circle {
+        width: 42px !important;
+        height: 42px !important;
+        border-radius: 50% !important;
+        background: rgba(255, 255, 255, 0.24) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.55) !important;
+        color: #ffffff !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow:
+          0 4px 10px rgba(180, 83, 9, 0.25),
+          inset 0 2px 3px rgba(255, 255, 255, 0.7),
+          inset 0 -1.5px 2px rgba(0, 0, 0, 0.12) !important;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+      }
+
+      .mobile-tab-plus .plus-icon {
+        width: 22px !important;
+        height: 22px !important;
+        transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+      }
+
+      .mobile-tab-label {
+        font-size: 9.5px !important;
+        font-weight: 800 !important;
+        line-height: 1 !important;
+        color: #ffffff !important;
+        max-height: 0px !important;
+        opacity: 0 !important;
+        margin-top: 0px !important;
+        overflow: hidden !important;
+        transform: translateY(4px) !important;
+        transition:
+          max-height 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+          opacity 0.22s ease,
+          margin-top 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+          transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        white-space: nowrap !important;
+        pointer-events: none !important;
+      }
+
+      /* 5. TAB AKTIF DI ATAS KACA CAIR CEMBUNG */
+      .mobile-tab-item.active {
+        color: #ffffff !important;
+      }
+
+      .mobile-tab-item.active .mobile-tab-icon-wrapper,
+      .mobile-tab-item.active .mobile-tab-icon-circle {
+        color: #ffffff !important;
+        background: transparent !important; /* JANGAN ADA KOTAK/LINGKARAN PUTIH */
+        border: none !important;
+        box-shadow: none !important;
+        transform: scale(1.06) !important;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.28)) !important;
+      }
+
+      .mobile-tab-item.active .mobile-tab-label {
+        color: #ffffff !important;
+        font-weight: 900 !important;
+        max-height: 14px !important;
+        opacity: 1 !important;
+        margin-top: 2px !important;
+        transform: translateY(0) !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35) !important;
+      }
+
+      .mobile-tab-item.active.mobile-tab-plus .plus-circle {
+        background: transparent !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
+        width: 26px !important;
+        height: 26px !important;
+      }
+    </style>
+  </head>
+  <body class="p-0 md:p-6 lg:p-8 flex items-center justify-center min-h-screen">
+    <!-- Top Instant Navigation Laser Progress Bar -->
+    <div
+      id="topProgressBar"
+      class="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 z-[999999] transform -translate-x-full transition-transform duration-300 pointer-events-none"
+    ></div>
+
+    <!-- Custom Pull-to-Refresh: The Liquid Gold Drop (Mobile Touch Engine) -->
+    <div id="liquidPtrContainer" class="md:hidden" aria-hidden="true">
+      <svg id="liquidPtrSvg" viewBox="0 0 140 110" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="liquidGoldDropGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#FCD34D" />
+            <stop offset="55%" stop-color="#F59E0B" />
+            <stop offset="100%" stop-color="#B45309" />
+          </linearGradient>
+        </defs>
+        <path
+          id="liquidPtrPath"
+          d="M 20,0 C 50,0 90,0 120,0 C 90,0 50,0 20,0 Z"
+          fill="url(#liquidGoldDropGrad)"
+        />
+        <ellipse
+          id="liquidPtrSheen"
+          cx="65"
+          cy="14"
+          rx="5"
+          ry="3"
+          fill="rgba(255,255,255,0.75)"
+          opacity="0"
+        />
+      </svg>
+      <div id="liquidPtrHint">Lepas untuk segarkan</div>
+    </div>
+
+    <!-- Toast Notification Capsule (3D Convex) -->
+    <div
+      id="toastNotification"
+      class="fixed top-4 right-4 z-50 transform translate-y-[-140%] opacity-0 transition-all duration-300 flex items-center gap-3 px-5 py-3 rounded-2xl bg-stone-900/95 backdrop-blur-xl text-white text-xs font-bold shadow-2xl border border-white/20"
+    >
+      <i data-lucide="check-circle-2" class="w-4 h-4 text-amber-300"></i>
+      <span id="toastMessage">Pesan Notifikasi</span>
+    </div>
+
+    <!-- PWA Install Prompt Banner (Floating Top Capsule) -->
+    <div
+      id="pwaInstallBanner"
+      class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-[100000] flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-amber-600/95 backdrop-blur-xl text-white text-xs font-bold shadow-2xl border border-amber-300/40"
+    >
+      <i data-lucide="smartphone" class="w-4 h-4 text-amber-200"></i>
+      <span>Pasang di Layar Utama HP?</span>
+      <button
+        type="button"
+        onclick="installPWA()"
+        class="px-3 py-1 rounded-xl bg-white text-amber-900 font-extrabold text-[11px] hover:bg-amber-100 shadow-sm transition-all active:scale-95"
+      >
+        Install
+      </button>
+      <button
+        type="button"
+        onclick="
+          document.getElementById('pwaInstallBanner').classList.add('hidden')
+        "
+        class="text-amber-200 hover:text-white p-0.5"
+      >
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <!-- ========================================================================
        MAIN APPLICATION SHELL (FROSTED 3D DESKTOP & MOBILE WINDOW)
        ======================================================================== -->
-  <div class="app-window-frame w-full max-w-[1440px] min-h-screen md:min-h-[880px] flex flex-col md:flex-row relative">
-
-    <!-- ====================================================================
+    <div
+      class="app-window-frame w-full max-w-[1440px] min-w-0 min-h-screen md:min-h-[880px] flex flex-col md:flex-row relative overflow-x-hidden"
+    >
+      <!-- ====================================================================
          1. DESKTOP FROSTED CAPSULE SIDEBAR (HIDDEN ON MOBILE, FLEX ON MD)
          ==================================================================== -->
-    <aside class="sidebar-capsule-glass hidden md:flex md:w-[280px] lg:w-[310px] p-6 flex-shrink-0">
-      
-      <div>
-        <!-- macOS Window Traffic Light Dots (🔴 🟡 🟢) -->
-        <div class="macos-traffic-dots">
-          <span class="traffic-dot red" title="Tutup"></span>
-          <span class="traffic-dot yellow" title="Perkecil"></span>
-          <span class="traffic-dot green" title="Perbesar"></span>
-          <span class="ml-auto text-[10px] font-extrabold text-amber-100/90 tracking-widest uppercase">ARISAN.OS</span>
-        </div>
-
-        <!-- App Brand Logo (Pure Freestanding Golden Mark Tanpa Kotak) -->
-        <div class="flex items-center gap-3 mb-6">
-          <img src="{% static 'img/logo.svg' %}" alt="Logo Arisan Digital" class="w-11 h-11 object-contain drop-shadow-[0_4px_14px_rgba(245,158,11,0.45)] flex-shrink-0">
-          <div>
-            <h2 class="font-black text-lg tracking-tight text-white leading-tight">Arisan Digital</h2>
-            <div class="flex items-center gap-1.5 mt-0.5">
-              {% if user_role == 'ketua' %}
-                <span class="px-2.5 py-0.5 rounded-full bg-white/25 text-white text-[10px] font-black border border-white/40 shadow-sm">
+      <aside
+        class="sidebar-capsule-glass hidden md:flex md:w-[280px] lg:w-[310px] p-6 flex-shrink-0"
+      >
+        <div>
+          <!-- App Brand Logo (Pure Freestanding Golden Mark Tanpa Kotak) -->
+          <div class="flex items-center gap-3 mb-6 pt-1">
+            <img
+              src="{% static 'img/logo.svg' %}"
+              alt="Logo Arisan Digital"
+              class="w-11 h-11 object-contain drop-shadow-[0_4px_14px_rgba(245,158,11,0.45)] flex-shrink-0"
+            />
+            <div>
+              <h2
+                class="font-black text-lg tracking-tight text-white leading-tight"
+              >
+                Arisan Digital
+              </h2>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                {% if user_role == 'ketua' %}
+                <span
+                  class="px-2.5 py-0.5 rounded-full bg-white/25 text-white text-[10px] font-black border border-white/40 shadow-sm"
+                >
                   👑 Ketua
                 </span>
-              {% else %}
-                <span class="px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-bold border border-white/30">
+                {% else %}
+                <span
+                  class="px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-bold border border-white/30"
+                >
                   👤 Anggota
                 </span>
-              {% endif %}
+                {% endif %}
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Quick Action Button 3D (Khusus Ketua) -->
-        {% if user_role == 'ketua' %}
+          <!-- Quick Action Button 3D (Khusus Ketua) -->
+          {% if user_role == 'ketua' %}
           <div class="mb-6">
             <button onclick="openModalTambahAnggota()" class="btn-sidebar-3d">
               <i data-lucide="user-plus" class="w-4 h-4 text-amber-600"></i>
               <span>Tambah Anggota Baru</span>
             </button>
           </div>
-        {% endif %}
+          {% endif %}
 
-        <!-- Navigation Section -->
-        <div class="mb-3 px-2 flex items-center justify-between text-[11px] font-extrabold text-amber-100/90 uppercase tracking-widest">
-          <span>MENU UTAMA</span>
-        </div>
-
-        <nav class="space-y-1.5" id="sidebarNav">
-          <!-- Dashboard Home -->
-          <a href="{% url 'dashboard' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-            <i data-lucide="layout-grid" class="w-5 h-5 flex-shrink-0"></i>
-            <span>Dashboard Ruang</span>
-          </a>
-
-          <!-- Ruang Kocokan Live -->
-          <a href="{% url 'kocokan_view' %}" class="sidebar-nav-item {% if 'kocokan' in request.resolver_match.url_name %}active{% endif %}">
-            <i data-lucide="sparkles" class="w-5 h-5 flex-shrink-0 text-amber-200"></i>
-            <span>Ruang Kocokan Live</span>
-          </a>
-
-          <!-- Riwayat Pemenang & Transparansi Kas (Fitur Pengganti Admin) -->
-          <a href="{% url 'riwayat_kas' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'riwayat_kas' %}active{% endif %}">
-            <i data-lucide="receipt-text" class="w-5 h-5 flex-shrink-0 text-amber-200"></i>
-            <span>Riwayat &amp; Kas</span>
-          </a>
-
-          <!-- Submenu Multi-Arisan & Sesi -->
-          <div class="pt-4 pb-2 px-2 text-[11px] font-extrabold text-amber-100/90 uppercase tracking-widest border-t border-white/15 mt-4">
-            <span>MULTI-ARISAN &amp; SESI</span>
+          <!-- Navigation Section -->
+          <div
+            class="mb-3 px-2 flex items-center justify-between text-[11px] font-extrabold text-amber-100/90 uppercase tracking-widest"
+          >
+            <span>MENU UTAMA</span>
           </div>
 
-          <a href="{% url 'grup_saya' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'grup_saya' %}active{% endif %}">
-            <i data-lucide="users-round" class="w-5 h-5 flex-shrink-0 text-amber-200"></i>
-            <span class="flex-1">Grup Saya</span>
-            {% if total_grup_count > 1 %}
-              <span class="px-2 py-0.5 rounded-full bg-white/25 text-[10px] font-black text-white">{{ total_grup_count }}</span>
-            {% endif %}
-          </a>
-        </nav>
-      </div>
+          <nav class="space-y-1.5" id="sidebarNav">
+            <!-- Dashboard Home -->
+            <a
+              href="{% url 'dashboard' %}"
+              class="sidebar-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+            >
+              <i data-lucide="layout-grid" class="w-5 h-5 flex-shrink-0"></i>
+              <span>Dashboard Ruang</span>
+            </a>
 
-      <!-- Bottom User Profile Capsule -->
-      <div class="mt-8 pt-4 border-t border-white/20">
-        <div class="profile-capsule-card">
-          <div class="flex items-center gap-3 overflow-hidden">
-            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-white to-amber-100 text-amber-800 font-black text-sm flex items-center justify-center flex-shrink-0 shadow-md border-2 border-white">
-              {{ user_nama|default:"User"|slice:":2"|upper }}
+            <!-- Ruang Kocokan Live -->
+            <a
+              href="{% url 'kocokan_view' %}"
+              class="sidebar-nav-item {% if 'kocokan' in request.resolver_match.url_name %}active{% endif %}"
+            >
+              <i
+                data-lucide="sparkles"
+                class="w-5 h-5 flex-shrink-0 text-amber-200"
+              ></i>
+              <span>Ruang Kocokan Live</span>
+            </a>
+
+            <!-- Riwayat Pemenang & Transparansi Kas (Fitur Pengganti Admin) -->
+            <a
+              href="{% url 'riwayat_kas' %}"
+              class="sidebar-nav-item {% if request.resolver_match.url_name == 'riwayat_kas' %}active{% endif %}"
+            >
+              <i
+                data-lucide="receipt-text"
+                class="w-5 h-5 flex-shrink-0 text-amber-200"
+              ></i>
+              <span>Riwayat &amp; Kas</span>
+            </a>
+
+            <!-- Submenu Multi-Arisan & Sesi -->
+            <div
+              class="pt-4 pb-2 px-2 text-[11px] font-extrabold text-amber-100/90 uppercase tracking-widest border-t border-white/15 mt-4"
+            >
+              <span>MULTI-ARISAN &amp; SESI</span>
             </div>
-            <div class="overflow-hidden">
-              <p class="text-xs font-bold text-white truncate leading-tight">{{ user_nama|default:"Pengguna Arisan" }}</p>
-              <p class="text-[10px] text-amber-100 font-semibold truncate mt-0.5">
-                {% if user_role == 'ketua' %}👑 Ketua{% else %}👤 Anggota{% endif %}
-              </p>
-            </div>
-          </div>
-          <a href="{% url 'logout' %}" title="Keluar dari sesi" class="w-8 h-8 rounded-xl bg-white/20 hover:bg-rose-500/90 text-white flex items-center justify-center transition-colors flex-shrink-0 shadow-sm">
-            <i data-lucide="log-out" class="w-4 h-4"></i>
-          </a>
+
+            <a
+              href="{% url 'grup_saya' %}"
+              class="sidebar-nav-item {% if request.resolver_match.url_name == 'grup_saya' %}active{% endif %}"
+            >
+              <i
+                data-lucide="users-round"
+                class="w-5 h-5 flex-shrink-0 text-amber-200"
+              ></i>
+              <span class="flex-1">Grup Saya</span>
+              {% if total_grup_count > 1 %}
+              <span
+                class="px-2 py-0.5 rounded-full bg-white/25 text-[10px] font-black text-white"
+                >{{ total_grup_count }}</span
+              >
+              {% endif %}
+            </a>
+          </nav>
         </div>
-      </div>
 
-    </aside>
+        <!-- Bottom User Profile Capsule -->
+        <div class="mt-8 pt-4 border-t border-white/20">
+          <div class="profile-capsule-card">
+            <div class="flex items-center gap-3 overflow-hidden">
+              <div
+                class="w-10 h-10 rounded-full bg-gradient-to-tr from-white to-amber-100 text-amber-800 font-black text-sm flex items-center justify-center flex-shrink-0 shadow-md border-2 border-white"
+              >
+                {{ user_nama|default:"User"|slice:":2"|upper }}
+              </div>
+              <div class="overflow-hidden">
+                <p class="text-xs font-bold text-white truncate leading-tight">
+                  {{ user_nama|default:"Pengguna Arisan" }}
+                </p>
+                <p
+                  class="text-[10px] text-amber-100 font-semibold truncate mt-0.5"
+                >
+                  {% if user_role == 'ketua' %}👑 Ketua{% else %}👤 Anggota{% endif %}
+                </p>
+              </div>
+            </div>
+            <a
+              href="{% url 'logout' %}"
+              title="Keluar dari sesi"
+              class="w-8 h-8 rounded-xl bg-white/20 hover:bg-rose-500/90 text-white flex items-center justify-center transition-colors flex-shrink-0 shadow-sm"
+            >
+              <i data-lucide="log-out" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+      </aside>
 
-    <!-- ====================================================================
+      <!-- ====================================================================
          2. MAIN CONTENT AREA (PEARL WHITE CANVAS)
          ==================================================================== -->
-    <main id="mainContentContainer" class="flex-1 flex flex-col bg-white/90 overflow-y-auto pb-28 md:pb-8">
-
-      <!-- Header Top Bar (Desktop & Mobile) -->
-      <header class="p-3 sm:p-5 pb-3 border-b border-stone-200/50 flex flex-col sm:flex-row items-center justify-between gap-3 bg-white/70 backdrop-blur-md">
-        
-        <!-- Mobile Brand Logo Header (Khusus HP: md:hidden) -->
-        <div class="flex items-center justify-between w-full md:hidden mb-1">
-          <div class="flex items-center gap-2.5">
-            <img src="{% static 'img/logo.svg' %}" alt="Logo Arisan" class="w-9 h-9 object-contain drop-shadow-[0_2px_8px_rgba(245,158,11,0.4)] flex-shrink-0">
-            <div>
-              <div class="flex items-center gap-1.5">
-                <h3 class="font-black text-sm text-stone-900 leading-tight">Arisan Digital</h3>
-                {% if kelompok %}
-                  <span class="px-2 py-0.2 rounded-full bg-amber-100 text-amber-900 text-[9px] font-black border border-amber-300">
+      <main
+        id="mainContentContainer"
+        data-room-code="{{ kelompok.kode_room|default:'' }}"
+        class="flex-1 min-w-0 w-full max-w-full flex flex-col bg-white/90 overflow-y-auto overflow-x-hidden pb-28 md:pb-8"
+      >
+        <!-- Header Top Bar (Desktop & Mobile) -->
+        <header
+          class="p-3 sm:p-5 pb-3 border-b border-stone-200/50 flex flex-col sm:flex-row items-center justify-between gap-3 bg-white/70 backdrop-blur-md"
+        >
+          <!-- Mobile Brand Logo Header (Khusus HP: md:hidden) -->
+          <div class="flex items-center justify-between w-full md:hidden mb-1">
+            <div class="flex items-center gap-2.5">
+              <img
+                src="{% static 'img/logo.svg' %}"
+                alt="Logo Arisan"
+                class="w-9 h-9 object-contain drop-shadow-[0_2px_8px_rgba(245,158,11,0.4)] flex-shrink-0"
+              />
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <h3 class="font-black text-sm text-stone-900 leading-tight">
+                    Arisan Digital
+                  </h3>
+                  {% if kelompok %}
+                  <span
+                    class="px-2 py-0.2 rounded-full bg-amber-100 text-amber-900 text-[9px] font-black border border-amber-300"
+                  >
                     P-{{ kelompok.putaran_berikutnya }}
                   </span>
-                {% endif %}
+                  {% endif %}
+                </div>
+                <p class="text-[10px] text-amber-800 font-extrabold truncate">
+                  {% if user_role == 'ketua' %}👑 Ketua{% else %}👤 Anggota{% endif %}
+                </p>
               </div>
-              <p class="text-[10px] text-amber-800 font-extrabold truncate">
-                {% if user_role == 'ketua' %}👑 Ketua{% else %}👤 Anggota{% endif %}
-              </p>
             </div>
-          </div>
 
-          {% if kelompok %}
-            <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-300 text-amber-900 text-xs font-bold shadow-sm">
+            {% if kelompok %}
+            <div
+              class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-300 text-amber-900 text-xs font-bold shadow-sm"
+            >
               <span class="text-[10px] text-stone-500">Room:</span>
-              <strong class="font-mono text-amber-800">{{ kelompok.kode_room }}</strong>
-              <button onclick="copyRoomCode('{{ kelompok.kode_room }}')" class="p-0.5 text-amber-700">
+              <strong class="font-mono text-amber-800"
+                >{{ kelompok.kode_room }}</strong
+              >
+              <button
+                onclick="copyRoomCode('{{ kelompok.kode_room }}')"
+                class="p-0.5 text-amber-700"
+              >
                 <i data-lucide="copy" class="w-3 h-3"></i>
               </button>
             </div>
-          {% endif %}
-        </div>
+            {% endif %}
+          </div>
 
-        <!-- Desktop Left Identity: Arisan Brand & Program Aktif (Khusus Layar Desktop) -->
-        <div class="hidden md:flex items-center gap-3">
-          <img src="{% static 'img/logo.svg' %}" alt="Logo Arisan" class="w-10 h-10 object-contain drop-shadow-[0_2px_8px_rgba(245,158,11,0.4)] flex-shrink-0">
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 class="font-black text-sm text-stone-900 leading-tight">
-                {{ kelompok.nama_kelompok|default:"Arisan Digital" }}
-              </h2>
-              {% if kelompok %}
-                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-[10px] font-black tracking-wide shadow-xs">
-                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+          <!-- Desktop Left Identity: Arisan Brand & Program Aktif (Khusus Layar Desktop) -->
+          <div class="hidden md:flex items-center gap-3">
+            <img
+              src="{% static 'img/logo.svg' %}"
+              alt="Logo Arisan"
+              class="w-10 h-10 object-contain drop-shadow-[0_2px_8px_rgba(245,158,11,0.4)] flex-shrink-0"
+            />
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="font-black text-sm text-stone-900 leading-tight">
+                  {{ kelompok.nama_kelompok|default:"Arisan Digital" }}
+                </h2>
+                {% if kelompok %}
+                <span
+                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-[10px] font-black tracking-wide shadow-xs"
+                >
+                  <span
+                    class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"
+                  ></span>
                   PUTARAN KE-{{ kelompok.putaran_berikutnya }}
                 </span>
-              {% endif %}
+                {% endif %}
+              </div>
+              <p class="text-[10px] text-stone-400 font-semibold mt-0.5">
+                Iuran: Rp {{ kelompok.nominal_iuran|floatformat:0 }} &bull; {{ kelompok.frekuensi_setor|capfirst }}
+              </p>
             </div>
-            <p class="text-[10px] text-stone-400 font-semibold mt-0.5">
-              Iuran: Rp {{ kelompok.nominal_iuran|floatformat:0 }} &bull; {{ kelompok.frekuensi_setor|capfirst }}
-            </p>
           </div>
-        </div>
 
-        <!-- Search Bar Inset Cekung (Concave 3D) -->
-        <form method="GET" action="{% url 'dashboard' %}" class="w-full sm:w-80 relative">
-          <i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"></i>
-          <input type="text" name="q" value="{{ query|default:'' }}" 
-                 placeholder="Cari nama warga, nomor HP..." 
-                 class="search-bar-concave">
-        </form>
+          <!-- Search Bar Inset Cekung (Concave 3D) -->
+          <form
+            method="GET"
+            action="{% url 'dashboard' %}"
+            class="w-full sm:w-80 relative"
+          >
+            <i
+              data-lucide="search"
+              class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"
+            ></i>
+            <input
+              type="text"
+              name="q"
+              value="{{ query|default:'' }}"
+              placeholder="Cari nama warga, nomor HP..."
+              class="search-bar-concave"
+            />
+          </form>
 
-        <!-- Right Bar (Desktop: Room Code & Role) -->
-        <div class="hidden md:flex items-center gap-3 w-full sm:w-auto justify-end">
-          {% if kelompok %}
-            <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-50 to-amber-100/90 border border-amber-300/80 text-amber-900 shadow-sm">
-              <span class="text-[11px] font-semibold text-stone-600">Kode Room:</span>
-              <strong id="headerRoomCode" class="font-mono font-black text-xs tracking-wider text-amber-800">{{ kelompok.kode_room }}</strong>
-              <button onclick="copyRoomCode('{{ kelompok.kode_room }}')" title="Salin Kode Room" class="p-1 rounded-full hover:bg-amber-200/70 text-amber-800 transition-colors">
+          <!-- Right Bar (Desktop: Room Code & Role) -->
+          <div
+            class="hidden md:flex items-center gap-3 w-full sm:w-auto justify-end"
+          >
+            {% if kelompok %}
+            <div
+              class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-50 to-amber-100/90 border border-amber-300/80 text-amber-900 shadow-sm"
+            >
+              <span class="text-[11px] font-semibold text-stone-600"
+                >Kode Room:</span
+              >
+              <strong
+                id="headerRoomCode"
+                class="font-mono font-black text-xs tracking-wider text-amber-800"
+                >{{ kelompok.kode_room }}</strong
+              >
+              <button
+                onclick="copyRoomCode('{{ kelompok.kode_room }}')"
+                title="Salin Kode Room"
+                class="p-1 rounded-full hover:bg-amber-200/70 text-amber-800 transition-colors"
+              >
                 <i data-lucide="copy" class="w-3.5 h-3.5"></i>
               </button>
             </div>
-          {% endif %}
-
-          <div class="flex items-center gap-2 pl-2 border-l border-stone-200">
-            {% if user_role == 'ketua' %}
-              <span class="badge-role-ketua-3d"><span>👑</span><span>KETUA</span></span>
-            {% else %}
-              <span class="badge-role-anggota-3d"><span>👤</span><span>ANGGOTA</span></span>
             {% endif %}
-          </div>
-        </div>
-      </header>
 
-      <!-- Django Messages (Alerts) with Auto-Dismiss (2.5s) -->
-      {% if messages %}
+            <div class="flex items-center gap-2 pl-2 border-l border-stone-200">
+              {% if user_role == 'ketua' %}
+              <span class="badge-role-ketua-3d"
+                ><span>👑</span><span>KETUA</span></span
+              >
+              {% else %}
+              <span class="badge-role-anggota-3d"
+                ><span>👤</span><span>ANGGOTA</span></span
+              >
+              {% endif %}
+            </div>
+          </div>
+        </header>
+
+        <!-- Django Messages (Alerts) with Auto-Dismiss (2.5s) -->
+        {% if messages %}
         <div id="djangoMessagesContainer" class="px-4 sm:px-8 pt-3 space-y-2">
           {% for message in messages %}
-            <div class="flash-alert-item p-3.5 rounded-2xl flex items-center justify-between gap-3 text-xs font-bold transition-all duration-300 shadow-xs {% if message.tags == 'error' %}bg-rose-50 text-rose-800 border border-rose-200{% else %}bg-amber-50 text-amber-900 border border-amber-200{% endif %}">
-              <div class="flex items-center gap-2.5">
-                <i data-lucide="{% if message.tags == 'error' %}alert-circle{% else %}check-circle-2{% endif %}" class="w-4 h-4 flex-shrink-0 {% if message.tags == 'error' %}text-rose-600{% else %}text-amber-600{% endif %}"></i>
-                <span>{{ message }}</span>
-              </div>
-              <button type="button" onclick="dismissFlashAlert(this)" class="w-6 h-6 rounded-full hover:bg-black/5 flex items-center justify-center text-stone-400 hover:text-stone-700 transition-colors flex-shrink-0 cursor-pointer" title="Tutup Notifikasi">
-                <i data-lucide="x" class="w-3.5 h-3.5 pointer-events-none"></i>
-              </button>
+          <div
+            class="flash-alert-item p-3.5 rounded-2xl flex items-center justify-between gap-3 text-xs font-bold transition-all duration-300 shadow-xs {% if message.tags == 'error' %}bg-rose-50 text-rose-800 border border-rose-200{% else %}bg-amber-50 text-amber-900 border border-amber-200{% endif %}"
+          >
+            <div class="flex items-center gap-2.5">
+              <i
+                data-lucide="{% if message.tags == 'error' %}alert-circle{% else %}check-circle-2{% endif %}"
+                class="w-4 h-4 flex-shrink-0 {% if message.tags == 'error' %}text-rose-600{% else %}text-amber-600{% endif %}"
+              ></i>
+              <span>{{ message }}</span>
             </div>
+            <button
+              type="button"
+              onclick="dismissFlashAlert(this)"
+              class="w-6 h-6 rounded-full hover:bg-black/5 flex items-center justify-center text-stone-400 hover:text-stone-700 transition-colors flex-shrink-0 cursor-pointer"
+              title="Tutup Notifikasi"
+            >
+              <i data-lucide="x" class="w-3.5 h-3.5 pointer-events-none"></i>
+            </button>
+          </div>
           {% endfor %}
         </div>
-      {% endif %}
+        {% endif %}
 
-      <!-- Page Content Block -->
-      <div id="dynamicPageContent" class="p-4 sm:p-6 md:p-8 flex-1">
-        {% block content %}{% endblock %}
-      </div>
+        <!-- Page Content Block -->
+        <div id="dynamicPageContent" class="p-4 sm:p-6 md:p-8 flex-1">
+          {% block content %}{% endblock %}
+        </div>
 
-      <!-- Footer Bar (Clearance Bawah Ekstra Khusus Mobile agar Tidak Tertutup Tab Bar) -->
-      <footer class="px-6 py-4 pb-24 md:pb-4 border-t border-stone-100 flex items-center justify-between text-xs text-stone-400 bg-white/40">
-        <p>Arisan Digital by Alware Platform</p>
-        <p class="hidden sm:inline">Sistem Gotong Royong Digital &bull; Sah &amp; Transparan</p>
-      </footer>
-    </main>
+        <!-- Footer Bar (Clearance Bawah Ekstra Khusus Mobile agar Tidak Tertutup Tab Bar) -->
+        <footer
+          class="px-6 py-4 pb-24 md:pb-4 border-t border-stone-100 flex items-center justify-between text-xs text-stone-400 bg-white/40"
+        >
+          <p>Arisan Digital by Alware Platform</p>
+          <p class="hidden sm:inline">
+            Sistem Gotong Royong Digital &bull; Sah &amp; Transparan
+          </p>
+        </footer>
+      </main>
+    </div>
 
-  </div>
-
-  <!-- ========================================================================
+    <!-- ========================================================================
        3. FLOATING LIQUID GLASS MOBILE BOTTOM TAB BAR (KHUSUS TAMPILAN HP)
        Muncul otomatis di layar smartphone (md:hidden)
        Presisi 5 Tab Simetris dengan Tombol (+) Bulat Sempurna di Tengah
        ======================================================================== -->
-  <nav class="mobile-bottom-tab-bar md:hidden" id="mobileBottomNav">
-    
-    <!-- Tab 1: Beranda / Dashboard -->
-    <a href="{% url 'dashboard' %}" class="mobile-tab-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" title="Beranda">
-      <div class="mobile-tab-icon-circle">
-        <i data-lucide="layout-grid" class="w-5 h-5"></i>
-      </div>
-      <span class="mobile-tab-label">Beranda</span>
-    </a>
+    <nav
+      class="mobile-bottom-tab-bar-shell mobile-bottom-tab-bar md:hidden"
+      id="mobileBottomNav"
+    >
+      <!-- Fluid Jelly Sliding Indicator (Kaca Cair Cembung Meluncur) -->
+      <div class="mobile-fluid-indicator" id="mobileFluidIndicator"></div>
 
-    <!-- Tab 2: Ruang Kocokan Live -->
-    <a href="{% url 'kocokan_view' %}" class="mobile-tab-item {% if 'kocokan' in request.resolver_match.url_name %}active{% endif %}" title="Kocokan Live">
-      <div class="mobile-tab-icon-circle">
-        <i data-lucide="sparkles" class="w-5 h-5"></i>
-      </div>
-      <span class="mobile-tab-label">Kocokan</span>
-    </a>
-
-    <!-- Tab 3 (CENTER PERSIS): Tombol Pintar Quick Action (+) Bulat Sempurna -->
-    <div class="flex items-center justify-center">
-      <button type="button" onclick="handleMobilePlusClick()" class="mobile-fab-center-btn" title="{% if user_role == 'ketua' %}Tambah Anggota Baru{% else %}Tiket &amp; Setoran Saya{% endif %}">
-        <div class="mobile-fab-socket">
-          <div class="mobile-fab-orb">
-            <i data-lucide="plus" class="w-6 h-6 text-white stroke-[2.8]"></i>
+      <!-- 5 Tab Kolom Grid Murni (Jaminan 1 Baris Presisi & Nol Wrapping) -->
+      <div class="mobile-tab-grid">
+        <!-- Tab 0: Beranda / Dashboard -->
+        <a
+          href="{% url 'dashboard' %}"
+          class="mobile-tab-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+          title="Beranda"
+          data-tab-index="0"
+        >
+          <div class="mobile-tab-icon-wrapper">
+            <i data-lucide="layout-grid" class="w-5 h-5"></i>
           </div>
-        </div>
-      </button>
-    </div>
+          <span class="mobile-tab-label">Beranda</span>
+        </a>
 
-    <!-- Tab 4: Riwayat Pemenang & Transparansi Kas (Pengganti Admin!) -->
-    <a href="{% url 'riwayat_kas' %}" class="mobile-tab-item {% if request.resolver_match.url_name == 'riwayat_kas' %}active{% endif %}" title="Riwayat & Kas">
-      <div class="mobile-tab-icon-circle">
-        <i data-lucide="receipt-text" class="w-5 h-5"></i>
+        <!-- Tab 1: Ruang Kocokan Live -->
+        <a
+          href="{% url 'kocokan_view' %}"
+          class="mobile-tab-item {% if 'kocokan' in request.resolver_match.url_name %}active{% endif %}"
+          title="Kocokan Live"
+          data-tab-index="1"
+        >
+          <div class="mobile-tab-icon-wrapper">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+          </div>
+          <span class="mobile-tab-label">Kocokan</span>
+        </a>
+
+        <!-- Tab 2 (CENTER PERSIS): Tombol Pintar Quick Action (+) Sejajar di Tengah -->
+        <button
+          type="button"
+          onclick="handleMobilePlusClick()"
+          class="mobile-tab-item mobile-tab-plus"
+          id="mobilePlusBtn"
+          title="{% if user_role == 'ketua' %}Tambah Anggota Baru{% else %}Tiket &amp; Setoran Saya{% endif %}"
+          data-tab-index="2"
+        >
+          <div class="mobile-tab-icon-wrapper plus-circle">
+            <i data-lucide="plus" class="w-5 h-5 plus-icon stroke-[2.6]"></i>
+          </div>
+          <span class="mobile-tab-label"
+            >{% if user_role == 'ketua' %}Tambah{% else %}Aksi{% endif %}</span
+          >
+        </button>
+
+        <!-- Tab 3: Riwayat Pemenang & Transparansi Kas (Pengganti Admin!) -->
+        <a
+          href="{% url 'riwayat_kas' %}"
+          class="mobile-tab-item {% if request.resolver_match.url_name == 'riwayat_kas' %}active{% endif %}"
+          title="Riwayat & Kas"
+          data-tab-index="3"
+        >
+          <div class="mobile-tab-icon-wrapper">
+            <i data-lucide="receipt-text" class="w-5 h-5"></i>
+          </div>
+          <span class="mobile-tab-label">Riwayat</span>
+        </a>
+
+        <!-- Tab 4: Pusat Kendali Multi-Arisan (Grup Saya) -->
+        <a
+          href="{% url 'grup_saya' %}"
+          class="mobile-tab-item {% if request.resolver_match.url_name == 'grup_saya' %}active{% endif %}"
+          title="Grup Saya"
+          data-tab-index="4"
+        >
+          <div class="mobile-tab-icon-wrapper">
+            <i data-lucide="users-round" class="w-5 h-5"></i>
+          </div>
+          <span class="mobile-tab-label">Grup</span>
+        </a>
       </div>
-      <span class="mobile-tab-label">Riwayat</span>
-    </a>
+    </nav>
 
-    <!-- Tab 5: Pusat Kendali Multi-Arisan (Grup Saya) -->
-    <a href="{% url 'grup_saya' %}" class="mobile-tab-item {% if request.resolver_match.url_name == 'grup_saya' %}active{% endif %}" title="Grup Saya">
-      <div class="mobile-tab-icon-circle">
-        <i data-lucide="users-round" class="w-5 h-5"></i>
-      </div>
-      <span class="mobile-tab-label">Grup</span>
-    </a>
-
-  </nav>
-
-  <!-- ========================================================================
+    <!-- ========================================================================
        4. MODAL UNIVERSAL: TAMBAH ANGGOTA (KETUA) / AKSI CEPAT & TIKET (ANGGOTA)
        ======================================================================== -->
-  {% if user_role == 'ketua' %}
-  <!-- Modal Tambah Anggota (Khusus Ketua - Viewport Centered) -->
-  <div id="modalTambahAnggota" class="modal-viewport-center hidden">
-    <div class="modal-glass-thick w-full max-w-md p-6 sm:p-8 relative">
-      <div class="flex items-center justify-between mb-5">
-        <div class="flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center shadow-sm">
-            <i data-lucide="user-plus" class="w-5 h-5"></i>
+    {% if user_role == 'ketua' %}
+    <!-- Modal Tambah Anggota (Khusus Ketua - Viewport Centered) -->
+    <div id="modalTambahAnggota" class="modal-viewport-center hidden">
+      <div class="modal-glass-thick w-full max-w-md p-6 sm:p-8 relative">
+        <div class="flex items-center justify-between mb-5">
+          <div class="flex items-center gap-2.5">
+            <div
+              class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center shadow-sm"
+            >
+              <i data-lucide="user-plus" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h4 class="font-extrabold text-stone-900 text-base">
+                Tambah Anggota Manual
+              </h4>
+              <p class="text-[11px] text-stone-500">
+                Daftarkan warga baru ke kelompok arisan.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onclick="closeModalTambahAnggota()"
+            class="w-8 h-8 rounded-full hover:bg-stone-100 flex items-center justify-center text-stone-400 hover:text-stone-700"
+          >
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <form
+          method="POST"
+          action="{% url 'anggota_create' %}"
+          class="space-y-4"
+        >
+          {% csrf_token %}
+          <div>
+            <label class="block text-xs font-bold text-stone-700 mb-1.5"
+              >Nama Lengkap Warga <span class="text-rose-500">*</span></label
+            >
+            <input
+              type="text"
+              name="nama"
+              required
+              class="liquid-input-concave"
+              placeholder="Contoh: Budi Santoso / Bu Ani"
+            />
           </div>
           <div>
-            <h4 class="font-extrabold text-stone-900 text-base">Tambah Anggota Manual</h4>
-            <p class="text-[11px] text-stone-500">Daftarkan warga baru ke kelompok arisan.</p>
+            <label class="block text-xs font-bold text-stone-700 mb-1.5"
+              >Nomor WhatsApp / HP</label
+            >
+            <input
+              type="text"
+              name="no_telepon"
+              class="liquid-input-concave"
+              placeholder="08xxxxxxxxxx"
+            />
           </div>
-        </div>
-        <button type="button" onclick="closeModalTambahAnggota()" class="w-8 h-8 rounded-full hover:bg-stone-100 flex items-center justify-center text-stone-400 hover:text-stone-700">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+          <div>
+            <label class="block text-xs font-bold text-stone-700 mb-1.5"
+              >Alamat Rumah</label
+            >
+            <input
+              type="text"
+              name="alamat"
+              class="liquid-input-concave"
+              placeholder="Contoh: RT 05 Blok C No. 4"
+            />
+          </div>
+
+          <div class="flex items-center justify-end gap-2.5 pt-4">
+            <button
+              type="button"
+              onclick="closeModalTambahAnggota()"
+              class="px-5 py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50"
+            >
+              Batal
+            </button>
+            <button type="submit" class="btn-convex-gold text-xs !py-2.5 !px-5">
+              Simpan Anggota
+            </button>
+          </div>
+        </form>
       </div>
-
-      <form method="POST" action="{% url 'anggota_create' %}" class="space-y-4">
-        {% csrf_token %}
-        <div>
-          <label class="block text-xs font-bold text-stone-700 mb-1.5">Nama Lengkap Warga <span class="text-rose-500">*</span></label>
-          <input type="text" name="nama" required class="liquid-input-concave" placeholder="Contoh: Budi Santoso / Bu Ani">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-stone-700 mb-1.5">Nomor WhatsApp / HP</label>
-          <input type="text" name="no_telepon" class="liquid-input-concave" placeholder="08xxxxxxxxxx">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-stone-700 mb-1.5">Alamat Rumah</label>
-          <input type="text" name="alamat" class="liquid-input-concave" placeholder="Contoh: RT 05 Blok C No. 4">
-        </div>
-
-        <div class="flex items-center justify-end gap-2.5 pt-4">
-          <button type="button" onclick="closeModalTambahAnggota()" class="px-5 py-2.5 rounded-xl border border-stone-200 text-xs font-bold text-stone-600 hover:bg-stone-50">
-            Batal
-          </button>
-          <button type="submit" class="btn-convex-gold text-xs !py-2.5 !px-5">
-            Simpan Anggota
-          </button>
-        </div>
-      </form>
     </div>
-  </div>
-  {% else %}
-  <!-- Modal Aksi Cepat & Tiket Undian (Khusus Anggota - Viewport Centered) -->
-  <div id="modalQuickActionAnggota" class="modal-viewport-center hidden">
-    <div class="modal-glass-thick w-full max-w-md p-6 sm:p-7 relative max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 text-white flex items-center justify-center shadow-md">
-            <i data-lucide="ticket" class="w-5 h-5"></i>
+    {% else %}
+    <!-- Modal Aksi Cepat & Tiket Undian (Khusus Anggota - Viewport Centered) -->
+    <div id="modalQuickActionAnggota" class="modal-viewport-center hidden">
+      <div
+        class="modal-glass-thick w-full max-w-md p-6 sm:p-7 relative max-h-[90vh] overflow-y-auto"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2.5">
+            <div
+              class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 text-white flex items-center justify-center shadow-md"
+            >
+              <i data-lucide="ticket" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h4 class="font-extrabold text-stone-900 text-base">
+                Tiket &amp; Aksi Anda
+              </h4>
+              <p class="text-[11px] text-stone-500">
+                Kelompok: {{ kelompok.nama_kelompok }}
+              </p>
+            </div>
           </div>
-          <div>
-            <h4 class="font-extrabold text-stone-900 text-base">Tiket &amp; Aksi Anda</h4>
-            <p class="text-[11px] text-stone-500">Kelompok: {{ kelompok.nama_kelompok }}</p>
+          <button
+            type="button"
+            onclick="closeModalQuickActionAnggota()"
+            class="w-8 h-8 rounded-full hover:bg-stone-100 flex items-center justify-center text-stone-400 hover:text-stone-700"
+          >
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Kartu Tiket Lot & Verifikasi Setoran Tunai Fisik -->
+        <div
+          class="p-4 rounded-2xl bg-white/95 border border-stone-200/90 shadow-sm space-y-3 mb-4"
+        >
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-stone-500"
+              >Tiket Lot Anda:</span
+            >
+            <span
+              class="px-3 py-1 rounded-full bg-amber-500 text-white font-black text-sm tracking-wide shadow-sm"
+            >
+              LOT #{{ peserta_aktif.nomor_undian|stringformat:"02d"|default:"--" }}
+            </span>
           </div>
-        </div>
-        <button type="button" onclick="closeModalQuickActionAnggota()" class="w-8 h-8 rounded-full hover:bg-stone-100 flex items-center justify-center text-stone-400 hover:text-stone-700">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
 
-      <!-- Kartu Tiket Lot & Verifikasi Setoran Tunai Fisik -->
-      <div class="p-4 rounded-2xl bg-white/95 border border-stone-200/90 shadow-sm space-y-3 mb-4">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-stone-500">Tiket Lot Anda:</span>
-          <span class="px-3 py-1 rounded-full bg-amber-500 text-white font-black text-sm tracking-wide shadow-sm">
-            LOT #{{ peserta_aktif.nomor_undian|stringformat:"02d"|default:"--" }}
-          </span>
-        </div>
+          <div
+            class="p-3 rounded-xl {% if peserta_aktif.status_setor %}bg-emerald-50 border border-emerald-200 text-emerald-900{% else %}bg-amber-50 border border-amber-200 text-amber-900{% endif %}"
+          >
+            <div class="flex items-center gap-2 text-xs font-black">
+              {% if peserta_aktif.status_setor %}
+              <i
+                data-lucide="check-circle-2"
+                class="w-4 h-4 text-emerald-600 flex-shrink-0"
+              ></i>
+              <span
+                >SETORAN TUNAI LUNAS (Rp {{ kelompok.nominal_iuran|floatformat:0 }})</span
+              >
+              {% else %}
+              <i
+                data-lucide="clock"
+                class="w-4 h-4 text-amber-600 flex-shrink-0"
+              ></i>
+              <span
+                >BELUM SETOR TUNAI (Rp {{ kelompok.nominal_iuran|floatformat:0 }})</span
+              >
+              {% endif %}
+            </div>
+            <p
+              class="text-[11px] mt-1 {% if peserta_aktif.status_setor %}text-emerald-700{% else %}text-amber-800{% endif %} font-medium leading-relaxed"
+            >
+              {% if peserta_aktif.status_setor %} Uang iuran fisik Anda telah
+              diterima dan diverifikasi sah oleh Ketua Kelompok. Anda berhak
+              mengikuti kocokan periode ini. {% else %} Silakan serahkan uang
+              tunai fisik secara langsung ke Ketua Kelompok saat pertemuan warga
+              agar dicatat lunas di aplikasi. {% endif %}
+            </p>
+          </div>
 
-        <div class="p-3 rounded-xl {% if peserta_aktif.status_setor %}bg-emerald-50 border border-emerald-200 text-emerald-900{% else %}bg-amber-50 border border-amber-200 text-amber-900{% endif %}">
-          <div class="flex items-center gap-2 text-xs font-black">
-            {% if peserta_aktif.status_setor %}
-              <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 flex-shrink-0"></i>
-              <span>SETORAN TUNAI LUNAS (Rp {{ kelompok.nominal_iuran|floatformat:0 }})</span>
+          <div
+            class="flex justify-between items-center text-xs py-1 border-t border-stone-100"
+          >
+            <span class="text-stone-400">Peluang Undian:</span>
+            {% if peserta_aktif.status_menang %}
+            <span class="text-stone-700 font-bold"
+              >🏆 Sudah Menang Putaran Ini</span
+            >
             {% else %}
-              <i data-lucide="clock" class="w-4 h-4 text-amber-600 flex-shrink-0"></i>
-              <span>BELUM SETOR TUNAI (Rp {{ kelompok.nominal_iuran|floatformat:0 }})</span>
+            <span class="text-amber-800 font-black"
+              >🎟️ Siap Masuk Kotak Kocokan</span
+            >
             {% endif %}
           </div>
-          <p class="text-[11px] mt-1 {% if peserta_aktif.status_setor %}text-emerald-700{% else %}text-amber-800{% endif %} font-medium leading-relaxed">
-            {% if peserta_aktif.status_setor %}
-              Uang iuran fisik Anda telah diterima dan diverifikasi sah oleh Ketua Kelompok. Anda berhak mengikuti kocokan periode ini.
-            {% else %}
-              Silakan serahkan uang tunai fisik secara langsung ke Ketua Kelompok saat pertemuan warga agar dicatat lunas di aplikasi.
-            {% endif %}
+        </div>
+
+        <!-- Menu Aksi Cepat Anggota -->
+        <div class="space-y-2 mb-2">
+          <p
+            class="text-[11px] font-extrabold text-stone-400 uppercase tracking-wider px-1"
+          >
+            Menu Aksi
           </p>
+
+          <a
+            href="{% url 'grup_saya' %}"
+            class="p-3 rounded-2xl bg-white hover:bg-amber-50/50 border border-stone-200 flex items-center justify-between transition-colors shadow-sm text-xs font-bold text-stone-800"
+          >
+            <div class="flex items-center gap-2.5">
+              <div
+                class="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center"
+              >
+                <i data-lucide="layers" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="leading-none text-stone-900">
+                  Grup Saya &amp; Pindah Ruang
+                </p>
+                <p class="text-[10px] text-stone-400 font-normal mt-0.5">
+                  Lihat {{ total_grup_count }} program arisan yang Anda ikuti
+                </p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-stone-400"></i>
+          </a>
+
+          <a
+            href="{% url 'grup_saya' %}"
+            class="p-3 rounded-2xl bg-white hover:bg-amber-50/50 border border-stone-200 flex items-center justify-between transition-colors shadow-sm text-xs font-bold text-stone-800"
+          >
+            <div class="flex items-center gap-2.5">
+              <div
+                class="w-8 h-8 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center"
+              >
+                <i data-lucide="key-round" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="leading-none text-stone-900">Gabung Arisan Lain</p>
+                <p class="text-[10px] text-stone-400 font-normal mt-0.5">
+                  Masukkan Kode Room arisan teman/keluarga
+                </p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-stone-400"></i>
+          </a>
+
+          <a
+            href="{% url 'grup_saya' %}"
+            class="p-3 rounded-2xl bg-gradient-to-r from-amber-50 to-amber-100/60 hover:from-amber-100 hover:to-amber-200/60 border border-amber-300 flex items-center justify-between transition-colors shadow-sm text-xs font-bold text-amber-950"
+          >
+            <div class="flex items-center gap-2.5">
+              <div
+                class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center"
+              >
+                <i data-lucide="crown" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="leading-none">Buat Arisan Baru (Jadi Ketua)</p>
+                <p class="text-[10px] text-amber-800 font-normal mt-0.5">
+                  Buka program arisan komunitas Anda sendiri
+                </p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-amber-700"></i>
+          </a>
         </div>
 
-        <div class="flex justify-between items-center text-xs py-1 border-t border-stone-100">
-          <span class="text-stone-400">Peluang Undian:</span>
-          {% if peserta_aktif.status_menang %}
-            <span class="text-stone-700 font-bold">🏆 Sudah Menang Putaran Ini</span>
-          {% else %}
-            <span class="text-amber-800 font-black">🎟️ Siap Masuk Kotak Kocokan</span>
-          {% endif %}
+        <div class="flex items-center justify-end pt-3">
+          <button
+            type="button"
+            onclick="closeModalQuickActionAnggota()"
+            class="btn-convex-pearl text-xs !py-2.5 !px-5 w-full"
+          >
+            Tutup
+          </button>
         </div>
-      </div>
-
-      <!-- Menu Aksi Cepat Anggota -->
-      <div class="space-y-2 mb-2">
-        <p class="text-[11px] font-extrabold text-stone-400 uppercase tracking-wider px-1">Menu Aksi</p>
-
-        <a href="{% url 'grup_saya' %}" class="p-3 rounded-2xl bg-white hover:bg-amber-50/50 border border-stone-200 flex items-center justify-between transition-colors shadow-sm text-xs font-bold text-stone-800">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
-              <i data-lucide="layers" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <p class="leading-none text-stone-900">Grup Saya &amp; Pindah Ruang</p>
-              <p class="text-[10px] text-stone-400 font-normal mt-0.5">Lihat {{ total_grup_count }} program arisan yang Anda ikuti</p>
-            </div>
-          </div>
-          <i data-lucide="chevron-right" class="w-4 h-4 text-stone-400"></i>
-        </a>
-
-        <a href="{% url 'grup_saya' %}" class="p-3 rounded-2xl bg-white hover:bg-amber-50/50 border border-stone-200 flex items-center justify-between transition-colors shadow-sm text-xs font-bold text-stone-800">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center">
-              <i data-lucide="key-round" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <p class="leading-none text-stone-900">Gabung Arisan Lain</p>
-              <p class="text-[10px] text-stone-400 font-normal mt-0.5">Masukkan Kode Room arisan teman/keluarga</p>
-            </div>
-          </div>
-          <i data-lucide="chevron-right" class="w-4 h-4 text-stone-400"></i>
-        </a>
-
-        <a href="{% url 'grup_saya' %}" class="p-3 rounded-2xl bg-gradient-to-r from-amber-50 to-amber-100/60 hover:from-amber-100 hover:to-amber-200/60 border border-amber-300 flex items-center justify-between transition-colors shadow-sm text-xs font-bold text-amber-950">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center">
-              <i data-lucide="crown" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <p class="leading-none">Buat Arisan Baru (Jadi Ketua)</p>
-              <p class="text-[10px] text-amber-800 font-normal mt-0.5">Buka program arisan komunitas Anda sendiri</p>
-            </div>
-          </div>
-          <i data-lucide="chevron-right" class="w-4 h-4 text-amber-700"></i>
-        </a>
-      </div>
-
-      <div class="flex items-center justify-end pt-3">
-        <button type="button" onclick="closeModalQuickActionAnggota()" class="btn-convex-pearl text-xs !py-2.5 !px-5 w-full">
-          Tutup
-        </button>
       </div>
     </div>
-  </div>
-  {% endif %}
+    {% endif %}
 
-  <!-- ========================================================================
+    <!-- ========================================================================
        5. UNIVERSAL ROOT MODALS CONTAINER (DI LUAR CONTAINER KACA)
        Menjamin seluruh modal pop-up selalu mengambang persis di tengah layar HP
        ======================================================================== -->
-  <div id="modalPortalRoot">
-    {% block modals %}{% endblock %}
-  </div>
+    <div id="modalPortalRoot">{% block modals %}{% endblock %}</div>
 
-  <!-- Lucide Icons & Global Scripts -->
-  <script>
-    lucide.createIcons();
+    <!-- Lucide Icons & Global Scripts -->
+    <script>
+      lucide.createIcons();
 
-    // =========================================================================
-    // GLOBAL BODY SCROLL LOCK CONTROLLER FOR VIEWPORT-LOCKED MODALS
-    // =========================================================================
-    function lockBodyScroll() {
-      document.body.classList.add('modal-open');
-    }
+      // =========================================================================
+      // GLOBAL BODY SCROLL LOCK CONTROLLER FOR VIEWPORT-LOCKED MODALS
+      // =========================================================================
+      function lockBodyScroll() {
+        document.body.classList.add("modal-open");
+      }
 
-    function unlockBodyScroll() {
-      setTimeout(() => {
-        const anyOpen = document.querySelectorAll('.modal-viewport-center:not(.hidden)');
-        if (!anyOpen || anyOpen.length === 0) {
-          document.body.classList.remove('modal-open');
+      function unlockBodyScroll() {
+        setTimeout(() => {
+          const anyOpen = document.querySelectorAll(
+            ".modal-viewport-center:not(.hidden)",
+          );
+          if (!anyOpen || anyOpen.length === 0) {
+            document.body.classList.remove("modal-open");
+          }
+        }, 50);
+      }
+
+      // =========================================================================
+      // MODAL HANDLERS (UNIVERSAL AKSES KETUA & ANGGOTA)
+      // =========================================================================
+      function openModalTambahAnggota() {
+        const modal = document.getElementById("modalTambahAnggota");
+        if (modal) {
+          modal.classList.remove("hidden");
+          lockBodyScroll();
+          const inputNama = modal.querySelector('input[name="nama"]');
+          if (inputNama) inputNama.focus();
         }
-      }, 50);
-    }
-
-    // =========================================================================
-    // MODAL HANDLERS (UNIVERSAL AKSES KETUA & ANGGOTA)
-    // =========================================================================
-    function openModalTambahAnggota() {
-      const modal = document.getElementById('modalTambahAnggota');
-      if (modal) {
-        modal.classList.remove('hidden');
-        lockBodyScroll();
-        const inputNama = modal.querySelector('input[name="nama"]');
-        if (inputNama) inputNama.focus();
       }
-    }
 
-    function closeModalTambahAnggota() {
-      const modal = document.getElementById('modalTambahAnggota');
-      if (modal) {
-        modal.classList.add('hidden');
-        unlockBodyScroll();
+      function closeModalTambahAnggota() {
+        const modal = document.getElementById("modalTambahAnggota");
+        if (modal) {
+          modal.classList.add("hidden");
+          unlockBodyScroll();
+        }
+        onModalClosedRestoreTab();
       }
-    }
 
-    function openModalQuickActionAnggota() {
-      const modal = document.getElementById('modalQuickActionAnggota');
-      if (modal) {
-        modal.classList.remove('hidden');
-        lockBodyScroll();
+      function openModalQuickActionAnggota() {
+        const modal = document.getElementById("modalQuickActionAnggota");
+        if (modal) {
+          modal.classList.remove("hidden");
+          lockBodyScroll();
+        }
       }
-    }
 
-    function closeModalQuickActionAnggota() {
-      const modal = document.getElementById('modalQuickActionAnggota');
-      if (modal) {
-        modal.classList.add('hidden');
-        unlockBodyScroll();
+      function closeModalQuickActionAnggota() {
+        const modal = document.getElementById("modalQuickActionAnggota");
+        if (modal) {
+          modal.classList.add("hidden");
+          unlockBodyScroll();
+        }
+        onModalClosedRestoreTab();
       }
-    }
 
-    // Fallback alias
-    function openModalInfoAnggota() { openModalQuickActionAnggota(); }
-    function closeModalInfoAnggota() { closeModalQuickActionAnggota(); }
-
-    function handleMobilePlusClick() {
-      const userRole = '{{ user_role|default:"anggota" }}';
-      if (userRole === 'ketua') {
-        openModalTambahAnggota();
-      } else {
+      // Fallback alias
+      function openModalInfoAnggota() {
         openModalQuickActionAnggota();
       }
-    }
-
-    // =========================================================================
-    // ROBUST CLIPBOARD HELPER (MENDUKUNG HTTPS DAN LOCAL HTTP IP SMARTPHONE)
-    // =========================================================================
-    function copyToClipboard(text, successMsg) {
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).then(() => {
-          showToast(successMsg || 'Berhasil disalin ke clipboard!');
-        }).catch(() => {
-          fallbackCopyText(text, successMsg);
-        });
-      } else {
-        fallbackCopyText(text, successMsg);
+      function closeModalInfoAnggota() {
+        closeModalQuickActionAnggota();
       }
-    }
 
-    function fallbackCopyText(text, successMsg) {
-      try {
-        const textArea = document.createElement("textarea");
-        textArea.value = text;
-        textArea.style.position = "fixed";
-        textArea.style.top = "-9999px";
-        textArea.style.left = "-9999px";
-        textArea.setAttribute("readonly", "");
-        document.body.appendChild(textArea);
-        textArea.select();
-        textArea.setSelectionRange(0, 99999);
-        const successful = document.execCommand('copy');
-        document.body.removeChild(textArea);
-        if (successful) {
-          showToast(successMsg || 'Berhasil disalin ke clipboard!');
+      // =========================================================================
+      // FLUID JELLY SLIDER INDICATOR & MODAL INTERACTION (OPSI B)
+      // =========================================================================
+      let lastActiveTabIndex = 0;
+      let isModalOpen = false;
+
+      function getActiveTabIndex() {
+        const activeTab = document.querySelector(
+          ".mobile-tab-item.active:not(#mobilePlusBtn)",
+        );
+        if (activeTab && activeTab.hasAttribute("data-tab-index")) {
+          return parseInt(activeTab.getAttribute("data-tab-index"), 10);
+        }
+        return 0;
+      }
+
+      function moveFluidIndicator(index, withStretch = true) {
+        const indicator = document.getElementById("mobileFluidIndicator");
+        if (!indicator) return;
+
+        const stepPercent = 100;
+        indicator.style.transform = `translateX(${index * stepPercent}%)`;
+
+        if (withStretch) {
+          indicator.classList.add("is-stretching");
+          setTimeout(() => {
+            indicator.classList.remove("is-stretching");
+          }, 320);
+        }
+      }
+
+      function initFluidTabIndicator() {
+        lastActiveTabIndex = getActiveTabIndex();
+        moveFluidIndicator(lastActiveTabIndex, false);
+      }
+
+      function onModalClosedRestoreTab() {
+        if (!isModalOpen) return;
+        isModalOpen = false;
+
+        // Kembalikan rotasi icon (+)
+        const plusIcon = document.querySelector("#mobilePlusBtn .plus-icon");
+        if (plusIcon) plusIcon.style.transform = "rotate(0deg)";
+
+        // Kembalikan active class ke tab asal
+        document
+          .querySelectorAll(".mobile-tab-item")
+          .forEach((el) => el.classList.remove("active"));
+        const originTab = document.querySelector(
+          `.mobile-tab-item[data-tab-index="${lastActiveTabIndex}"]`,
+        );
+        if (originTab) originTab.classList.add("active");
+
+        // Cairan meluncur balik ke tab asal dengan efek membal (Spatial Continuity)
+        moveFluidIndicator(lastActiveTabIndex, true);
+      }
+
+      function handleMobilePlusClick() {
+        // Opsi B: Simpan tab asal, cairan melompat ke tengah (+)
+        lastActiveTabIndex = getActiveTabIndex();
+        isModalOpen = true;
+
+        // Update active class
+        document
+          .querySelectorAll(".mobile-tab-item")
+          .forEach((el) => el.classList.remove("active"));
+        const plusBtn = document.getElementById("mobilePlusBtn");
+        if (plusBtn) plusBtn.classList.add("active");
+
+        // Animasi cairan meluncur ke index 2 (+) dengan efek kenyal
+        moveFluidIndicator(2, true);
+
+        // Putar icon (+) jadi 45 derajat
+        const plusIcon = document.querySelector("#mobilePlusBtn .plus-icon");
+        if (plusIcon) plusIcon.style.transform = "rotate(45deg)";
+
+        // Efek getar taktil
+        if (navigator.vibrate) {
+          try {
+            navigator.vibrate(15);
+          } catch (_) {}
+        }
+
+        // Buka modal
+        const userRole = '{{ user_role|default:"anggota" }}';
+        if (userRole === "ketua") {
+          openModalTambahAnggota();
         } else {
+          openModalQuickActionAnggota();
+        }
+      }
+
+      // =========================================================================
+      // ROBUST CLIPBOARD HELPER (MENDUKUNG HTTPS DAN LOCAL HTTP IP SMARTPHONE)
+      // =========================================================================
+      function copyToClipboard(text, successMsg) {
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard
+            .writeText(text)
+            .then(() => {
+              showToast(successMsg || "Berhasil disalin ke clipboard!");
+            })
+            .catch(() => {
+              fallbackCopyText(text, successMsg);
+            });
+        } else {
+          fallbackCopyText(text, successMsg);
+        }
+      }
+
+      function fallbackCopyText(text, successMsg) {
+        try {
+          const textArea = document.createElement("textarea");
+          textArea.value = text;
+          textArea.style.position = "fixed";
+          textArea.style.top = "-9999px";
+          textArea.style.left = "-9999px";
+          textArea.setAttribute("readonly", "");
+          document.body.appendChild(textArea);
+          textArea.select();
+          textArea.setSelectionRange(0, 99999);
+          const successful = document.execCommand("copy");
+          document.body.removeChild(textArea);
+          if (successful) {
+            showToast(successMsg || "Berhasil disalin ke clipboard!");
+          } else {
+            prompt("Salin teks di bawah ini:", text);
+          }
+        } catch (err) {
           prompt("Salin teks di bawah ini:", text);
         }
-      } catch (err) {
-        prompt("Salin teks di bawah ini:", text);
       }
-    }
 
-    function copyRoomCode(code) {
-      copyToClipboard(code, `Kode Room "${code}" berhasil disalin! Bagikan ke warga.`);
-    }
+      function copyRoomCode(code) {
+        copyToClipboard(
+          code,
+          `Kode Room "${code}" berhasil disalin! Bagikan ke warga.`,
+        );
+      }
 
-    function showToast(message) {
-      const toast = document.getElementById('toastNotification');
-      const text = document.getElementById('toastMessage');
-      if (!toast || !text) return;
+      function showToast(message) {
+        const toast = document.getElementById("toastNotification");
+        const text = document.getElementById("toastMessage");
+        if (!toast || !text) return;
 
-      text.innerText = message;
-      toast.classList.remove('translate-y-[-140%]', 'opacity-0');
-      toast.classList.add('translate-y-0', 'opacity-100');
+        text.innerText = message;
+        toast.classList.remove("translate-y-[-140%]", "opacity-0");
+        toast.classList.add("translate-y-0", "opacity-100");
 
-      setTimeout(() => {
-        toast.classList.remove('translate-y-0', 'opacity-100');
-        toast.classList.add('translate-y-[-140%]', 'opacity-0');
-      }, 3000);
-    }
+        setTimeout(() => {
+          toast.classList.remove("translate-y-0", "opacity-100");
+          toast.classList.add("translate-y-[-140%]", "opacity-0");
+        }, 3000);
+      }
 
-    // Explicit Global Window Attachments (Fail-proof across SPA)
-    window.openModalTambahAnggota = openModalTambahAnggota;
-    window.closeModalTambahAnggota = closeModalTambahAnggota;
-    window.openModalQuickActionAnggota = openModalQuickActionAnggota;
-    window.closeModalQuickActionAnggota = closeModalQuickActionAnggota;
-    window.openModalInfoAnggota = openModalInfoAnggota;
-    window.closeModalInfoAnggota = closeModalInfoAnggota;
-    window.handleMobilePlusClick = handleMobilePlusClick;
-    window.copyToClipboard = copyToClipboard;
-    window.copyRoomCode = copyRoomCode;
-    window.showToast = showToast;
-    window.lockBodyScroll = lockBodyScroll;
-    window.unlockBodyScroll = unlockBodyScroll;
+      // Explicit Global Window Attachments (Fail-proof across SPA)
+      window.openModalTambahAnggota = openModalTambahAnggota;
+      window.closeModalTambahAnggota = closeModalTambahAnggota;
+      window.openModalQuickActionAnggota = openModalQuickActionAnggota;
+      window.closeModalQuickActionAnggota = closeModalQuickActionAnggota;
+      window.openModalInfoAnggota = openModalInfoAnggota;
+      window.closeModalInfoAnggota = closeModalInfoAnggota;
+      window.handleMobilePlusClick = handleMobilePlusClick;
+      window.copyToClipboard = copyToClipboard;
+      window.copyRoomCode = copyRoomCode;
+      window.showToast = showToast;
+      window.lockBodyScroll = lockBodyScroll;
+      window.unlockBodyScroll = unlockBodyScroll;
 
-    // =========================================================================
-    // AUTO-DISMISS FLASH NOTIFIKASI DESKRIPSI (2.5 DETIK)
-    // =========================================================================
-    function initFlashAlertAutoDismiss() {
-      const alerts = document.querySelectorAll('.flash-alert-item');
-      if (!alerts || alerts.length === 0) return;
+      // =========================================================================
+      // AUTO-DISMISS FLASH NOTIFIKASI DESKRIPSI (2.5 DETIK)
+      // =========================================================================
+      function initFlashAlertAutoDismiss() {
+        const alerts = document.querySelectorAll(".flash-alert-item");
+        if (!alerts || alerts.length === 0) return;
 
-      setTimeout(() => {
-        alerts.forEach((alert) => {
-          dismissFlashAlert(alert);
-        });
-      }, 2500);
-    }
+        setTimeout(() => {
+          alerts.forEach((alert) => {
+            dismissFlashAlert(alert);
+          });
+        }, 2500);
+      }
 
-    function dismissFlashAlert(elem) {
-      const alert = elem.classList.contains('flash-alert-item') ? elem : elem.closest('.flash-alert-item');
-      if (!alert) return;
+      function dismissFlashAlert(elem) {
+        const alert = elem.classList.contains("flash-alert-item")
+          ? elem
+          : elem.closest(".flash-alert-item");
+        if (!alert) return;
 
-      alert.style.transition = 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
-      alert.style.opacity = '0';
-      alert.style.transform = 'translateY(-6px) scale(0.98)';
+        alert.style.transition = "all 0.35s cubic-bezier(0.16, 1, 0.3, 1)";
+        alert.style.opacity = "0";
+        alert.style.transform = "translateY(-6px) scale(0.98)";
 
-      setTimeout(() => {
-        alert.style.maxHeight = '0px';
-        alert.style.paddingTop = '0px';
-        alert.style.paddingBottom = '0px';
-        alert.style.marginTop = '0px';
-        alert.style.marginBottom = '0px';
-        alert.style.borderWidth = '0px';
-        alert.style.overflow = 'hidden';
-      }, 80);
+        setTimeout(() => {
+          alert.style.maxHeight = "0px";
+          alert.style.paddingTop = "0px";
+          alert.style.paddingBottom = "0px";
+          alert.style.marginTop = "0px";
+          alert.style.marginBottom = "0px";
+          alert.style.borderWidth = "0px";
+          alert.style.overflow = "hidden";
+        }, 80);
 
-      setTimeout(() => {
-        alert.remove();
-        const container = document.getElementById('djangoMessagesContainer');
-        if (container && container.children.length === 0) {
-          container.remove();
-        }
-      }, 400);
-    }
-
-    window.dismissFlashAlert = dismissFlashAlert;
-    window.initFlashAlertAutoDismiss = initFlashAlertAutoDismiss;
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initFlashAlertAutoDismiss);
-    } else {
-      initFlashAlertAutoDismiss();
-    }
-
-    // =========================================================================
-    // PWA (PROGRESSIVE WEB APP) SERVICE WORKER & 1-TAP INSTALL TO HOMESCREEN
-    // =========================================================================
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/static/js/sw.js').then((reg) => {
-          console.log('PWA ServiceWorker ready:', reg.scope);
-        }).catch((err) => {
-          console.warn('PWA ServiceWorker notice:', err);
-        });
-      });
-    }
-
-    let deferredInstallPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredInstallPrompt = e;
-      const banner = document.getElementById('pwaInstallBanner');
-      if (banner) banner.classList.remove('hidden');
-    });
-
-    function installPWA() {
-      if (deferredInstallPrompt) {
-        deferredInstallPrompt.prompt();
-        deferredInstallPrompt.userChoice.then((result) => {
-          if (result.outcome === 'accepted') {
-            showToast('Aplikasi Arisan berhasil dipasang di Layar Utama HP!');
+        setTimeout(() => {
+          alert.remove();
+          const container = document.getElementById("djangoMessagesContainer");
+          if (container && container.children.length === 0) {
+            container.remove();
           }
-          deferredInstallPrompt = null;
-          const banner = document.getElementById('pwaInstallBanner');
-          if (banner) banner.classList.add('hidden');
+        }, 400);
+      }
+
+      window.dismissFlashAlert = dismissFlashAlert;
+      window.initFlashAlertAutoDismiss = initFlashAlertAutoDismiss;
+
+      if (document.readyState === "loading") {
+        document.addEventListener(
+          "DOMContentLoaded",
+          initFlashAlertAutoDismiss,
+        );
+      } else {
+        initFlashAlertAutoDismiss();
+      }
+
+      // =========================================================================
+      // PWA (PROGRESSIVE WEB APP) SERVICE WORKER & 1-TAP INSTALL TO HOMESCREEN
+      // =========================================================================
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/static/js/sw.js")
+            .then((reg) => {
+              reg.update();
+              console.log("PWA ServiceWorker ready:", reg.scope);
+            })
+            .catch((err) => {
+              console.warn("PWA ServiceWorker notice:", err);
+            });
         });
       }
-    }
 
-    // =========================================================================
-    // INSTANT NAVIGATION ENGINE & 0ms TOUCH FEEDBACK (TURBO SPA MODE)
-    // Menghilangkan delay 2 detik saat berpindah tabbar di HP!
-    // =========================================================================
-    document.addEventListener('click', (e) => {
-      const tabLink = e.target.closest('.mobile-tab-item, .sidebar-nav-item');
-      if (!tabLink) return;
-
-      const href = tabLink.getAttribute('href');
-      if (!href || href.startsWith('#') || href.startsWith('javascript') || tabLink.getAttribute('target') === '_blank') {
-        return;
-      }
-
-      // Cegah klik berulang pada tab yang sedang aktif
-      if (tabLink.classList.contains('active') && window.location.pathname === href) {
+      let deferredInstallPrompt;
+      window.addEventListener("beforeinstallprompt", (e) => {
         e.preventDefault();
-        return;
+        deferredInstallPrompt = e;
+        const banner = document.getElementById("pwaInstallBanner");
+        if (banner) banner.classList.remove("hidden");
+      });
+
+      function installPWA() {
+        if (deferredInstallPrompt) {
+          deferredInstallPrompt.prompt();
+          deferredInstallPrompt.userChoice.then((result) => {
+            if (result.outcome === "accepted") {
+              showToast("Aplikasi Arisan berhasil dipasang di Layar Utama HP!");
+            }
+            deferredInstallPrompt = null;
+            const banner = document.getElementById("pwaInstallBanner");
+            if (banner) banner.classList.add("hidden");
+          });
+        }
       }
 
-      e.preventDefault();
+      // =========================================================================
+      // INSTANT NAVIGATION ENGINE & 0ms TOUCH FEEDBACK (TURBO SPA MODE)
+      // Menghilangkan delay 2 detik saat berpindah tabbar di HP!
+      // =========================================================================
+      document.addEventListener("click", (e) => {
+        const tabLink = e.target.closest(".mobile-tab-item, .sidebar-nav-item");
+        if (!tabLink) return;
 
-      // 1. RESPON SENTUHAN INSTAN 0ms (Aktifkan tab detik itu juga!)
-      if (tabLink.classList.contains('mobile-tab-item')) {
-        document.querySelectorAll('.mobile-tab-item').forEach(el => el.classList.remove('active'));
-        tabLink.classList.add('active');
-      } else if (tabLink.classList.contains('sidebar-nav-item')) {
-        document.querySelectorAll('.sidebar-nav-item').forEach(el => el.classList.remove('active'));
-        tabLink.classList.add('active');
-      }
-
-      // Efek getar taktil lembut pada HP jika didukung
-      if (navigator.vibrate) {
-        try { navigator.vibrate(12); } catch (_) {}
-      }
-
-      // 2. Jalankan Progress Laser Emas
-      const progressBar = document.getElementById('topProgressBar');
-      if (progressBar) {
-        progressBar.style.transition = 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
-        progressBar.style.transform = 'translateX(-30%)';
-      }
-
-      // 3. Pindah Halaman Tanpa Reload Kasar
-      navigatePageInstantly(href);
-    });
-
-    async function navigatePageInstantly(url) {
-      const progressBar = document.getElementById('topProgressBar');
-      try {
-        const res = await fetch(url, {
-          headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        });
-        if (!res.ok) throw new Error('Status ' + res.status);
-        const htmlText = await res.text();
-
-        if (progressBar) progressBar.style.transform = 'translateX(-10%)';
-
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlText, 'text/html');
-
-        // Ganti Title
-        document.title = doc.title;
-
-        // Ganti Konten Halaman Utama
-        const newContent = doc.getElementById('dynamicPageContent');
-        const curContent = document.getElementById('dynamicPageContent');
-        if (newContent && curContent) {
-          curContent.innerHTML = newContent.innerHTML;
+        const href = tabLink.getAttribute("href");
+        if (
+          !href ||
+          href.startsWith("#") ||
+          href.startsWith("javascript") ||
+          tabLink.getAttribute("target") === "_blank"
+        ) {
+          return;
         }
 
-        // Ganti Root Modals
-        const newModals = doc.getElementById('modalPortalRoot');
-        const curModals = document.getElementById('modalPortalRoot');
-        if (newModals && curModals) {
-          curModals.innerHTML = newModals.innerHTML;
+        // Cegah klik berulang pada tab yang sedang aktif
+        if (
+          tabLink.classList.contains("active") &&
+          window.location.pathname === href
+        ) {
+          e.preventDefault();
+          return;
         }
 
-        // Update Desktop Header info jika ada
-        const newHeader = doc.querySelector('header');
-        const curHeader = document.querySelector('header');
-        if (newHeader && curHeader) {
-          curHeader.innerHTML = newHeader.innerHTML;
+        e.preventDefault();
+
+        // 1. RESPON SENTUHAN INSTAN 0ms (Aktifkan tab detik itu juga!)
+        if (tabLink.classList.contains("mobile-tab-item")) {
+          document
+            .querySelectorAll(".mobile-tab-item")
+            .forEach((el) => el.classList.remove("active"));
+          tabLink.classList.add("active");
+          const targetIndex = parseInt(
+            tabLink.getAttribute("data-tab-index") || "0",
+            10,
+          );
+          moveFluidIndicator(targetIndex, true);
+        } else if (tabLink.classList.contains("sidebar-nav-item")) {
+          document
+            .querySelectorAll(".sidebar-nav-item")
+            .forEach((el) => el.classList.remove("active"));
+          tabLink.classList.add("active");
         }
 
-        // Update Tab Bar Active States
-        const newNav = doc.getElementById('mobileBottomNav');
-        const curNav = document.getElementById('mobileBottomNav');
-        if (newNav && curNav) {
-          curNav.innerHTML = newNav.innerHTML;
+        // Efek getar taktil lembut pada HP jika didukung
+        if (navigator.vibrate) {
+          try {
+            navigator.vibrate(12);
+          } catch (_) {}
         }
 
-        // Update Sidebar Active States
-        const newSidebar = doc.querySelector('aside');
-        const curSidebar = document.querySelector('aside');
-        if (newSidebar && curSidebar) {
-          curSidebar.innerHTML = newSidebar.innerHTML;
+        // 2. Jalankan Progress Laser Emas
+        const progressBar = document.getElementById("topProgressBar");
+        if (progressBar) {
+          progressBar.style.transition =
+            "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)";
+          progressBar.style.transform = "translateX(-30%)";
         }
 
-        // Update Flash Alerts jika ada
-        const newMsg = doc.getElementById('djangoMessagesContainer');
-        const curMsg = document.getElementById('djangoMessagesContainer');
-        if (newMsg && curMsg) {
-          curMsg.outerHTML = newMsg.outerHTML;
-          initFlashAlertAutoDismiss();
-        } else if (newMsg && !curMsg) {
-          const mainContent = document.getElementById('dynamicPageContent');
-          if (mainContent) {
-            mainContent.parentNode.insertBefore(newMsg, mainContent);
-            initFlashAlertAutoDismiss();
+        // 3. Pindah Halaman Tanpa Reload Kasar
+        navigatePageInstantly(href);
+      });
+
+      async function navigatePageInstantly(url, opts = {}) {
+        const progressBar = document.getElementById("topProgressBar");
+        try {
+          const res = await fetch(url, {
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+          });
+          if (!res.ok) throw new Error("Status " + res.status);
+          const htmlText = await res.text();
+
+          if (progressBar) progressBar.style.transform = "translateX(-10%)";
+
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(htmlText, "text/html");
+
+          // Ganti Title
+          document.title = doc.title;
+
+          // Ganti Konten Halaman Utama
+          const newContent = doc.getElementById("dynamicPageContent");
+          const curContent = document.getElementById("dynamicPageContent");
+          if (newContent && curContent) {
+            curContent.innerHTML = newContent.innerHTML;
           }
-        } else if (!newMsg && curMsg) {
-          curMsg.remove();
-        }
 
-        // Jalankan Script Baru dari Halaman yang Di-swap di Global Window Scope
-        const scripts = doc.querySelectorAll('#dynamicPageContent script, #modalPortalRoot script, body script:not([src])');
-        scripts.forEach(oldScript => {
-          const code = oldScript.innerText || oldScript.textContent;
-          if (code && !code.includes('navigatePageInstantly') && !code.includes('topProgressBar')) {
-            try {
-              const s = document.createElement('script');
-              s.textContent = code;
-              document.body.appendChild(s);
-              setTimeout(() => { s.remove(); }, 100);
-            } catch (err) {
-              console.warn('Script execution notice:', err);
+          // Ganti Root Modals
+          const newModals = doc.getElementById("modalPortalRoot");
+          const curModals = document.getElementById("modalPortalRoot");
+          if (newModals && curModals) {
+            curModals.innerHTML = newModals.innerHTML;
+          }
+
+          // Update Desktop Header info jika ada
+          const newHeader = doc.querySelector("header");
+          const curHeader = document.querySelector("header");
+          if (newHeader && curHeader) {
+            curHeader.innerHTML = newHeader.innerHTML;
+          }
+
+          // Update Tab Bar Active States TANPA menghancurkan elemen slider yang sedang meluncur
+          const newNav = doc.getElementById("mobileBottomNav");
+          const curNav = document.getElementById("mobileBottomNav");
+          if (newNav && curNav) {
+            const newActive = newNav.querySelector(".mobile-tab-item.active");
+            const newIdx = newActive
+              ? parseInt(newActive.getAttribute("data-tab-index") || "0", 10)
+              : 0;
+            curNav.querySelectorAll(".mobile-tab-item").forEach((el) => {
+              const idx = parseInt(el.getAttribute("data-tab-index") || "-1", 10);
+              el.classList.toggle("active", idx === newIdx);
+            });
+            lastActiveTabIndex = newIdx;
+            moveFluidIndicator(newIdx, false);
+          }
+
+          // Update Sidebar Active States
+          const newSidebar = doc.querySelector("aside");
+          const curSidebar = document.querySelector("aside");
+          if (newSidebar && curSidebar) {
+            curSidebar.innerHTML = newSidebar.innerHTML;
+          }
+
+          // Update Flash Alerts jika ada
+          const newMsg = doc.getElementById("djangoMessagesContainer");
+          const curMsg = document.getElementById("djangoMessagesContainer");
+          if (newMsg && curMsg) {
+            curMsg.outerHTML = newMsg.outerHTML;
+            initFlashAlertAutoDismiss();
+          } else if (newMsg && !curMsg) {
+            const mainContent = document.getElementById("dynamicPageContent");
+            if (mainContent) {
+              mainContent.parentNode.insertBefore(newMsg, mainContent);
+              initFlashAlertAutoDismiss();
+            }
+          } else if (!newMsg && curMsg) {
+            curMsg.remove();
+          }
+
+          // Jalankan Script Baru dari Halaman yang Di-swap di Global Window Scope
+          const scripts = doc.querySelectorAll(
+            "#dynamicPageContent script, #modalPortalRoot script, body script:not([src])",
+          );
+          scripts.forEach((oldScript) => {
+            const code = oldScript.innerText || oldScript.textContent;
+            if (
+              code &&
+              !code.includes("navigatePageInstantly") &&
+              !code.includes("topProgressBar")
+            ) {
+              try {
+                const s = document.createElement("script");
+                s.textContent = code;
+                document.body.appendChild(s);
+                setTimeout(() => {
+                  s.remove();
+                }, 100);
+              } catch (err) {
+                console.warn("Script execution notice:", err);
+              }
+            }
+          });
+
+          // Sinkronkan kode room aktif untuk Smart Delta Poller
+          const newMain = doc.getElementById("mainContentContainer");
+          const curMain = document.getElementById("mainContentContainer");
+          if (newMain && curMain) {
+            const nextCode = newMain.getAttribute("data-room-code") || "";
+            if (curMain.getAttribute("data-room-code") !== nextCode) {
+              curMain.setAttribute("data-room-code", nextCode);
+              if (window.resetDeltaSyncRoom) window.resetDeltaSyncRoom(nextCode);
             }
           }
+
+          // Re-inisialisasi Ikon Lucide
+          if (window.lucide) {
+            lucide.createIcons();
+          }
+
+          // Simpan History & Scroll ke Atas Instan (kecuali saat background delta sync)
+          if (!opts.skipPushState) {
+            window.history.pushState({ url }, doc.title, url);
+          }
+          if (!opts.preserveScroll) {
+            window.scrollTo({ top: 0, behavior: "instant" });
+          }
+
+          // Tuntaskan Progress Bar Laser
+          if (progressBar) {
+            progressBar.style.transform = "translateX(0%)";
+            setTimeout(() => {
+              progressBar.style.transition = "none";
+              progressBar.style.transform = "translateX(-100%)";
+            }, 200);
+          }
+        } catch (err) {
+          console.warn("Fallback ke navigasi biasa:", err);
+          if (!opts.isPullRefresh) {
+            window.location.href = url;
+          } else {
+            window.location.reload();
+          }
+        }
+      }
+
+      // Dukungan Tombol Back/Forward Browser HP
+      window.addEventListener("popstate", (e) => {
+        if (e.state && e.state.url) {
+          navigatePageInstantly(e.state.url, { skipPushState: true });
+        } else {
+          navigatePageInstantly(window.location.href, { skipPushState: true });
+        }
+      });
+
+      // =========================================================================
+      // TAHAP 3: CUSTOM PULL-TO-REFRESH MOBILE (THE LIQUID GOLD DROP + HAPTIC)
+      // Menggantikan animasi lingkaran/titik bawaan browser dengan tetesan emas kenyal
+      // =========================================================================
+      (function initLiquidGoldPullToRefresh() {
+        const container = document.getElementById("liquidPtrContainer");
+        const pathEl = document.getElementById("liquidPtrPath");
+        const sheenEl = document.getElementById("liquidPtrSheen");
+        const hintEl = document.getElementById("liquidPtrHint");
+        const mainEl = document.getElementById("mainContentContainer");
+        if (!container || !pathEl || !sheenEl || !hintEl) return;
+
+        const TRIGGER_THRESHOLD = 70;
+        const MAX_PULL = 100;
+
+        let startY = 0;
+        let currentPull = 0;
+        let isTracking = false;
+        let hasVibrated = false;
+        let isRefreshing = false;
+        let retractAnimId = null;
+
+        function isAtTop() {
+          const winTop =
+            (window.scrollY || document.documentElement.scrollTop || 0) <= 1;
+          const mainTop = mainEl ? mainEl.scrollTop <= 1 : true;
+          return winTop && mainTop;
+        }
+
+        function renderDrop(px) {
+          const p = Math.max(0, Math.min(px, MAX_PULL));
+          if (p <= 0.5) {
+            pathEl.setAttribute("d", "M 20,0 L 120,0 Z");
+            sheenEl.setAttribute("opacity", "0");
+            return;
+          }
+          const r = Math.min(18, 5 + p * 0.14);
+          const cy = Math.max(r * 0.4, p - r);
+          const neckHalf = Math.max(4.5, 22 - p * 0.15);
+          const topSpread = Math.max(22, 48 - p * 0.22);
+
+          const d = [
+            `M ${(70 - topSpread).toFixed(1)},0`,
+            `C ${(70 - topSpread * 0.45).toFixed(1)},0 ${(70 - neckHalf).toFixed(1)},${(cy * 0.45).toFixed(1)} ${(70 - r).toFixed(1)},${cy.toFixed(1)}`,
+            `A ${r.toFixed(1)},${r.toFixed(1)} 0 1 0 ${(70 + r).toFixed(1)},${cy.toFixed(1)}`,
+            `C ${(70 + neckHalf).toFixed(1)},${(cy * 0.45).toFixed(1)} ${(70 + topSpread * 0.45).toFixed(1)},0 ${(70 + topSpread).toFixed(1)},0`,
+            "Z",
+          ].join(" ");
+          pathEl.setAttribute("d", d);
+          hintEl.style.top = (p + 8).toFixed(1) + "px";
+
+          if (p > 16) {
+            sheenEl.setAttribute("cx", (70 - r * 0.36).toFixed(1));
+            sheenEl.setAttribute("cy", (cy - r * 0.22).toFixed(1));
+            sheenEl.setAttribute("rx", (r * 0.28).toFixed(1));
+            sheenEl.setAttribute("ry", (r * 0.18).toFixed(1));
+            sheenEl.setAttribute(
+              "opacity",
+              Math.min(0.85, (p - 16) / 40).toFixed(2),
+            );
+          } else {
+            sheenEl.setAttribute("opacity", "0");
+          }
+        }
+
+        function animateDropTo(targetPx, durationMs = 260, onDone) {
+          if (retractAnimId) cancelAnimationFrame(retractAnimId);
+          const fromPx = currentPull;
+          const startTime = performance.now();
+
+          function step(now) {
+            const t = Math.min(1, (now - startTime) / durationMs);
+            // Smooth ease-out curve
+            const eased = 1 - Math.pow(1 - t, 3);
+            currentPull = fromPx + (targetPx - fromPx) * eased;
+            renderDrop(currentPull);
+            if (t < 1) {
+              retractAnimId = requestAnimationFrame(step);
+            } else {
+              retractAnimId = null;
+              if (onDone) onDone();
+            }
+          }
+          retractAnimId = requestAnimationFrame(step);
+        }
+
+        document.addEventListener(
+          "touchstart",
+          (e) => {
+            if (isRefreshing || e.touches.length !== 1) return;
+            if (document.body.style.overflow === "hidden") return;
+            if (e.target.closest("input, textarea, select, [data-no-ptr]"))
+              return;
+            if (!isAtTop()) return;
+
+            startY = e.touches[0].clientY;
+            isTracking = true;
+            hasVibrated = false;
+            container.classList.add("is-dragging");
+          },
+          { passive: true },
+        );
+
+        document.addEventListener(
+          "touchmove",
+          (e) => {
+            if (!isTracking || isRefreshing) return;
+            if (!isAtTop()) {
+              isTracking = false;
+              currentPull = 0;
+              renderDrop(0);
+              container.classList.remove("is-armed", "is-dragging");
+              return;
+            }
+
+            const deltaY = e.touches[0].clientY - startY;
+            if (deltaY <= 0) {
+              currentPull = 0;
+              renderDrop(0);
+              container.classList.remove("is-armed");
+              return;
+            }
+
+            // Resistensi elastis (tarikan terasa kenyal)
+            const dampedPull = Math.min(MAX_PULL, Math.pow(deltaY, 0.85) * 1.35);
+            currentPull = dampedPull;
+            renderDrop(dampedPull);
+
+            if (dampedPull >= TRIGGER_THRESHOLD) {
+              container.classList.add("is-armed");
+              hintEl.textContent = "Lepas untuk segarkan";
+              if (!hasVibrated) {
+                hasVibrated = true;
+                if (navigator.vibrate) {
+                  try {
+                    navigator.vibrate(15);
+                  } catch (_) {}
+                }
+              }
+            } else {
+              container.classList.remove("is-armed");
+              hasVibrated = false;
+            }
+          },
+          { passive: true },
+        );
+
+        async function finishPullOrCancel() {
+          if (!isTracking || isRefreshing) return;
+          isTracking = false;
+          container.classList.remove("is-dragging");
+
+          if (currentPull >= TRIGGER_THRESHOLD) {
+            isRefreshing = true;
+            container.classList.remove("is-armed");
+            container.classList.add("is-refreshing");
+            hintEl.textContent = "Menyegarkan data...";
+
+            animateDropTo(54, 180);
+            const minDisplayPromise = new Promise((res) =>
+              setTimeout(res, 450),
+            );
+            try {
+              await Promise.all([
+                navigatePageInstantly(window.location.href, {
+                  skipPushState: true,
+                  isPullRefresh: true,
+                }),
+                minDisplayPromise,
+              ]);
+              if (typeof showToast === "function") {
+                showToast("Data terbaru berhasil disinkronkan!");
+              }
+            } finally {
+              container.classList.remove("is-refreshing");
+              animateDropTo(0, 260, () => {
+                isRefreshing = false;
+                hintEl.textContent = "Lepas untuk segarkan";
+              });
+            }
+          } else {
+            container.classList.remove("is-armed");
+            animateDropTo(0, 220);
+          }
+        }
+
+        document.addEventListener("touchend", finishPullOrCancel, {
+          passive: true,
         });
+        document.addEventListener("touchcancel", finishPullOrCancel, {
+          passive: true,
+        });
+      })();
 
-        // Re-inisialisasi Ikon Lucide
-        if (window.lucide) {
-          lucide.createIcons();
+      // =========================================================================
+      // TAHAP 4: SMART DELTA HEARTBEAT POLLER (3 DETIK + PAGE VISIBILITY API)
+      // Hemat CPU server PythonAnywhere & sinkronisasi real-time tanpa reload
+      // =========================================================================
+      (function initSmartDeltaHeartbeatPoller() {
+        const POLL_INTERVAL_MS = 3000;
+        let lastRoomVersion = null;
+        let activeRoomCode = (
+          document
+            .getElementById("mainContentContainer")
+            ?.getAttribute("data-room-code") || ""
+        ).trim();
+        let isPolling = false;
+        let lastLocalMutationAt = 0;
+
+        window.markLocalMutation = function () {
+          lastLocalMutationAt = Date.now();
+          lastRoomVersion = null;
+        };
+
+        window.resetDeltaSyncRoom = function (newCode) {
+          activeRoomCode = (newCode || "").trim();
+          lastRoomVersion = null;
+        };
+
+        function patchDashboardKPI(data) {
+          if (!data || !data.stats || !data.room) return;
+          const s = data.stats;
+          const elPeserta = document.getElementById("statTotalPeserta");
+          const elPot = document.getElementById("statTargetPot");
+          const elKas = document.getElementById("statKasTerkumpul");
+          const elSisa = document.getElementById("statSisaKekurangan");
+          const elSub = document.getElementById("statSubLunas");
+          const elBar = document.getElementById("statProgressBar");
+          const elPct = document.getElementById("statPersentaseText");
+          const elMax = document.getElementById("statProgressMax");
+
+          if (elPeserta) elPeserta.innerText = `${s.total_peserta} Warga`;
+          if (elPot) elPot.innerText = s.target_pot_formatted;
+          if (elKas) elKas.innerText = s.total_kas_formatted;
+          if (elSisa) elSisa.innerText = s.sisa_kekurangan_formatted;
+          if (elSub)
+            elSub.innerText = `${s.total_lunas} / ${s.total_peserta} warga lunas`;
+          if (elBar) elBar.style.width = `${s.persentase_lunas}%`;
+          if (elPct) elPct.innerText = `${s.persentase_lunas}% Terkumpul`;
+          if (elMax) elMax.innerText = s.target_pot_formatted;
         }
 
-        // Simpan History & Scroll ke Atas Instan
-        window.history.pushState({ url }, doc.title, url);
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        async function runHeartbeatCheck() {
+          if (!activeRoomCode || document.hidden || isPolling) return;
+          if (document.body.style.overflow === "hidden") return;
 
-        // Tuntaskan Progress Bar Laser
-        if (progressBar) {
-          progressBar.style.transform = 'translateX(0%)';
-          setTimeout(() => {
-            progressBar.style.transition = 'none';
-            progressBar.style.transform = 'translateX(-100%)';
-          }, 200);
+          const activeEl = document.activeElement;
+          if (
+            activeEl &&
+            ["INPUT", "TEXTAREA", "SELECT"].includes(activeEl.tagName)
+          ) {
+            return;
+          }
+
+          isPolling = true;
+          try {
+            const url = `/api/v1/rooms/${encodeURIComponent(activeRoomCode)}/sync/?version=${encodeURIComponent(lastRoomVersion || "")}`;
+            const res = await fetch(url, {
+              headers: { "X-Requested-With": "XMLHttpRequest" },
+              cache: "no-store",
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+
+            if (!lastRoomVersion) {
+              lastRoomVersion = data.version || null;
+              return;
+            }
+
+            if (data.has_update && data.version !== lastRoomVersion) {
+              lastRoomVersion = data.version;
+              patchDashboardKPI(data);
+
+              // Jangan timpa mutasi lokal yang barusan diklik pengguna (< 1.5 detik)
+              if (Date.now() - lastLocalMutationAt < 1500) {
+                return;
+              }
+
+              // Hindari gangguan jika bola pengocokan sedang berputar
+              const sphere = document.getElementById("raffleSphere");
+              if (sphere && sphere.classList.contains("is-spinning")) {
+                return;
+              }
+
+              await navigatePageInstantly(window.location.href, {
+                skipPushState: true,
+                preserveScroll: true,
+                isDeltaSync: true,
+              });
+
+              if (typeof showToast === "function") {
+                showToast("🔄 Data arisan diperbarui otomatis!");
+              }
+            }
+          } catch (err) {
+            // Abaikan error jaringan sesaat agar polling tetap tangguh
+          } finally {
+            isPolling = false;
+          }
         }
-      } catch (err) {
-        console.warn('Fallback ke navigasi biasa:', err);
-        window.location.href = url;
-      }
-    }
 
-    // Dukungan Tombol Back/Forward Browser HP
-    window.addEventListener('popstate', (e) => {
-      if (e.state && e.state.url) {
-        navigatePageInstantly(e.state.url);
+        setInterval(runHeartbeatCheck, POLL_INTERVAL_MS);
+        document.addEventListener("visibilitychange", () => {
+          if (!document.hidden) {
+            runHeartbeatCheck();
+          }
+        });
+      })();
+
+      // Inisialisasi posisi awal slider cairan saat halaman pertama kali load
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initFluidTabIndicator);
       } else {
-        navigatePageInstantly(window.location.href);
+        initFluidTabIndicator();
       }
-    });
-  </script>
+    </script>
 
-  {% block scripts %}{% endblock %}
-</body>
+    {% block scripts %}{% endblock %}
+  </body>
 </html>

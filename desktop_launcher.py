@@ -1,101 +1,59 @@
 import os
 import sys
-import time
-import socket
-import threading
+import subprocess
 import webbrowser
 from pathlib import Path
-from wsgiref.simple_server import make_server
 
-# Tentukan Environment Django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+CLOUD_PORTAL_URL = "https://alware21.pythonanywhere.com/portal/"
 
-import django
-django.setup()
-
-from django.core.management import call_command
-from django.core.wsgi import get_wsgi_application
-from django.contrib.staticfiles.handlers import StaticFilesHandler
-
-def get_wifi_ip():
-    """Dapatkan IP WiFi / LAN lokal agar HP bisa terhubung"""
+# Pastikan stdout/stderr aman saat dijalankan dalam mode GUI windowed (tanpa terminal console)
+if sys.stdout is None:
     try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.settimeout(0.5)
-        # Tidak perlu koneksi nyata keluar, hanya untuk mendeteksi interface default
-        s.connect(('8.8.8.8', 80))
-        ip = s.getsockname()[0]
-        s.close()
-        return ip
+        sys.stdout = open(os.devnull, "w", encoding="utf-8")
     except Exception:
-        try:
-            return socket.gethostbyname(socket.gethostname())
-        except Exception:
-            return '127.0.0.1'
-
-def find_available_port(default_port=8000):
-    """Cari port yang tersedia, mulai dari 8000"""
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        pass
+if sys.stderr is None:
     try:
-        s.bind(('0.0.0.0', default_port))
-        s.close()
-        return default_port
-    except OSError:
-        # Port 8000 terpakai, cari port bebas acak
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind(('0.0.0.0', 0))
-        port = s.getsockname()[1]
-        s.close()
-        return port
+        sys.stderr = open(os.devnull, "w", encoding="utf-8")
+    except Exception:
+        pass
 
-def run_db_migrations():
-    """Jalankan migrasi database otomatis saat pertama kali dibuka"""
-    try:
-        call_command('migrate', interactive=False)
-    except Exception as e:
-        print(f"[Info Migrasi] {e}")
+
+def find_browser_executable():
+    """Mencari browser berbasis Chromium (Edge / Chrome) untuk mode jendela aplikasi mandiri."""
+    candidates = [
+        os.path.expandvars(r"%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe"),
+        os.path.expandvars(r"%ProgramFiles%\Microsoft\Edge\Application\msedge.exe"),
+        os.path.expandvars(r"%LocalAppData%\Microsoft\Edge\Application\msedge.exe"),
+        os.path.expandvars(r"%ProgramFiles%\Google\Chrome\Application\chrome.exe"),
+        os.path.expandvars(r"%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe"),
+        os.path.expandvars(r"%LocalAppData%\Google\Chrome\Application\chrome.exe"),
+    ]
+    for path in candidates:
+        if os.path.isfile(path):
+            return path
+    return None
+
 
 def main():
-    print("=" * 65)
-    print("      ✨ ARISAN DIGITAL - BY ALWARE PLATFORM ✨")
-    print("           Solusi Arisan Warga Modern & Transparan")
-    print("=" * 65)
-    print("\n[1/3] Menyiapkan database lokal...")
-    run_db_migrations()
-
-    port = find_available_port(8000)
-    wifi_ip = get_wifi_ip()
-
-    print("[2/3] Memulai server aplikasi arisan...")
-    # StaticFilesHandler memastikan file CSS, logo SVG, dan JS terlayani sempurna
-    application = StaticFilesHandler(get_wsgi_application())
-    httpd = make_server('0.0.0.0', port, application)
-
-    local_url = f"http://127.0.0.1:{port}/"
-    hp_url = f"http://{wifi_ip}:{port}/"
-
-    print("[3/3] Server siap melayani!")
-    print("-" * 65)
-    print(f"  💻 Akses di Laptop (Browser) : {local_url}")
-    print(f"  📱 Akses di HP (1 Jaringan)  : {hp_url}")
-    print("-" * 65)
-    print("\n🌐 Membuka aplikasi Arisan di browser laptop secara otomatis...")
-    print("\n⚠️  PENTING: Jangan tutup jendela hitam ini selama menggunakan aplikasi.")
-    print("    Tekan CTRL + C di jendela ini untuk mematikan aplikasi.\n")
-
-    def open_browser():
-        time.sleep(1.2)
+    """Membuka Arisan Digital Cloud (Full Online) dalam mode aplikasi desktop mandiri."""
+    browser_exe = find_browser_executable()
+    if browser_exe:
         try:
-            webbrowser.open(local_url)
+            profile_dir = Path(os.environ.get("TEMP", ".")) / "arisan_desktop_profile"
+            subprocess.Popen([
+                browser_exe,
+                f"--app={CLOUD_PORTAL_URL}",
+                f"--user-data-dir={profile_dir}",
+                "--no-first-run",
+                "--no-default-browser-check",
+            ])
+            return
         except Exception:
             pass
 
-    threading.Thread(target=open_browser, daemon=True).start()
+    webbrowser.open(CLOUD_PORTAL_URL)
 
-    try:
-        httpd.serve_forever()
-    except (KeyboardInterrupt, SystemExit):
-        print("\n\nTerima kasih! Server Arisan Digital telah dimatikan.")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
